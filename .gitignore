@@ -1,0 +1,5 @@
+# Deploy repo: publish ONLY index.html to GitHub Pages.
+# Ignore everything by default, then allow the deploy files.
+/*
+!/index.html
+!/.gitignore
