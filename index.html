@@ -342,10 +342,10 @@ h2,h3,h4{text-wrap:pretty}
       </div>
     </div>
   </div>
-<button type="button" aria-label="前のラウンド" onclick="schedScroll(-1)" style="position:absolute;left:0;top:calc(50% - 7px);transform:translateY(-50%);z-index:6;width:clamp(16px,4.5vw,48px);height:64px;border:none;background:#EE651C;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s" class="h21">
+<button type="button" aria-label="前のラウンド" onclick="schedScroll(-1)" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:6;width:clamp(16px,4.5vw,48px);height:64px;border:none;background:#EE651C;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s" class="h21">
     <span style="width:9px;height:9px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(45deg);margin-left:2px"></span>
   </button>
-  <button type="button" aria-label="次のラウンド" onclick="schedScroll(1)" style="position:absolute;right:0;top:calc(50% - 7px);transform:translateY(-50%);z-index:6;width:clamp(16px,4.5vw,48px);height:64px;border:none;background:#EE651C;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s" class="h22">
+  <button type="button" aria-label="次のラウンド" onclick="schedScroll(1)" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:6;width:clamp(16px,4.5vw,48px);height:64px;border:none;background:#EE651C;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s" class="h22">
     <span style="width:9px;height:9px;border-right:2.5px solid #fff;border-top:2.5px solid #fff;transform:rotate(45deg);margin-right:2px"></span>
   </button>
 <div class="topdots" style="position:absolute;display:flex;gap:8px;z-index:4;left:50%;transform:translateX(-50%);top:20px">
@@ -556,8 +556,13 @@ h2,h3,h4{text-wrap:pretty}
   }
   function advance(){
     i++; anim=true; render();
-    if(i>=N){ setTimeout(function(){ i=0; anim=false; render();
-      requestAnimationFrame(function(){ anim=true; render(); }); },640); }
+    if(i>=N){ setTimeout(function(){
+      i=0; anim=false; render();
+      /* force reflow so the jump-to-start is committed with transition:none,
+         otherwise the browser animates -N*step -> 0 (looks like a rewind) */
+      if(ht) void ht.offsetWidth; if(vt) void vt.offsetWidth;
+      anim=true; render();
+    },640); }
   }
   window.go=function(d){ i=d; anim=true; render(); start(); };
   function start(){ clearInterval(tmr); tmr=setInterval(advance,3600); }
