@@ -47,6 +47,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
       {active && (
         <div
           onClick={() => setActive(null)}
+          className="pmodal-overlay"
           style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(10,10,12,.74)", backdropFilter: "blur(3px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
         >
           <div

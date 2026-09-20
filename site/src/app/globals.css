@@ -27,7 +27,13 @@ h1, h2, h3, h4 { margin: 0; }
 }
 
 /* ===== player detail modal (2-column: portrait + info) ===== */
-.pmodal { display: flex; }
+@keyframes pmodal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pmodal-pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+.pmodal-overlay { animation: pmodal-fade .18s ease both; }
+.pmodal { display: flex; animation: pmodal-pop .24s cubic-bezier(.2,.7,.3,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .pmodal-overlay, .pmodal { animation: none; }
+}
 .pmodal-img { flex: 0 0 270px; background: #e9e9e9; background-size: cover; background-position: center top; background-repeat: no-repeat; }
 .pmodal-body { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; }
 .pmodal-sns { display: flex; gap: 8px; margin-top: 12px; }
