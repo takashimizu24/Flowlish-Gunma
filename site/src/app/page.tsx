@@ -16,7 +16,7 @@ function Bar() {
 }
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontWeight: 900, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: 14, margin: 0 }}>
+    <h2 style={{ fontWeight: 800, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: 14, margin: 0 }}>
       <Bar />
       {children}
     </h2>
@@ -54,12 +54,12 @@ function Schedule({ matches }: { matches: Match[] }) {
                 {/* left: league + round big */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.15 }}>{m.league}</div>
-                  <div style={{ fontWeight: 900, fontSize: 30, lineHeight: 1.04, marginTop: 3, textTransform: "uppercase" }}>{m.round}</div>
+                  <div style={{ fontWeight: 800, fontSize: 30, lineHeight: 1.04, marginTop: 3, textTransform: "uppercase" }}>{m.round}</div>
                   <div style={{ fontWeight: 800, fontSize: 24, marginTop: 12, fontVariantNumeric: "tabular-nums" }}>
                     {m.dateLabel || ymd(m.date)}
                   </div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
-                  {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 900, fontSize: 12, padding: "7px 12px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{m.resultBadge}</span></div>}
+                  {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 800, fontSize: 12, padding: "7px 12px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{m.resultBadge}</span></div>}
                 </div>
                 {/* right: entry members (circular photos, vertical) */}
                 {entry.length > 0 && (
