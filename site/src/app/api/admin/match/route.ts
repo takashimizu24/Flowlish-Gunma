@@ -28,9 +28,16 @@ export async function POST(req: Request) {
     return { phase: g.phase || "", opp: g.opp, score: `${g.myScore}-${g.oppScore}`, result };
   });
 
+  // Prefix the year (from the date) onto the round so seasons stay distinct,
+  // e.g. "ROUND.8" -> "2026 ROUND.8". Skip if already year-prefixed.
+  let round = String(b.round).trim();
+  if (b.date && !/^\d{4}\s/.test(round)) {
+    round = `${new Date(b.date).getFullYear()} ${round}`;
+  }
+
   const payload: Record<string, unknown> = {
     league: b.league || "3x3.EXE PREMIER",
-    round: b.round,
+    round,
     venue: b.venue || "",
     status: b.status || "",
     resultBadge: b.resultBadge || "",
