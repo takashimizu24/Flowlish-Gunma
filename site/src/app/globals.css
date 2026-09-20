@@ -26,6 +26,11 @@ h1, h2, h3, h4 { margin: 0; }
   .hcar-slide { aspect-ratio: auto; height: 100%; }   /* fill row (= right 2 + gap) */
 }
 
+/* ===== player detail modal (2-column: portrait + info) ===== */
+.pmodal { display: flex; }
+.pmodal-img { flex: 0 0 270px; background: #e9e9e9; background-size: cover; background-position: center top; background-repeat: no-repeat; }
+.pmodal-body { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; }
+
 /* ===== responsive (mirrors the mock) ===== */
 @media (max-width: 900px) {
   .sns { display: none !important; }                 /* header SNS hidden */
@@ -46,4 +51,6 @@ h1, h2, h3, h4 { margin: 0; }
   .news-grid { grid-template-columns: 1fr !important; }
   .roster-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
+  .pmodal { flex-direction: column; }
+  .pmodal-img { flex: none; width: 100%; aspect-ratio: 4 / 5; }
 }

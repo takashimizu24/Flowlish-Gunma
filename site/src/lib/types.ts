@@ -43,7 +43,8 @@ export type Player = MicroCMSListContent & {
   nationality?: string;
   birthdate?: string;
   bio?: string;
-  photo?: MicroCMSImage;
+  photo?: MicroCMSImage;        // roster card (3:4 headshot)
+  photoDetail?: MicroCMSImage;  // modal portrait (different shot)
   tags?: string[];
 };
 

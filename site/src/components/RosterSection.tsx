@@ -53,11 +53,16 @@ export default function RosterSection({ players }: { players: Player[] }) {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            style={{ background: "#fff", color: INK, width: "min(560px,100%)", maxHeight: "88vh", overflow: "auto", borderRadius: 16, position: "relative", boxShadow: "0 30px 80px -20px rgba(0,0,0,.6)" }}
+            className="pmodal"
+            style={{ background: "#fff", color: INK, width: "min(760px,100%)", maxHeight: "88vh", overflow: "hidden", borderRadius: 16, position: "relative", boxShadow: "0 30px 80px -20px rgba(0,0,0,.6)" }}
           >
             <button onClick={() => setActive(null)} aria-label="閉じる"
               style={{ position: "absolute", top: 14, right: 14, width: 38, height: 38, borderRadius: 9, border: "1px solid rgba(20,20,20,.14)", background: "#fff", color: INK, fontSize: 20, cursor: "pointer", display: "grid", placeItems: "center", zIndex: 2, lineHeight: 1 }}>×</button>
-            <div style={{ padding: 30 }}>
+            {(() => {
+              const detail = active.photoDetail?.url || active.photo?.url;
+              return <div className="pmodal-img" style={{ backgroundImage: detail ? `url(${detail}?w=760)` : undefined }} aria-hidden />;
+            })()}
+            <div className="pmodal-body" style={{ padding: 30 }}>
               <div style={{ display: "flex", gap: 20, alignItems: "center", paddingBottom: 20, borderBottom: "2px solid #141414" }}>
                 <div style={{ fontWeight: 900, fontSize: 62, color: ORANGE, lineHeight: 0.8 }}>{active.number}</div>
                 <div>
