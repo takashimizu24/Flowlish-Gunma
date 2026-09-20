@@ -1,11 +1,11 @@
 import { siteConfig } from "@/lib/config";
 
 const NAV = [
-  { label: "HOME", href: "#top" },
-  { label: "SCHEDULE", href: "#schedule" },
-  { label: "NEWS", href: "#news" },
-  { label: "TEAM", href: "#roster" },
-  { label: "PARTNERS", href: "#partners" },
+  { label: "HOME", href: "/" },
+  { label: "SCHEDULE", href: "/schedule" },
+  { label: "NEWS", href: "/#news" },
+  { label: "TEAM", href: "/#roster" },
+  { label: "PARTNERS", href: "/#partners" },
   { label: "SCHOOL", href: "#" },
   { label: "SHOP", href: "#" },
 ];
@@ -24,7 +24,7 @@ export default function Header() {
       {/* top dark bar */}
       <div style={{ background: "#141414" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px,4.5vw,56px)", height: 84, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <a href="#top"><img src="/logo.svg" alt="FLOWLISH GUNMA" style={{ height: 54, width: "auto", display: "block" }} /></a>
+          <a href="/"><img src="/logo.svg" alt="FLOWLISH GUNMA" style={{ height: 54, width: "auto", display: "block" }} /></a>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div className="sns" style={{ display: "flex", gap: 8 }}>
               {SNS.map((s) => (
