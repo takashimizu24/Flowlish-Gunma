@@ -31,7 +31,7 @@ function ymd(s?: string) {
 function ResultChip({ result }: { result: string }) {
   const win = result.toLowerCase() === "win";
   return (
-    <span style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".04em", textTransform: "uppercase", padding: "2px 8px", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
+    <span style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".04em", textTransform: "uppercase", width: 52, padding: "3px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
       {win ? "WIN" : "LOSE"}
     </span>
   );
@@ -102,7 +102,7 @@ function MatchRow({ m }: { m: Match }) {
         </div>
 
         {/* aside: entry + ranking */}
-        <div className="sched-aside" style={{ flex: "0 0 190px", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14, borderLeft: "1px solid var(--line)", paddingLeft: 20 }}>
+        <div className="sched-aside" style={{ flex: "0 0 150px", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14, borderLeft: "1px solid var(--line)", paddingLeft: 20 }}>
           <EntryAvatars entry={entry} />
           <div style={{ textAlign: "right", marginTop: "auto" }}>
             {upcoming ? (
