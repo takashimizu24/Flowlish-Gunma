@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RosterSection from "@/components/RosterSection";
 import TopCarousel from "@/components/TopCarousel";
+import IntroOverlay from "@/components/IntroOverlay";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
@@ -133,6 +134,8 @@ function Roster({ players }: { players: Player[] }) {
 // Sponsor tiles are sized by rank tier (1 = biggest). Tiers come from the
 // `tier` field ("1".."5"); higher tier = larger tile (fewer per row).
 const TIER_MINW: Record<string, number> = { "1": 420, "2": 300, "3": 225, "4": 172, "5": 144 };
+// top tiers get more breathing room inside the white tile
+const TIER_PAD: Record<string, string> = { "1": "22px 34px", "2": "18px 28px", "3": "15px 22px" };
 
 function Partners({ partners }: { partners: { id: string; name: string; logo?: { url: string }; url?: string; tier?: string }[] }) {
   const groups = ["1", "2", "3", "4", "5"]
@@ -149,7 +152,7 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
             {groups.map(({ t, list }) => (
               <div key={t} style={{ display: "grid", gap: 14, gridTemplateColumns: `repeat(auto-fill, minmax(min(${TIER_MINW[t]}px, 100%), 1fr))` }}>
                 {list.map((p) => (
-                  <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
+                  <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name} style={TIER_PAD[t] ? { padding: TIER_PAD[t] } : undefined}>
                     {p.logo ? <img src={`${p.logo.url}?h=300`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
                   </a>
                 ))}
@@ -169,6 +172,7 @@ export default async function Home() {
 
   return (
     <>
+      <IntroOverlay />
       <Header />
       <main style={{ background: INK }}>
         {!isCmsConfigured && (

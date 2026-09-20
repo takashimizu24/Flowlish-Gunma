@@ -48,6 +48,11 @@ h1, h2, h3, h4 { margin: 0; }
 .partners-tile:hover { box-shadow: 0 10px 26px -12px rgba(0,0,0,.24); transform: translateY(-2px); }
 .partners-tile img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 
+/* ===== access intro overlay ===== */
+.intro-logo { animation: fg-intro-in .9s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes fg-intro-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .intro-logo { animation: none; } }
+
 /* ===== schedule & results page ===== */
 @media (max-width: 640px) {
   .sched-row { flex-direction: column !important; }
