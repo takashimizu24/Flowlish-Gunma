@@ -12,10 +12,8 @@ export default function IntroOverlay() {
   const [split, setSplit] = useState(false);
 
   useEffect(() => {
-    let seen = false;
-    try { seen = sessionStorage.getItem("fg_intro") === "1"; } catch {}
-    if (seen) { setVisible(false); return; }
-    try { sessionStorage.setItem("fg_intro", "1"); } catch {}
+    // NOTE: temporarily plays on every load. To limit to once per session,
+    // restore the sessionStorage "fg_intro" guard here.
     const t1 = setTimeout(() => setSplit(true), 1150);   // start the split
     const t2 = setTimeout(() => setVisible(false), 1950); // unmount after it clears
     return () => { clearTimeout(t1); clearTimeout(t2); };
