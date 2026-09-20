@@ -34,7 +34,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
           >
             <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 700, fontSize: 52, color: ORANGE, lineHeight: 1 }}>{p.number}</div>
             <div style={{ padding: 12, background: "linear-gradient(0deg,rgba(20,20,20,.94),transparent)", color: "#fff" }}>
-              {p.position && <span style={{ color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}
+              {p.position && <span style={{ display: "block", lineHeight: 1, color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}
               <div style={{ fontWeight: 900, fontSize: 23, textTransform: "uppercase", lineHeight: 1.05, marginTop: 4, color: "#fff" }}>
                 {p.nameEn}
                 <small style={{ display: "block", fontWeight: 600, fontSize: 13, opacity: 0.85, textTransform: "none", marginTop: 4 }}>{p.nameJa}</small>
