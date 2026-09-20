@@ -34,7 +34,7 @@ h1, h2, h3, h4 { margin: 0; }
 .pmodal-sns a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(20,20,20,.16); display: grid; place-items: center; color: #141414; transition: .15s; }
 .pmodal-sns a:hover { background: #ee651c; border-color: #ee651c; color: #fff; }
 .pmodal-sns svg { width: 17px; height: 17px; fill: currentColor; display: block; }
-.pmodal-sns .badge3 { font-weight: 900; font-size: 11px; letter-spacing: -.03em; }
+.pmodal-sns svg.ic-fiba { width: 21px; height: 15px; }   /* 3x3 logo is wide */
 
 /* ===== responsive (mirrors the mock) ===== */
 @media (max-width: 900px) {

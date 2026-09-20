@@ -83,7 +83,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
                       )}
                       {active.fibaUrl && (
                         <a href={active.fibaUrl} target="_blank" rel="noopener" aria-label="FIBA 3x3 player page">
-                          <span className="badge3">3x3</span>
+                          <svg className="ic-fiba" viewBox="0 0 841.89 595.28"><use href="/icons.svg#ic-fiba" /></svg>
                         </a>
                       )}
                     </div>
