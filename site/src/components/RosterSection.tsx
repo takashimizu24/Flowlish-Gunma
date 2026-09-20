@@ -69,6 +69,25 @@ export default function RosterSection({ players }: { players: Player[] }) {
                   {active.position && <div style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: ORANGE }}>{active.position}</div>}
                   <div style={{ fontWeight: 900, fontSize: 26, textTransform: "uppercase", lineHeight: 1.05, marginTop: 3 }}>{active.nameEn}</div>
                   <div style={{ fontSize: 14, opacity: 0.75, marginTop: 4 }}>{active.nameJa}</div>
+                  {(active.snsInstagram || active.snsX || active.fibaUrl) && (
+                    <div className="pmodal-sns">
+                      {active.snsInstagram && (
+                        <a href={active.snsInstagram} target="_blank" rel="noopener" aria-label="Instagram">
+                          <svg><use href="/icons.svg#ic-ig" /></svg>
+                        </a>
+                      )}
+                      {active.snsX && (
+                        <a href={active.snsX} target="_blank" rel="noopener" aria-label="X">
+                          <svg><use href="/icons.svg#ic-x" /></svg>
+                        </a>
+                      )}
+                      {active.fibaUrl && (
+                        <a href={active.fibaUrl} target="_blank" rel="noopener" aria-label="FIBA 3x3 player page">
+                          <span className="badge3">3x3</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: "rgba(20,20,20,.14)", border: "1px solid rgba(20,20,20,.14)", borderRadius: 10, overflow: "hidden", margin: "20px 0" }}>

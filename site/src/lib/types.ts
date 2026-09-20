@@ -45,6 +45,9 @@ export type Player = MicroCMSListContent & {
   bio?: string;
   photo?: MicroCMSImage;        // roster card (3:4 headshot)
   photoDetail?: MicroCMSImage;  // modal portrait (different shot)
+  snsInstagram?: string;        // full URL; icon hidden if empty
+  snsX?: string;                // full URL; icon hidden if empty
+  fibaUrl?: string;             // FIBA 3x3 player page URL; icon hidden if empty
   tags?: string[];
 };
 
