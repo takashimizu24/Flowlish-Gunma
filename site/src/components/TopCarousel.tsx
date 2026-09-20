@@ -72,7 +72,7 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
       <div className="topnews-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: GAP, alignItems: "stretch" }}>
         {/* LEFT — horizontal slider, fills the row height */}
         <div style={{ position: "relative", overflow: "hidden" }}>
-          <div className="hcar-track" onTransitionEnd={onEnd} style={{ display: "flex", transform: `translateX(${-i * 100}%)`, transition: anim ? TR : "none" }}>
+          <div className="hcar-track" onTransitionEnd={onEnd} style={{ display: "flex", gap: GAP, transform: `translateX(calc(${-i * 100}% - ${i * GAP}px))`, transition: anim ? TR : "none" }}>
             {hItems.map((b, k) => (
               <a key={k} className="hcar-slide" href={b.linkUrl || "#"} style={{ minWidth: "100%", width: "100%", display: "block", background: bg(b, 1200) }} />
             ))}
