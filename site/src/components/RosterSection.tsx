@@ -28,16 +28,16 @@ export default function RosterSection({ players }: { players: Player[] }) {
             onClick={() => setActive(p)}
             style={{
               all: "unset", cursor: "pointer", position: "relative", borderRadius: 14, overflow: "hidden",
-              aspectRatio: "3/4", background: p.photo ? `#141414 center top/cover url(${p.photo.url}?w=600)` : "#1d1d1d",
+              aspectRatio: "3/4", background: p.photo ? `#141414 center 22%/auto 132% url(${p.photo.url}?w=800)` : "#1d1d1d",
               border: "1px solid var(--line)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
             }}
           >
             <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 400, fontSize: 52, color: ORANGE, lineHeight: 1, textShadow: "0 2px 14px rgba(0,0,0,.55)" }}>{p.number}</div>
             <div style={{ padding: 12, background: "linear-gradient(0deg,rgba(20,20,20,.94),transparent)", color: "#fff" }}>
               {p.position && <span style={{ color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}
-              <div style={{ fontWeight: 900, fontSize: 19, textTransform: "uppercase", lineHeight: 1, marginTop: 4, color: "#fff" }}>
+              <div style={{ fontWeight: 900, fontSize: 23, textTransform: "uppercase", lineHeight: 1.05, marginTop: 4, color: "#fff" }}>
                 {p.nameEn}
-                <small style={{ display: "block", fontWeight: 600, fontSize: 12, opacity: 0.85, textTransform: "none", marginTop: 4 }}>{p.nameJa}</small>
+                <small style={{ display: "block", fontWeight: 600, fontSize: 13, opacity: 0.85, textTransform: "none", marginTop: 4 }}>{p.nameJa}</small>
               </div>
             </div>
           </button>
