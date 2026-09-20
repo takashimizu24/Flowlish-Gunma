@@ -39,8 +39,8 @@ h1, h2, h3, h4 { margin: 0; }
 .pmodal-sns { display: flex; gap: 8px; margin-top: 12px; }
 .pmodal-sns a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(20,20,20,.16); display: grid; place-items: center; color: #141414; transition: .15s; }
 .pmodal-sns a:hover { background: #ee651c; border-color: #ee651c; color: #fff; }
-.pmodal-sns svg { width: 17px; height: 17px; fill: currentColor; display: block; }
-.pmodal-sns svg.ic-fiba { width: 21px; height: 15px; }   /* 3x3 logo is wide */
+.pmodal-sns svg { width: 21px; height: 21px; fill: currentColor; display: block; }
+.pmodal-sns svg.ic-fiba { width: 26px; height: 18px; }   /* 3x3 logo is wide */
 
 /* ===== partners (uniform white tiles, logo centered/contained) ===== */
 .partners-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
