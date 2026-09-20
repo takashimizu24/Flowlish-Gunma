@@ -61,11 +61,11 @@ function GameGroup({ title, games }: { title: string; games: Game[] }) {
 function EntryAvatars({ entry }: { entry: Player[] }) {
   if (entry.length === 0) return null;
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 54px)", gap: "12px 10px", justifyContent: "flex-end" }}>
       {entry.map((p) => (
-        <div key={p.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, width: 46 }}>
-          <span style={{ width: 40, height: 40, borderRadius: "50%", flex: "none", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=120)` : "#141414" }} />
-          <span style={{ fontWeight: 700, fontSize: 9, textTransform: "uppercase", lineHeight: 1.1, textAlign: "center", color: INK, opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 46 }}>
+        <div key={p.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+          <span style={{ width: 48, height: 48, borderRadius: "50%", flex: "none", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=140)` : "#141414" }} />
+          <span style={{ fontWeight: 700, fontSize: 9, textTransform: "uppercase", lineHeight: 1.1, textAlign: "center", color: INK, opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 54 }}>
             {p.nameEn?.split(" ").slice(-1)[0]}
           </span>
         </div>
