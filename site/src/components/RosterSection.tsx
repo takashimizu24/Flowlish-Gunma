@@ -29,7 +29,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
             style={{
               all: "unset", cursor: "pointer", position: "relative", borderRadius: 14, overflow: "hidden",
               aspectRatio: "3/4", background: p.photo ? `#141414 center/cover url(${p.photo.url}?w=800)` : "#1d1d1d",
-              border: "1px solid var(--line)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
+              border: `2px solid ${ORANGE}`, display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
             }}
           >
             <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 400, fontSize: 52, color: ORANGE, lineHeight: 1, textShadow: "0 2px 14px rgba(0,0,0,.55)" }}>{p.number}</div>
