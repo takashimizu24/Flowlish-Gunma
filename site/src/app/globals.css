@@ -81,6 +81,7 @@ h1, h2, h3, h4 { margin: 0; }
   .roster-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .partners-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
-  .pmodal { flex-direction: column; }
+  .pmodal { flex-direction: column; overflow: hidden auto !important; }
   .pmodal-img { flex: none; width: 100%; aspect-ratio: 4 / 5; }
+  .pmodal-body { overflow: visible; min-height: auto; }
 }
