@@ -138,10 +138,10 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
         {partners.length === 0 ? (
           <p style={{ opacity: 0.55, fontSize: 14, margin: 0, color: INK }}>スポンサー未登録</p>
         ) : (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 30, alignItems: "center" }}>
+          <div className="partners-grid">
             {partners.map((p) => (
-              <a key={p.id} href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
-                {p.logo ? <img src={`${p.logo.url}?h=120`} alt={p.name} style={{ height: 46, width: "auto" }} /> : <span>{p.name}</span>}
+              <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
+                {p.logo ? <img src={`${p.logo.url}?h=240`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
               </a>
             ))}
           </div>

@@ -28,7 +28,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
             onClick={() => setActive(p)}
             style={{
               all: "unset", cursor: "pointer", position: "relative", borderRadius: 14, overflow: "hidden",
-              aspectRatio: "3/4", background: p.photo ? `#141414 center 22%/auto 132% url(${p.photo.url}?w=800)` : "#1d1d1d",
+              aspectRatio: "3/4", background: p.photo ? `#141414 center/cover url(${p.photo.url}?w=800)` : "#1d1d1d",
               border: "1px solid var(--line)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
             }}
           >
