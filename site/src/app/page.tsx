@@ -130,7 +130,14 @@ function Roster({ players }: { players: Player[] }) {
   );
 }
 
-function Partners({ partners }: { partners: { id: string; name: string; logo?: { url: string }; url?: string }[] }) {
+// Sponsor tiles are sized by rank tier (1 = biggest). Tiers come from the
+// `tier` field ("1".."5"); higher tier = larger tile (fewer per row).
+const TIER_MINW: Record<string, number> = { "1": 420, "2": 300, "3": 225, "4": 172, "5": 144 };
+
+function Partners({ partners }: { partners: { id: string; name: string; logo?: { url: string }; url?: string; tier?: string }[] }) {
+  const groups = ["1", "2", "3", "4", "5"]
+    .map((t) => ({ t, list: partners.filter((p) => (p.tier || "5") === t) }))
+    .filter((g) => g.list.length > 0);
   return (
     <section id="partners" style={{ ...section, background: "#f2f2f0", color: INK, padding: "clamp(46px,7vw,80px) 0" }}>
       <div style={container}>
@@ -138,11 +145,15 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
         {partners.length === 0 ? (
           <p style={{ opacity: 0.55, fontSize: 14, margin: 0, color: INK }}>スポンサー未登録</p>
         ) : (
-          <div className="partners-grid">
-            {partners.map((p) => (
-              <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
-                {p.logo ? <img src={`${p.logo.url}?h=240`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
-              </a>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {groups.map(({ t, list }) => (
+              <div key={t} style={{ display: "grid", gap: 14, gridTemplateColumns: `repeat(auto-fill, minmax(min(${TIER_MINW[t]}px, 100%), 1fr))` }}>
+                {list.map((p) => (
+                  <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
+                    {p.logo ? <img src={`${p.logo.url}?h=300`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
+                  </a>
+                ))}
+              </div>
             ))}
           </div>
         )}
