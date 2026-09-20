@@ -26,8 +26,9 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
     const vp = vpRef.current;
     if (!vp) return;
     if (!window.matchMedia("(min-width:901px)").matches) { setPitch(0); setVpH(0); return; }
-    const w = vp.clientWidth;
-    const itemH = Math.round((w * 9) / 16);
+    // Exact aspect height (no rounding) so pitch/height match the rendered
+    // 16:9 items pixel-for-pixel — rounding here left sub-pixel gaps.
+    const itemH = (vp.clientWidth * 9) / 16;
     setPitch(itemH + GAP);
     setVpH(2 * itemH + GAP);
   }, []);
