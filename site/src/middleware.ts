@@ -2,22 +2,27 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Site-wide password gate (staging / pre-launch).
+ * Pre-launch access gate, decided per hostname.
  *
- * Behaviour:
- *  - Local development (`next dev`): always open, no prompt.
- *  - Production: requires HTTP Basic Auth. The password is read from the
- *    `SITE_PASSWORD` environment variable (set it in Vercel → Settings →
- *    Environment Variables). Username is ignored — enter anything.
- *  - Fail-closed: if `SITE_PASSWORD` is not set in production, every request is
- *    blocked, so the site can never be public by accident.
+ *  - Local development (`next dev`): always open.
+ *  - `*.vercel.app` (the working/preview URL, e.g. flowlish-gunma.vercel.app):
+ *    PUBLIC — no password. Share this link freely before launch.
+ *  - The custom domain(s) (flowlish3x3.com / www): PRIVATE — HTTP Basic Auth,
+ *    password from the `SITE_PASSWORD` env var (Vercel → Settings → Env Vars),
+ *    username ignored. Fail-closed: if `SITE_PASSWORD` is unset the custom
+ *    domain is fully blocked, so it can never go public by accident.
  *
- * To make the site public at launch: delete this file (and the SITE_PASSWORD env var).
+ * At launch: delete this file to make every hostname public.
  */
 export function middleware(req: NextRequest) {
   // Open in local dev so `npm run dev` needs no password.
   if (process.env.NODE_ENV !== "production") return NextResponse.next();
 
+  // The Vercel-hosted URL is the public preview — let it through.
+  const host = req.headers.get("host") ?? "";
+  if (host.endsWith(".vercel.app")) return NextResponse.next();
+
+  // Custom domain(s) stay private behind a password.
   const expected = process.env.SITE_PASSWORD;
   const auth = req.headers.get("authorization");
 
