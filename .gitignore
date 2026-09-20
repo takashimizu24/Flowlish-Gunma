@@ -1,5 +1,9 @@
-# Deploy repo: publish ONLY index.html to GitHub Pages.
-# Ignore everything by default, then allow the deploy files.
+# Deploy repo:
+#  - GitHub Pages serves /index.html (the design mock).
+#  - Vercel builds the production Next.js app in /site (Root Directory = site).
+# Ignore everything at root by default, then allow the deploy targets.
 /*
 !/index.html
 !/.gitignore
+!/site
+# (files inside /site follow site/.gitignore — node_modules/.next/.env* stay out)
