@@ -29,10 +29,10 @@ export default function RosterSection({ players }: { players: Player[] }) {
             style={{
               all: "unset", cursor: "pointer", position: "relative", borderRadius: 14, overflow: "hidden",
               aspectRatio: "3/4", background: p.photo ? `#141414 center/cover url(${p.photo.url}?w=800)` : "#1d1d1d",
-              border: `2px solid ${ORANGE}`, display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
+              border: "2px solid #fff", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
             }}
           >
-            <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 400, fontSize: 52, color: ORANGE, lineHeight: 1, textShadow: "0 2px 14px rgba(0,0,0,.55)" }}>{p.number}</div>
+            <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 700, fontSize: 52, color: ORANGE, lineHeight: 1 }}>{p.number}</div>
             <div style={{ padding: 12, background: "linear-gradient(0deg,rgba(20,20,20,.94),transparent)", color: "#fff" }}>
               {p.position && <span style={{ color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}
               <div style={{ fontWeight: 900, fontSize: 23, textTransform: "uppercase", lineHeight: 1.05, marginTop: 4, color: "#fff" }}>
