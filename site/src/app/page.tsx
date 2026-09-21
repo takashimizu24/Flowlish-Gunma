@@ -19,7 +19,7 @@ function Bar() {
 }
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontWeight: 800, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: 14, margin: 0 }}>
+    <h2 style={{ fontWeight: 800, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: "clamp(8px,2.4vw,14px)", margin: 0 }}>
       <Bar />
       {children}
     </h2>
@@ -56,7 +56,7 @@ function Schedule({ matches }: { matches: Match[] }) {
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
             return (
-              <div key={m.id} style={{ scrollSnapAlign: "start", flex: "0 0 430px", background: "#fff", color: INK, borderRadius: 14, padding: 22, height: 248, display: "flex", gap: 18, overflow: "hidden" }}>
+              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, height: 248, display: "flex", gap: 18, overflow: "hidden" }}>
                 {/* left: league + round big */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.15 }}>{m.league}</div>

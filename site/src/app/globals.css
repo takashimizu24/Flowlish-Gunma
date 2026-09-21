@@ -59,6 +59,24 @@ h1, h2, h3, h4 { margin: 0; }
 .sched-arrow--left { left: 6px; }
 .sched-arrow--right { right: 6px; }
 
+/* hide the carousel scrollbar (navigation is via arrows / dots) */
+.sched-track { scrollbar-width: none; -ms-overflow-style: none; }
+.sched-track::-webkit-scrollbar { display: none; }
+
+/* schedule card: fixed on desktop, matches content width on mobile */
+.sched-card { flex: 0 0 430px; }
+
+/* dot pagination (mobile only) */
+.sched-dots { display: none; }
+.sched-dot { width: 7px; height: 7px; padding: 0; border: none; border-radius: 999px; background: rgba(255,255,255,.3); cursor: pointer; transition: width .25s ease, background .25s ease; }
+.sched-dot.is-active { width: 22px; background: var(--orange); }
+
+@media (max-width: 640px) {
+  .sched-card { flex-basis: calc(100vw - 32px); }
+  .sched-arrow { display: none; }
+  .sched-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 14px; padding: 0 16px; }
+}
+
 /* ===== schedule & results page ===== */
 .match-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; letter-spacing: .03em; padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--orange); background: #fff; color: var(--ink); transition: background .15s, border-color .15s; }
 .match-link--event { background: var(--orange); border-color: var(--orange); color: #fff; }
