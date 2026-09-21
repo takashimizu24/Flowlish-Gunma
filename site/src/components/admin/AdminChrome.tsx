@@ -15,6 +15,7 @@ export function AdminChrome({ title, children }: { title: string; children: Reac
             <a href="/admin" style={{ color: "#fff", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>FLOWLISH 管理</a>
             <a href="/admin/match" style={{ color: "#ddd", fontSize: 13, textDecoration: "none" }}>試合</a>
             <a href="/admin/news" style={{ color: "#ddd", fontSize: 13, textDecoration: "none" }}>お知らせ</a>
+            <a href="/admin/players" style={{ color: "#ddd", fontSize: 13, textDecoration: "none" }}>選手</a>
           </div>
           <button onClick={logout} style={{ background: "transparent", color: "#bbb", border: "1px solid #444", borderRadius: 7, padding: "5px 10px", fontSize: 12, cursor: "pointer" }}>ログアウト</button>
         </div>

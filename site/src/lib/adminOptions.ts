@@ -12,6 +12,12 @@ export const RESULT_BADGES = [
   "優勝", "準優勝", "3位", "ベスト4", "5位", "6位", "7位", "8位", "予選敗退", "欠場",
 ];
 
+// Player positions (datalist suggestions — free text, combos like "Guard / Forward" allowed).
+export const PLAYER_POSITIONS = ["Guard", "Forward", "Center", "Guard / Forward", "Forward / Center"];
+
+// Nationality suggestions (datalist).
+export const NATIONALITIES = ["Japan", "USA", "Canada", "Australia", "UK"];
+
 // Common game phases (datalist suggestions).
 // QD-* = Qualifying Draw (予選の予選); shown as its own group above the 予選ラウンド.
 export const GAME_PHASES = [

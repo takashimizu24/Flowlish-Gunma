@@ -18,6 +18,10 @@ export default function AdminHome() {
           <div style={{ fontWeight: 800, fontSize: 17 }}>📰 お知らせを追加</div>
           <div style={{ color: "#777", fontSize: 13, marginTop: 6 }}>タイトル・日付・カテゴリ・画像</div>
         </a>
+        <a href="/admin/players" style={card}>
+          <div style={{ fontWeight: 800, fontSize: 17 }}>👤 選手を追加・編集</div>
+          <div style={{ color: "#777", fontSize: 13, marginTop: 6 }}>名前・背番号・写真・SNS・現役/過去</div>
+        </a>
       </div>
     </AdminChrome>
   );
