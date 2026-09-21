@@ -156,8 +156,6 @@ function Roster({ players }: { players: Player[] }) {
 // `tier` field ("1".."5"); higher tier = larger tile (fewer per row).
 const TIER_ORDER = ["BLACK", "PLATINUM", "GOLD", "SILVER", "BRONZE", "ORANGE", "PARTNER", "SUPPLY"];
 const TIER_MINW: Record<string, number> = { BLACK: 440, PLATINUM: 300, GOLD: 240, SILVER: 185, BRONZE: 150, ORANGE: 138, PARTNER: 124, SUPPLY: 118 };
-// top tiers get more breathing room inside the white tile
-const TIER_PAD: Record<string, string> = { BLACK: "24px 40px", PLATINUM: "18px 28px", GOLD: "15px 22px" };
 // rank label shown above each tier group
 const TIER_LABEL: Record<string, string> = {
   BLACK: "BLACK PARTNER",
@@ -190,7 +188,7 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
                 </div>
                 <div style={{ display: "grid", gap: 14, gridTemplateColumns: `repeat(auto-fill, minmax(min(${TIER_MINW[t]}px, 100%), 1fr))` }}>
                   {list.map((p) => (
-                    <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name} style={TIER_PAD[t] ? { padding: TIER_PAD[t] } : undefined}>
+                    <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name}>
                       {p.logo ? <img src={`${p.logo.url}?h=300`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
                     </a>
                   ))}

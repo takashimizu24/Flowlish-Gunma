@@ -44,7 +44,9 @@ h1, h2, h3, h4 { margin: 0; }
 
 /* ===== partners (uniform white tiles, logo centered/contained) ===== */
 .partners-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.partners-tile { background: #fff; border: 1px solid rgba(20,20,20,.08); border-radius: 12px; aspect-ratio: 750 / 300; display: flex; align-items: center; justify-content: center; padding: 8px 12px; transition: box-shadow .18s, transform .18s; }
+/* padding as a ratio of tile width (matches BLACK tier: 40/440 h, 24/440 v)
+   so every tile keeps the same logo-to-box ratio at any size — no rank reversal on mobile */
+.partners-tile { background: #fff; border: 1px solid rgba(20,20,20,.08); border-radius: 12px; aspect-ratio: 750 / 300; display: flex; align-items: center; justify-content: center; padding: 5.45% 9.1%; transition: box-shadow .18s, transform .18s; }
 .partners-tile:hover { box-shadow: 0 10px 26px -12px rgba(0,0,0,.24); transform: translateY(-2px); }
 .partners-tile img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 
