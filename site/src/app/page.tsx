@@ -53,6 +53,7 @@ function Schedule({ matches }: { matches: Match[] }) {
       {matches.length === 0 ? (
         <div style={container}><Empty label="試合未登録（microCMS「matches」に追加すると、ここにカードが並びます）" /></div>
       ) : (
+        <div style={container}>
         <ScheduleCarousel>
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
@@ -86,6 +87,7 @@ function Schedule({ matches }: { matches: Match[] }) {
             );
           })}
         </ScheduleCarousel>
+        </div>
       )}
     </section>
   );
@@ -95,7 +97,7 @@ function FanClubBanner() {
   return (
     <section style={{ background: INK, padding: "10px 0 48px" }}>
       <div style={container}>
-        <a href={siteConfig.fanClubUrl} aria-label="公式ファンクラブ会員募集中" style={{ display: "block", borderRadius: 16, overflow: "hidden", boxShadow: "0 10px 30px -12px rgba(0,0,0,.6)" }}>
+        <a href={siteConfig.fanClubUrl} className="fanclub-banner" aria-label="公式ファンクラブ会員募集中">
           <img src="/fanclub-banner.jpg" alt="FLOWLISH GUNMA 公式ファンクラブ会員募集中" style={{ width: "100%", height: "auto", display: "block" }} />
         </a>
       </div>

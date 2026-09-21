@@ -38,20 +38,23 @@ export default function ScheduleCarousel({ children }: { children: React.ReactNo
 
   return (
     <div style={{ position: "relative" }}>
-      <button type="button" aria-label="前のスケジュール" className="sched-arrow sched-arrow--left" onClick={() => scroll(-1)}>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19" /></svg>
-      </button>
-      <div
-        ref={ref}
-        onScroll={onScroll}
-        className="sched-track"
-        style={{ display: "flex", overflowX: "auto", padding: "4px clamp(16px,4.5vw,48px) 18px", scrollPaddingLeft: "clamp(16px,4.5vw,48px)", scrollSnapType: "x mandatory" }}
-      >
-        {children}
+      {/* track wrapper: arrows anchor here so they center on the CARD, not the dots */}
+      <div style={{ position: "relative" }}>
+        <button type="button" aria-label="前のスケジュール" className="sched-arrow sched-arrow--left" onClick={() => scroll(-1)}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19" /></svg>
+        </button>
+        <div
+          ref={ref}
+          onScroll={onScroll}
+          className="sched-track"
+          style={{ display: "flex", overflowX: "auto", padding: "4px 0 10px", scrollSnapType: "x mandatory" }}
+        >
+          {children}
+        </div>
+        <button type="button" aria-label="次のスケジュール" className="sched-arrow sched-arrow--right" onClick={() => scroll(1)}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19" /></svg>
+        </button>
       </div>
-      <button type="button" aria-label="次のスケジュール" className="sched-arrow sched-arrow--right" onClick={() => scroll(1)}>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19" /></svg>
-      </button>
       {count > 1 && (
         <div className="sched-dots" role="tablist" aria-label="スケジュール切り替え">
           {Array.from({ length: count }).map((_, i) => (

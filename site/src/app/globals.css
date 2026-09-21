@@ -55,27 +55,32 @@ h1, h2, h3, h4 { margin: 0; }
 @keyframes fg-intro-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .intro-logo { animation: none; } }
 
+/* ===== fan club banner (between schedule & news) ===== */
+.fanclub-banner { display: block; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px -12px rgba(0,0,0,.6); transition: transform .28s ease, box-shadow .28s ease; will-change: transform; }
+.fanclub-banner:hover { transform: scale(1.02); box-shadow: 0 16px 38px -12px rgba(0,0,0,.7); }
+@media (prefers-reduced-motion: reduce) { .fanclub-banner { transition: none; } .fanclub-banner:hover { transform: none; } }
+
 /* ===== home schedule carousel arrows ===== */
 .sched-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: none; background: var(--orange); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.45); transition: background .15s; }
 .sched-arrow:hover { background: #d85713; }
-.sched-arrow--left { left: 6px; }
-.sched-arrow--right { right: 6px; }
+.sched-arrow--left { left: -16px; }
+.sched-arrow--right { right: -16px; }
 
 /* hide the carousel scrollbar (navigation is via arrows / dots).
-   card gap is a touch wider than the side gutter (clamp min 16px) */
+   card gap is a touch wider than the side gutter */
 .sched-track { scrollbar-width: none; -ms-overflow-style: none; gap: 20px; }
 .sched-track::-webkit-scrollbar { display: none; }
 
-/* schedule card: fixed on desktop, matches news-section width on mobile */
+/* schedule card: fixed on desktop, fills the container (= news width) on mobile */
 .sched-card { flex: 0 0 430px; }
 
 /* dot pagination (all breakpoints, alongside the arrows on desktop) */
-.sched-dots { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 16px; padding: 0 16px; }
+.sched-dots { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 6px; padding: 0 16px; }
 .sched-dot { width: 7px; height: 7px; padding: 0; border: none; border-radius: 999px; background: rgba(255,255,255,.3); cursor: pointer; transition: width .25s ease, background .25s ease; }
 .sched-dot.is-active { width: 22px; background: var(--orange); }
 
 @media (max-width: 640px) {
-  .sched-card { flex-basis: calc(100vw - 2 * clamp(16px, 4.5vw, 48px)); }
+  .sched-card { flex-basis: 100%; }
   .sched-arrow { display: none; }
 }
 
