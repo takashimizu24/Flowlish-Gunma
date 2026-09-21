@@ -141,13 +141,14 @@ function Roster({ players }: { players: Player[] }) {
 
 // Sponsor tiles are sized by rank tier (1 = biggest). Tiers come from the
 // `tier` field ("1".."5"); higher tier = larger tile (fewer per row).
-const TIER_MINW: Record<string, number> = { "1": 420, "2": 300, "3": 225, "4": 172, "5": 144 };
+const TIER_ORDER = ["BLACK", "PLATINUM", "GOLD", "SILVER", "BRONZE", "ORANGE", "PARTNER", "SUPPLY"];
+const TIER_MINW: Record<string, number> = { BLACK: 440, PLATINUM: 300, GOLD: 240, SILVER: 185, BRONZE: 150, ORANGE: 138, PARTNER: 124, SUPPLY: 118 };
 // top tiers get more breathing room inside the white tile
-const TIER_PAD: Record<string, string> = { "1": "22px 34px", "2": "18px 28px", "3": "15px 22px" };
+const TIER_PAD: Record<string, string> = { BLACK: "24px 40px", PLATINUM: "18px 28px", GOLD: "15px 22px" };
 
 function Partners({ partners }: { partners: { id: string; name: string; logo?: { url: string }; url?: string; tier?: string }[] }) {
-  const groups = ["1", "2", "3", "4", "5"]
-    .map((t) => ({ t, list: partners.filter((p) => (p.tier || "5") === t) }))
+  const groups = TIER_ORDER
+    .map((t) => ({ t, list: partners.filter((p) => (p.tier || "PARTNER") === t) }))
     .filter((g) => g.list.length > 0);
   return (
     <section id="partners" style={{ ...section, background: "#f2f2f0", color: INK, padding: "clamp(46px,7vw,80px) 0" }}>
