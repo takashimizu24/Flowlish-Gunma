@@ -54,10 +54,15 @@ h1, h2, h3, h4 { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .intro-logo { animation: none; } }
 
 /* ===== schedule & results page ===== */
-.match-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; letter-spacing: .03em; padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); transition: .15s; }
+.match-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; letter-spacing: .03em; padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--ink); background: #fff; color: var(--ink); transition: .15s; }
 .match-link:hover { background: var(--ink); color: #fff; }
+.match-link--fiba { background: var(--ink); border-color: var(--ink); color: #fff; }
+.match-link--fiba:hover { background: #000; border-color: #000; }
+.match-link--live { background: #e11d1d; border-color: #e11d1d; color: #fff; }
+.match-link--live:hover { background: #c40d0d; border-color: #c40d0d; }
+.match-link--live .match-link-dot { background: #fff; }
 .match-link-fiba { width: 20px; height: 14px; fill: currentColor; }
-.match-link-dot { width: 8px; height: 8px; border-radius: 50%; background: #e11; flex: none; }
+.match-link-dot { width: 8px; height: 8px; border-radius: 50%; background: #e11d1d; flex: none; }
 
 @media (max-width: 640px) {
   .sched-row { flex-direction: column !important; }

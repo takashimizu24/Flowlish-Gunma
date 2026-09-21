@@ -83,7 +83,7 @@ function MatchLinks({ m }: { m: Match }) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
       {links.map((l) => (
-        <a key={l.kind} className="match-link" href={l.href} target="_blank" rel="noopener">
+        <a key={l.kind} className={`match-link match-link--${l.kind}`} href={l.href} target="_blank" rel="noopener">
           {l.kind === "fiba" && <svg className="match-link-fiba" viewBox="0 0 841.89 595.28"><use href="/icons.svg#ic-fiba" /></svg>}
           {l.kind === "live" && <span className="match-link-dot" />}
           {l.label}
