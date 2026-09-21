@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RosterSection from "@/components/RosterSection";
 import TopCarousel from "@/components/TopCarousel";
+import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { isCmsConfigured } from "@/lib/microcms";
@@ -43,11 +44,14 @@ function ymd(s?: string) {
 function Schedule({ matches }: { matches: Match[] }) {
   return (
     <section id="schedule" style={{ ...section, background: INK, color: "#fff", padding: "52px 0 38px" }}>
-      <div style={{ ...container, marginBottom: 20 }}><Heading>Schedule</Heading></div>
+      <div style={{ ...container, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <Heading>Schedule</Heading>
+        <a href="/schedule" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>一覧へ →</a>
+      </div>
       {matches.length === 0 ? (
         <div style={container}><Empty label="試合未登録（microCMS「matches」に追加すると、ここにカードが並びます）" /></div>
       ) : (
-        <div style={{ display: "flex", gap: 18, overflowX: "auto", padding: "4px clamp(16px,4.5vw,48px) 18px", scrollSnapType: "x mandatory" }}>
+        <ScheduleCarousel>
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
             return (
@@ -56,7 +60,7 @@ function Schedule({ matches }: { matches: Match[] }) {
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.15 }}>{m.league}</div>
                   <div style={{ fontWeight: 800, fontSize: 30, lineHeight: 1.04, marginTop: 3, textTransform: "uppercase" }}>{m.round}</div>
-                  <div style={{ fontWeight: 800, fontSize: 24, marginTop: 12, fontVariantNumeric: "tabular-nums" }}>
+                  <div style={{ fontWeight: 600, fontSize: 24, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>
                     {m.dateLabel || ymd(m.date)}
                   </div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
@@ -79,7 +83,7 @@ function Schedule({ matches }: { matches: Match[] }) {
               </div>
             );
           })}
-        </div>
+        </ScheduleCarousel>
       )}
     </section>
   );

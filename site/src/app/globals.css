@@ -53,6 +53,12 @@ h1, h2, h3, h4 { margin: 0; }
 @keyframes fg-intro-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .intro-logo { animation: none; } }
 
+/* ===== home schedule carousel arrows ===== */
+.sched-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: none; background: var(--orange); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.45); transition: background .15s; }
+.sched-arrow:hover { background: #d85713; }
+.sched-arrow--left { left: 6px; }
+.sched-arrow--right { right: 6px; }
+
 /* ===== schedule & results page ===== */
 .match-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; letter-spacing: .03em; padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--orange); background: #fff; color: var(--ink); transition: background .15s, border-color .15s; }
 .match-link--event { background: var(--orange); border-color: var(--orange); color: #fff; }
