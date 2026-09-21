@@ -12,6 +12,7 @@ export async function POST(req: Request) {
   if (!title) {
     return NextResponse.json({ ok: false, error: "タイトルは必須です" }, { status: 400 });
   }
+  const id = String(form.get("id") || "").trim();
   const publishedDate = String(form.get("publishedDate") || "");
   const body = String(form.get("body") || "");
   const categories = form.getAll("categories").map(String).filter(Boolean);
@@ -40,16 +41,19 @@ export async function POST(req: Request) {
     categories,
     publishedDate: publishedDate ? new Date(publishedDate).toISOString() : new Date().toISOString(),
   };
-  if (thumbnailUrl) payload.thumbnail = thumbnailUrl;
+  if (thumbnailUrl) payload.thumbnail = thumbnailUrl; // only replace image if a new one was uploaded
 
-  const r = await fetch(`https://${DOMAIN}.microcms.io/api/v1/news`, {
-    method: "POST",
-    headers: { "X-MICROCMS-API-KEY": KEY, "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  const r = await fetch(
+    `https://${DOMAIN}.microcms.io/api/v1/news${id ? `/${id}` : ""}`,
+    {
+      method: id ? "PATCH" : "POST",
+      headers: { "X-MICROCMS-API-KEY": KEY, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }
+  );
   const data = await r.json().catch(() => ({}));
   if (!r.ok) {
     return NextResponse.json({ ok: false, error: data?.message || "保存に失敗しました" }, { status: 502 });
   }
-  return NextResponse.json({ ok: true, id: data.id });
+  return NextResponse.json({ ok: true, id: data.id || id });
 }

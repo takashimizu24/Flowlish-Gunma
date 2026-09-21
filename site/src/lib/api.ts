@@ -13,6 +13,16 @@ export async function getPlayers(): Promise<Player[]> {
   return data.contents.filter((p) => p.active !== false);
 }
 
+/** All players incl. former (active === false) — for the admin editor. */
+export async function getAllPlayers(): Promise<Player[]> {
+  if (!client) return [];
+  const data = await client.getList<Player>({
+    endpoint: "players",
+    queries: { orders: "order,number", limit: 100 },
+  });
+  return data.contents;
+}
+
 /** News, newest first. */
 export async function getNews(limit = 6): Promise<News[]> {
   if (!client) return [];

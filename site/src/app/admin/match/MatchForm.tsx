@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
+import type { Match } from "@/lib/types";
 
 type PlayerOpt = { id: string; number: number; nameEn: string };
+type MatchListItem = { id: string; round: string; dateLabel: string };
 type Game = { phase: string; opp: string; myScore: string; oppScore: string };
 
 const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
@@ -12,24 +14,32 @@ const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", pad
 const card: React.CSSProperties = { background: "#fff", borderRadius: 14, padding: "8px 24px 24px", boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" };
 const half: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" };
 
-export default function MatchForm({ players }: { players: PlayerOpt[] }) {
-  const [entry, setEntry] = useState<string[]>([]);
-  const [games, setGames] = useState<Game[]>([]);
+function gamesFromScores(scores?: string): Game[] {
+  try {
+    const v = JSON.parse(scores || "");
+    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string }) => {
+      const [my, opp] = String(g.score ?? "").split("-");
+      return { phase: g.phase || "", opp: g.opp || "", myScore: my || "", oppScore: opp || "" };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export default function MatchForm({ players, matches, editing }: { players: PlayerOpt[]; matches: MatchListItem[]; editing: Match | null }) {
+  const [entry, setEntry] = useState<string[]>(() => (editing?.entryPlayers ?? []).map((p) => p.id));
+  const [games, setGames] = useState<Game[]>(() => gamesFromScores(editing?.scores));
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const dateVal = editing?.date ? new Date(editing.date).toISOString().slice(0, 10) : "";
 
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
   }
-  function addGame() {
-    setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "" }]);
-  }
-  function updGame(i: number, patch: Partial<Game>) {
-    setGames((g) => g.map((x, k) => (k === i ? { ...x, ...patch } : x)));
-  }
-  function delGame(i: number) {
-    setGames((g) => g.filter((_, k) => k !== i));
-  }
+  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "" }]);
+  const updGame = (i: number, patch: Partial<Game>) => setGames((g) => g.map((x, k) => (k === i ? { ...x, ...patch } : x)));
+  const delGame = (i: number) => setGames((g) => g.filter((_, k) => k !== i));
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,6 +47,7 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
     setMsg(null);
     const f = new FormData(e.currentTarget);
     const body = {
+      id: editing?.id,
       league: f.get("league"),
       round: f.get("round"),
       date: f.get("date"),
@@ -51,17 +62,15 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
       entryPlayers: entry,
       games,
     };
-    const r = await fetch("/api/admin/match", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const r = await fetch("/api/admin/match", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await r.json().catch(() => ({}));
     if (r.ok) {
-      setMsg({ ok: true, text: "試合を追加しました ✓" });
-      (e.target as HTMLFormElement).reset();
-      setEntry([]);
-      setGames([]);
+      setMsg({ ok: true, text: editing ? "試合を更新しました ✓" : "試合を追加しました ✓" });
+      if (!editing) {
+        (e.target as HTMLFormElement).reset();
+        setEntry([]);
+        setGames([]);
+      }
     } else {
       setMsg({ ok: false, text: d.error || "保存に失敗しました" });
     }
@@ -75,43 +84,59 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
   };
 
   return (
-    <AdminChrome title="試合を追加">
+    <AdminChrome title={editing ? "試合を編集" : "試合を追加"}>
+      {/* existing matches to edit */}
+      <div style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", marginBottom: 16, boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <span style={{ fontWeight: 700, fontSize: 13 }}>既存の試合を編集</span>
+          <a href="/admin/match" style={{ fontSize: 12, fontWeight: 700, color: editing ? "#EE651C" : "#aaa", textDecoration: "none" }}>＋ 新規作成</a>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 132, overflow: "auto" }}>
+          {matches.map((m) => (
+            <a key={m.id} href={`/admin/match?id=${m.id}`}
+              style={{ fontSize: 12, padding: "5px 10px", borderRadius: 7, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#e2e2e2", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
+              {m.round}{m.dateLabel ? ` (${m.dateLabel})` : ""}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <form onSubmit={submit} style={card}>
         <div style={half}>
           <div style={{ flex: "1 1 200px" }}>
             <label style={label}>リーグ</label>
-            <input name="league" defaultValue="3x3.EXE PREMIER" style={input} />
+            <input name="league" defaultValue={editing?.league ?? "3x3.EXE PREMIER"} style={input} />
           </div>
           <div style={{ flex: "1 1 140px" }}>
             <label style={label}>ラウンド <span style={{ color: "#EE651C" }}>*</span></label>
-            <input name="round" required placeholder="ROUND.8" style={input} />
+            <input name="round" required defaultValue={editing?.round ?? ""} placeholder="ROUND.8" style={input} />
           </div>
         </div>
 
         <div style={half}>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>開催日</label>
-            <input name="date" type="date" style={input} />
+            <input name="date" type="date" defaultValue={dateVal} style={input} />
           </div>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>日付表示（空欄なら自動）</label>
-            <input name="dateLabel" placeholder="例：2026.6.13-14" style={input} />
+            <input name="dateLabel" defaultValue={editing?.dateLabel ?? ""} placeholder="例：2026.6.13-14" style={input} />
           </div>
         </div>
 
         <label style={label}>会場</label>
-        <input name="venue" placeholder="例：ビエント高崎（群馬県高崎市）" style={input} />
+        <input name="venue" defaultValue={editing?.venue ?? ""} placeholder="例：ビエント高崎（群馬県高崎市）" style={input} />
 
         <div style={half}>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>状態</label>
-            <select name="status" defaultValue="結果" style={input}>
+            <select name="status" defaultValue={editing?.status ?? "結果"} style={input}>
               {MATCH_STATUS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>最終順位</label>
-            <input name="resultBadge" list="badges" placeholder="優勝 / 6位 など" style={input} />
+            <input name="resultBadge" defaultValue={editing?.resultBadge ?? ""} list="badges" placeholder="優勝 / 6位 など" style={input} />
             <datalist id="badges">{RESULT_BADGES.map((b) => <option key={b} value={b} />)}</datalist>
           </div>
         </div>
@@ -142,21 +167,21 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
         <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
 
         <label style={label}>備考（任意・イレギュラーな情報など）</label>
-        <textarea name="memo" rows={2} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
+        <textarea name="memo" defaultValue={editing?.memo ?? ""} rows={2} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
 
         <label style={label}>大会公式サイト URL（任意）</label>
-        <input name="eventUrl" type="url" placeholder="https://…（大会・イベントのHP）" style={input} />
+        <input name="eventUrl" type="url" defaultValue={editing?.eventUrl ?? ""} placeholder="https://…（大会・イベントのHP）" style={input} />
 
         <label style={label}>FIBA 3x3 イベントページ URL（任意）</label>
-        <input name="fibaEventUrl" type="url" placeholder="https://play.fiba3x3.com/events/…" style={input} />
+        <input name="fibaEventUrl" type="url" defaultValue={editing?.fibaEventUrl ?? ""} placeholder="https://play.fiba3x3.com/events/…" style={input} />
 
         <label style={label}>ライブ配信 URL（任意）</label>
-        <input name="liveUrl" type="url" placeholder="https://youtube.com/… など" style={input} />
+        <input name="liveUrl" type="url" defaultValue={editing?.liveUrl ?? ""} placeholder="https://youtube.com/… など" style={input} />
 
         <div>
           {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
           <button type="submit" disabled={busy} style={{ marginTop: 20, padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
-            {busy ? "保存中…" : "追加する"}
+            {busy ? "保存中…" : editing ? "更新する" : "追加する"}
           </button>
         </div>
       </form>

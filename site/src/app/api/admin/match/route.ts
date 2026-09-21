@@ -51,14 +51,18 @@ export async function POST(req: Request) {
   };
   if (b.date) payload.date = new Date(b.date).toISOString();
 
-  const r = await fetch(`https://${DOMAIN}.microcms.io/api/v1/matches`, {
-    method: "POST",
-    headers: { "X-MICROCMS-API-KEY": KEY, "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  const editing = typeof b.id === "string" && b.id;
+  const r = await fetch(
+    `https://${DOMAIN}.microcms.io/api/v1/matches${editing ? `/${b.id}` : ""}`,
+    {
+      method: editing ? "PATCH" : "POST",
+      headers: { "X-MICROCMS-API-KEY": KEY, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }
+  );
   const data = await r.json().catch(() => ({}));
   if (!r.ok) {
     return NextResponse.json({ ok: false, error: data?.message || "保存に失敗しました" }, { status: 502 });
   }
-  return NextResponse.json({ ok: true, id: data.id });
+  return NextResponse.json({ ok: true, id: data.id || b.id });
 }
