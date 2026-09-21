@@ -21,6 +21,8 @@ function parseGames(s?: string): Game[] {
   }
 }
 
+// Qualifying Draw = the pre-qualifying stage (予選の予選); checked before isPool
+const isQualDraw = (phase: string) => /qualif|予選ドロー|予選の予選|(^|[^a-z])qd/i.test(phase);
 const isPool = (phase: string) => /GROUP|POOL|予選|リーグ/i.test(phase);
 
 function ymd(s?: string) {
@@ -96,8 +98,9 @@ function MatchLinks({ m }: { m: Match }) {
 
 function MatchRow({ m }: { m: Match }) {
   const games = parseGames(m.scores);
-  const pool = games.filter((g) => isPool(g.phase));
-  const playoff = games.filter((g) => !isPool(g.phase));
+  const qualDraw = games.filter((g) => isQualDraw(g.phase));
+  const pool = games.filter((g) => !isQualDraw(g.phase) && isPool(g.phase));
+  const playoff = games.filter((g) => !isQualDraw(g.phase) && !isPool(g.phase));
   const entry = m.entryPlayers ?? [];
   const upcoming = m.status !== "結果" || (!m.resultBadge && games.length === 0);
 
@@ -114,6 +117,7 @@ function MatchRow({ m }: { m: Match }) {
           </div>
           {games.length > 0 && (
             <div style={{ marginTop: 6 }}>
+              <GameGroup title="Qualifying Draw" games={qualDraw} />
               <GameGroup title="予選ラウンド" games={pool} />
               <GameGroup title="決勝トーナメント" games={playoff} />
             </div>

@@ -13,6 +13,8 @@ export const RESULT_BADGES = [
 ];
 
 // Common game phases (datalist suggestions).
+// QD-* = Qualifying Draw (予選の予選); shown as its own group above the 予選ラウンド.
 export const GAME_PHASES = [
+  "QD-A", "QD-B", "QD-C", "QD-D",
   "GROUP-A", "GROUP-B", "GROUP-C", "GROUP-D", "予選", "準決勝", "決勝", "3位決定戦",
 ];
