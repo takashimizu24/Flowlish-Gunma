@@ -156,7 +156,7 @@ function Roster({ players }: { players: Player[] }) {
 // Sponsor tiles are sized by rank tier (1 = biggest). Tiers come from the
 // `tier` field ("1".."5"); higher tier = larger tile (fewer per row).
 const TIER_ORDER = ["BLACK", "PLATINUM", "GOLD", "SILVER", "BRONZE", "ORANGE", "PARTNER", "SUPPLY"];
-const TIER_MINW: Record<string, number> = { BLACK: 440, PLATINUM: 300, GOLD: 240, SILVER: 185, BRONZE: 150, ORANGE: 138, PARTNER: 124, SUPPLY: 118 };
+const TIER_MINW: Record<string, number> = { BLACK: 440, PLATINUM: 300, GOLD: 240, SILVER: 185, BRONZE: 150, ORANGE: 138, PARTNER: 124, SUPPLY: 124 };
 // rank label shown above each tier group
 const TIER_LABEL: Record<string, string> = {
   BLACK: "BLACK PARTNER",

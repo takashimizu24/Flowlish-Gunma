@@ -61,22 +61,22 @@ h1, h2, h3, h4 { margin: 0; }
 .sched-arrow--left { left: 6px; }
 .sched-arrow--right { right: 6px; }
 
-/* hide the carousel scrollbar (navigation is via arrows / dots) */
-.sched-track { scrollbar-width: none; -ms-overflow-style: none; }
+/* hide the carousel scrollbar (navigation is via arrows / dots).
+   card gap is a touch wider than the side gutter (clamp min 16px) */
+.sched-track { scrollbar-width: none; -ms-overflow-style: none; gap: 20px; }
 .sched-track::-webkit-scrollbar { display: none; }
 
-/* schedule card: fixed on desktop, matches content width on mobile */
+/* schedule card: fixed on desktop, matches news-section width on mobile */
 .sched-card { flex: 0 0 430px; }
 
-/* dot pagination (mobile only) */
-.sched-dots { display: none; }
+/* dot pagination (all breakpoints, alongside the arrows on desktop) */
+.sched-dots { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 16px; padding: 0 16px; }
 .sched-dot { width: 7px; height: 7px; padding: 0; border: none; border-radius: 999px; background: rgba(255,255,255,.3); cursor: pointer; transition: width .25s ease, background .25s ease; }
 .sched-dot.is-active { width: 22px; background: var(--orange); }
 
 @media (max-width: 640px) {
-  .sched-card { flex-basis: calc(100vw - 32px); }
+  .sched-card { flex-basis: calc(100vw - 2 * clamp(16px, 4.5vw, 48px)); }
   .sched-arrow { display: none; }
-  .sched-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 14px; padding: 0 16px; }
 }
 
 /* ===== schedule & results page ===== */

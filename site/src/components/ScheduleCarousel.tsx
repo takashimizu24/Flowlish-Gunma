@@ -45,7 +45,7 @@ export default function ScheduleCarousel({ children }: { children: React.ReactNo
         ref={ref}
         onScroll={onScroll}
         className="sched-track"
-        style={{ display: "flex", gap: 18, overflowX: "auto", padding: "4px clamp(16px,4.5vw,48px) 18px", scrollPaddingLeft: "clamp(16px,4.5vw,48px)", scrollSnapType: "x mandatory" }}
+        style={{ display: "flex", overflowX: "auto", padding: "4px clamp(16px,4.5vw,48px) 18px", scrollPaddingLeft: "clamp(16px,4.5vw,48px)", scrollSnapType: "x mandatory" }}
       >
         {children}
       </div>
