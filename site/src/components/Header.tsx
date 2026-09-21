@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/config";
 const NAV = [
   { label: "HOME", href: "/" },
   { label: "SCHEDULE", href: "/schedule" },
-  { label: "NEWS", href: "/#news" },
+  { label: "NEWS", href: "/news" },
   { label: "TEAM", href: "/#roster" },
   { label: "PARTNERS", href: "/#partners" },
   { label: "SCHOOL", href: "#" },

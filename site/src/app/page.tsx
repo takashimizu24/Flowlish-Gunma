@@ -94,13 +94,16 @@ function NewsList({ news }: { news: News[] }) {
     <section id="news" style={{ ...section, background: INK, padding: "0 0 8px" }}>
       <div style={container}>
         <div style={panel}>
-          <div style={{ marginBottom: "clamp(22px,3.2vw,40px)" }}><Heading>News</Heading></div>
+          <div style={{ marginBottom: "clamp(22px,3.2vw,40px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <Heading>News</Heading>
+            <a href="/news" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: INK, border: `1.5px solid ${INK}`, borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>一覧へ →</a>
+          </div>
           {news.length === 0 ? (
             <Empty label="お知らせ未登録" />
           ) : (
             <div className="news-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "30px 26px" }}>
               {news.map((n) => (
-                <a key={n.id} href="#" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <a key={n.id} href={`/news/${n.id}`} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <span style={{ width: "100%", aspectRatio: "16/9", borderRadius: 8, background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6", flex: "none" }} />
                   <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</span>
                   <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42, color: INK }}>{n.title}</h3>

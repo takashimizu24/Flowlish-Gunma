@@ -33,6 +33,16 @@ export async function getNews(limit = 6): Promise<News[]> {
   return data.contents;
 }
 
+/** A single news item by id (for the detail page). */
+export async function getNewsItem(id: string): Promise<News | null> {
+  if (!client) return null;
+  try {
+    return await client.getListDetail<News>({ endpoint: "news", contentId: id });
+  } catch {
+    return null;
+  }
+}
+
 /** Matches, newest first (by date). */
 export async function getMatches(limit = 20): Promise<Match[]> {
   if (!client) return [];
