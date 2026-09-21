@@ -6,6 +6,7 @@ import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { siteConfig } from "@/lib/config";
+import { rankLabel } from "@/lib/rank";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
 
@@ -66,7 +67,7 @@ function Schedule({ matches }: { matches: Match[] }) {
                   </div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
                   {(m.memo || m.note) && <div style={{ fontSize: 11, fontWeight: 700, color: ORANGE, marginTop: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.memo || m.note}</div>}
-                  {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 800, fontSize: 12, padding: "7px 12px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{m.resultBadge}</span></div>}
+                  {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 800, fontSize: 12, padding: "7px 12px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{rankLabel(m.resultBadge)}</span></div>}
                 </div>
                 {/* right: entry members (circular photos, vertical) */}
                 {entry.length > 0 && (
