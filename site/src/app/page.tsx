@@ -5,6 +5,7 @@ import TopCarousel from "@/components/TopCarousel";
 import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
+import { siteConfig } from "@/lib/config";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
 
@@ -85,6 +86,18 @@ function Schedule({ matches }: { matches: Match[] }) {
           })}
         </ScheduleCarousel>
       )}
+    </section>
+  );
+}
+
+function FanClubBanner() {
+  return (
+    <section style={{ background: INK, padding: "10px 0 28px" }}>
+      <div style={container}>
+        <a href={siteConfig.fanClubUrl} aria-label="公式ファンクラブ会員募集中" style={{ display: "block", borderRadius: 16, overflow: "hidden", boxShadow: "0 10px 30px -12px rgba(0,0,0,.6)" }}>
+          <img src="/fanclub-banner.jpg" alt="FLOWLISH GUNMA 公式ファンクラブ会員募集中" style={{ width: "100%", height: "auto", display: "block" }} />
+        </a>
+      </div>
     </section>
   );
 }
@@ -206,6 +219,7 @@ export default async function Home() {
         )}
         <TopCarousel banners={banners} />
         <Schedule matches={matches} />
+        <FanClubBanner />
         <NewsList news={news} />
         <Roster players={players} />
         <Partners partners={partners} />
