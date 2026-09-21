@@ -36,8 +36,12 @@ export default function ScheduleCarousel({ children }: { children: React.ReactNo
     el.scrollTo({ left: el.scrollLeft + (k.getBoundingClientRect().left - el.getBoundingClientRect().left - pad), behavior: "smooth" });
   };
 
+  // left inset = the container's content-left edge, so the first card aligns with
+  // the heading/other sections while the track still bleeds full-width to the right.
+  const insetStyle = { "--sched-inset": "calc(max(0px, (100vw - 1200px) / 2) + clamp(16px, 4.5vw, 56px))" } as React.CSSProperties;
+
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", ...insetStyle }}>
       {/* track wrapper: arrows anchor here so they center on the CARD, not the dots */}
       <div style={{ position: "relative" }}>
         <button type="button" aria-label="前のスケジュール" className="sched-arrow sched-arrow--left" onClick={() => scroll(-1)}>
@@ -47,7 +51,7 @@ export default function ScheduleCarousel({ children }: { children: React.ReactNo
           ref={ref}
           onScroll={onScroll}
           className="sched-track"
-          style={{ display: "flex", overflowX: "auto", padding: "4px 0 10px", scrollSnapType: "x mandatory" }}
+          style={{ display: "flex", overflowX: "auto", paddingTop: 4, paddingBottom: 10, paddingLeft: "var(--sched-inset)", paddingRight: "clamp(16px,4.5vw,48px)", scrollPaddingLeft: "var(--sched-inset)", scrollSnapType: "x mandatory" }}
         >
           {children}
         </div>

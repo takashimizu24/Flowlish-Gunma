@@ -53,7 +53,6 @@ function Schedule({ matches }: { matches: Match[] }) {
       {matches.length === 0 ? (
         <div style={container}><Empty label="試合未登録（microCMS「matches」に追加すると、ここにカードが並びます）" /></div>
       ) : (
-        <div style={container}>
         <ScheduleCarousel>
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
@@ -87,7 +86,6 @@ function Schedule({ matches }: { matches: Match[] }) {
             );
           })}
         </ScheduleCarousel>
-        </div>
       )}
     </section>
   );
