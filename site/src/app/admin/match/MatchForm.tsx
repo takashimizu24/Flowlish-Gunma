@@ -44,6 +44,7 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
       venue: f.get("venue"),
       status: f.get("status"),
       resultBadge: f.get("resultBadge"),
+      memo: f.get("memo"),
       eventUrl: f.get("eventUrl"),
       fibaEventUrl: f.get("fibaEventUrl"),
       liveUrl: f.get("liveUrl"),
@@ -139,6 +140,9 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
           </div>
         ))}
         <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
+
+        <label style={label}>備考（任意・イレギュラーな情報など）</label>
+        <textarea name="memo" rows={2} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
 
         <label style={label}>大会公式サイト URL（任意）</label>
         <input name="eventUrl" type="url" placeholder="https://…（大会・イベントのHP）" style={input} />

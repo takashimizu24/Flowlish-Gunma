@@ -117,7 +117,9 @@ function MatchRow({ m }: { m: Match }) {
               <GameGroup title="決勝トーナメント" games={playoff} />
             </div>
           )}
-          {m.note && <p style={{ fontSize: 12, opacity: 0.7, margin: "10px 0 0", whiteSpace: "pre-wrap" }}>{m.note}</p>}
+          {(m.memo || m.note) && (
+            <p style={{ fontSize: 12.5, margin: "12px 0 0", padding: "8px 12px", background: "rgba(238,101,28,.08)", borderLeft: `3px solid ${ORANGE}`, borderRadius: "0 6px 6px 0", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{m.memo || m.note}</p>
+          )}
           <MatchLinks m={m} />
         </div>
 

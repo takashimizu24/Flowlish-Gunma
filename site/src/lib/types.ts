@@ -28,6 +28,7 @@ export type Match = MicroCMSListContent & {
   resultBadge?: string;
   scores?: string;    // free text for now
   note?: string;
+  memo?: string;      // 備考 / irregular info shown on the card
   entryPlayers?: Player[];   // relationList -> players (expanded via depth)
   eventUrl?: string;         // 大会公式サイト / event homepage
   fibaEventUrl?: string;     // FIBA 3x3 event page

@@ -44,6 +44,7 @@ export async function POST(req: Request) {
     dateLabel: b.dateLabel || (b.date ? ymd(b.date) : ""),
     scores: parsedGames.length ? JSON.stringify({ games: parsedGames }) : "",
     entryPlayers: Array.isArray(b.entryPlayers) ? b.entryPlayers : [],
+    memo: b.memo || "",
     eventUrl: b.eventUrl || "",
     fibaEventUrl: b.fibaEventUrl || "",
     liveUrl: b.liveUrl || "",
