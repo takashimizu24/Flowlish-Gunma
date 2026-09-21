@@ -145,6 +145,17 @@ const TIER_ORDER = ["BLACK", "PLATINUM", "GOLD", "SILVER", "BRONZE", "ORANGE", "
 const TIER_MINW: Record<string, number> = { BLACK: 440, PLATINUM: 300, GOLD: 240, SILVER: 185, BRONZE: 150, ORANGE: 138, PARTNER: 124, SUPPLY: 118 };
 // top tiers get more breathing room inside the white tile
 const TIER_PAD: Record<string, string> = { BLACK: "24px 40px", PLATINUM: "18px 28px", GOLD: "15px 22px" };
+// rank label shown above each tier group
+const TIER_LABEL: Record<string, string> = {
+  BLACK: "BLACK PARTNER",
+  PLATINUM: "PLATINUM PARTNER",
+  GOLD: "GOLD PARTNER",
+  SILVER: "SILVER PARTNER",
+  BRONZE: "BRONZE PARTNER",
+  ORANGE: "ORANGE PARTNER",
+  PARTNER: "PARTNER",
+  SUPPLY: "SUPPLY PARTNER",
+};
 
 function Partners({ partners }: { partners: { id: string; name: string; logo?: { url: string }; url?: string; tier?: string }[] }) {
   const groups = TIER_ORDER
@@ -157,14 +168,20 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
         {partners.length === 0 ? (
           <p style={{ opacity: 0.55, fontSize: 14, margin: 0, color: INK }}>スポンサー未登録</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
             {groups.map(({ t, list }) => (
-              <div key={t} style={{ display: "grid", gap: 14, gridTemplateColumns: `repeat(auto-fill, minmax(min(${TIER_MINW[t]}px, 100%), 1fr))` }}>
-                {list.map((p) => (
-                  <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name} style={TIER_PAD[t] ? { padding: TIER_PAD[t] } : undefined}>
-                    {p.logo ? <img src={`${p.logo.url}?h=300`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
-                  </a>
-                ))}
+              <div key={t}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                  <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: ".12em", textTransform: "uppercase", color: ORANGE, whiteSpace: "nowrap" }}>{TIER_LABEL[t] || t}</span>
+                  <span style={{ flex: 1, height: 1, background: "rgba(20,20,20,.14)" }} />
+                </div>
+                <div style={{ display: "grid", gap: 14, gridTemplateColumns: `repeat(auto-fill, minmax(min(${TIER_MINW[t]}px, 100%), 1fr))` }}>
+                  {list.map((p) => (
+                    <a key={p.id} className="partners-tile" href={p.url || "#"} target="_blank" rel="noopener" title={p.name} style={TIER_PAD[t] ? { padding: TIER_PAD[t] } : undefined}>
+                      {p.logo ? <img src={`${p.logo.url}?h=300`} alt={p.name} /> : <span style={{ fontWeight: 700, fontSize: 14, textAlign: "center", color: INK }}>{p.name}</span>}
+                    </a>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
