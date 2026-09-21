@@ -74,6 +74,25 @@ function EntryAvatars({ entry }: { entry: Player[] }) {
   );
 }
 
+function MatchLinks({ m }: { m: Match }) {
+  const links: { label: string; href: string; kind: "event" | "fiba" | "live" }[] = [];
+  if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
+  if (m.fibaEventUrl) links.push({ label: "FIBA 3x3", href: m.fibaEventUrl, kind: "fiba" });
+  if (m.liveUrl) links.push({ label: "LIVE配信", href: m.liveUrl, kind: "live" });
+  if (links.length === 0) return null;
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+      {links.map((l) => (
+        <a key={l.kind} className="match-link" href={l.href} target="_blank" rel="noopener">
+          {l.kind === "fiba" && <svg className="match-link-fiba" viewBox="0 0 841.89 595.28"><use href="/icons.svg#ic-fiba" /></svg>}
+          {l.kind === "live" && <span className="match-link-dot" />}
+          {l.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 function MatchRow({ m }: { m: Match }) {
   const games = parseGames(m.scores);
   const pool = games.filter((g) => isPool(g.phase));
@@ -99,6 +118,7 @@ function MatchRow({ m }: { m: Match }) {
             </div>
           )}
           {m.note && <p style={{ fontSize: 12, opacity: 0.7, margin: "10px 0 0", whiteSpace: "pre-wrap" }}>{m.note}</p>}
+          <MatchLinks m={m} />
         </div>
 
         {/* aside: entry + ranking */}
@@ -136,10 +156,10 @@ export default async function SchedulePage() {
       <Header />
       <main style={{ background: INK, color: "#fff", minHeight: "70vh", padding: "clamp(36px,6vw,64px) 0 64px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 clamp(16px,4.5vw,48px)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+          <h1 style={{ display: "inline-flex", alignItems: "center", gap: 14, marginBottom: 6, fontWeight: 800, fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, textTransform: "uppercase" }}>
             <span style={{ width: 13, height: ".78em", background: ORANGE, transform: "skewX(-11deg)", borderRadius: 1, flex: "none", display: "inline-block" }} />
-            <h1 style={{ fontWeight: 800, fontSize: "clamp(26px,4.4vw,44px)", letterSpacing: ".01em", lineHeight: 1, textTransform: "uppercase", margin: 0 }}>Schedule &amp; Results</h1>
-          </div>
+            Schedule &amp; Results
+          </h1>
           <p style={{ opacity: 0.6, fontSize: 13, margin: "0 0 30px 27px" }}>試合日程・結果</p>
 
           {matches.length === 0 ? (

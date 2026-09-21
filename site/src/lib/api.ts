@@ -1,14 +1,16 @@
 import { client } from "./microcms";
 import type { Player, News, Match, Partner, TopBanner } from "./types";
 
-/** Players, ordered by `order` then jersey number. */
+/** Current-roster players, ordered by `order` then jersey number.
+ *  Former players (active === false) are excluded — they only appear in past
+ *  match records. Players without the flag set are treated as current. */
 export async function getPlayers(): Promise<Player[]> {
   if (!client) return [];
   const data = await client.getList<Player>({
     endpoint: "players",
     queries: { orders: "order,number", limit: 100 },
   });
-  return data.contents;
+  return data.contents.filter((p) => p.active !== false);
 }
 
 /** News, newest first. */

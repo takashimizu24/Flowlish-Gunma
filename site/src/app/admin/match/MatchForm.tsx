@@ -44,6 +44,9 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
       venue: f.get("venue"),
       status: f.get("status"),
       resultBadge: f.get("resultBadge"),
+      eventUrl: f.get("eventUrl"),
+      fibaEventUrl: f.get("fibaEventUrl"),
+      liveUrl: f.get("liveUrl"),
       entryPlayers: entry,
       games,
     };
@@ -136,6 +139,15 @@ export default function MatchForm({ players }: { players: PlayerOpt[] }) {
           </div>
         ))}
         <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
+
+        <label style={label}>大会公式サイト URL（任意）</label>
+        <input name="eventUrl" type="url" placeholder="https://…（大会・イベントのHP）" style={input} />
+
+        <label style={label}>FIBA 3x3 イベントページ URL（任意）</label>
+        <input name="fibaEventUrl" type="url" placeholder="https://play.fiba3x3.com/events/…" style={input} />
+
+        <label style={label}>ライブ配信 URL（任意）</label>
+        <input name="liveUrl" type="url" placeholder="https://youtube.com/… など" style={input} />
 
         <div>
           {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}

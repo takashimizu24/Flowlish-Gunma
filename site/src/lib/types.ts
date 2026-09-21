@@ -29,6 +29,9 @@ export type Match = MicroCMSListContent & {
   scores?: string;    // free text for now
   note?: string;
   entryPlayers?: Player[];   // relationList -> players (expanded via depth)
+  eventUrl?: string;         // 大会公式サイト / event homepage
+  fibaEventUrl?: string;     // FIBA 3x3 event page
+  liveUrl?: string;          // live-stream link
 };
 
 export type PlayerPosition = "Guard" | "Forward" | "Center";
@@ -43,6 +46,7 @@ export type Player = MicroCMSListContent & {
   nationality?: string;
   birthdate?: string;
   bio?: string;
+  active?: boolean;             // current roster? (false = former player, hidden from home)
   photo?: MicroCMSImage;        // roster card (3:4 headshot)
   photoDetail?: MicroCMSImage;  // modal portrait (different shot)
   snsInstagram?: string;        // full URL; icon hidden if empty
