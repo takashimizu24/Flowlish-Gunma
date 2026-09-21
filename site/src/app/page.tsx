@@ -92,7 +92,7 @@ function Schedule({ matches }: { matches: Match[] }) {
 
 function FanClubBanner() {
   return (
-    <section style={{ background: INK, padding: "10px 0 28px" }}>
+    <section style={{ background: INK, padding: "10px 0 48px" }}>
       <div style={container}>
         <a href={siteConfig.fanClubUrl} aria-label="公式ファンクラブ会員募集中" style={{ display: "block", borderRadius: 16, overflow: "hidden", boxShadow: "0 10px 30px -12px rgba(0,0,0,.6)" }}>
           <img src="/fanclub-banner.jpg" alt="FLOWLISH GUNMA 公式ファンクラブ会員募集中" style={{ width: "100%", height: "auto", display: "block" }} />
