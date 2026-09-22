@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
+import { gameOutcome, isWin, isWalkover, OUTCOME_LABEL } from "@/lib/result";
 import type { Match } from "@/lib/types";
 
 type PlayerOpt = { id: string; number: number; nameEn: string };
 type MatchListItem = { id: string; round: string; dateLabel: string };
-type Game = { phase: string; opp: string; myScore: string; oppScore: string };
+type Walkover = "" | "win" | "lose";
+type Game = { phase: string; opp: string; myScore: string; oppScore: string; walkover: Walkover };
 
 const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
 const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, border: "1px solid #d8d8d8", borderRadius: 9, background: "#fff" };
@@ -17,9 +19,18 @@ const half: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" }
 function gamesFromScores(scores?: string): Game[] {
   try {
     const v = JSON.parse(scores || "");
-    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string }) => {
+    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string; result?: string }) => {
+      const outcome = gameOutcome(g);
+      // Walkovers carry no points ("W-0"), so the score boxes stay empty.
+      const walkover: Walkover = outcome === "wo-win" ? "win" : outcome === "wo-lose" ? "lose" : "";
       const [my, opp] = String(g.score ?? "").split("-");
-      return { phase: g.phase || "", opp: g.opp || "", myScore: my || "", oppScore: opp || "" };
+      return {
+        phase: g.phase || "",
+        opp: g.opp || "",
+        myScore: walkover ? "" : my || "",
+        oppScore: walkover ? "" : opp || "",
+        walkover,
+      };
     });
   } catch {
     return [];
@@ -37,7 +48,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
   }
-  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "" }]);
+  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "", walkover: "" }]);
   const updGame = (i: number, patch: Partial<Game>) => setGames((g) => g.map((x, k) => (k === i ? { ...x, ...patch } : x)));
   const delGame = (i: number) => setGames((g) => g.filter((_, k) => k !== i));
 
@@ -77,10 +88,14 @@ export default function MatchForm({ players, matches, editing }: { players: Play
     setBusy(false);
   }
 
-  const winHint = (g: Game) => {
-    const a = Number(g.myScore), b = Number(g.oppScore);
-    if (!g.myScore || !g.oppScore || !Number.isFinite(a) || !Number.isFinite(b)) return "";
-    return a > b ? "WIN" : "LOSE";
+  // Preview of what the site will show for this game (blank while undecided).
+  const hint = (g: Game) => {
+    const outcome =
+      g.walkover === "win" ? ("wo-win" as const)
+      : g.walkover === "lose" ? ("wo-lose" as const)
+      : !g.myScore || !g.oppScore ? ("" as const)
+      : gameOutcome({ score: `${g.myScore}-${g.oppScore}` });
+    return outcome ? { text: OUTCOME_LABEL[outcome], win: isWin(outcome), wo: isWalkover(outcome) } : null;
   };
 
   return (
@@ -151,19 +166,33 @@ export default function MatchForm({ players, matches, editing }: { players: Play
           ))}
         </div>
 
-        <label style={label}>試合スコア（勝敗は自動）</label>
-        {games.map((g, i) => (
-          <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 8, background: "#faf9f7", padding: 10, borderRadius: 10 }}>
-            <input value={g.phase} onChange={(e) => updGame(i, { phase: e.target.value })} list="phases" placeholder="フェーズ" style={{ ...input, flex: "1 1 100px", padding: "8px 10px" }} />
-            <datalist id="phases">{GAME_PHASES.map((p) => <option key={p} value={p} />)}</datalist>
-            <input value={g.opp} onChange={(e) => updGame(i, { opp: e.target.value })} placeholder="対戦相手" style={{ ...input, flex: "2 1 160px", padding: "8px 10px" }} />
-            <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" placeholder="自" style={{ ...input, width: 60, flex: "none", padding: "8px 8px" }} />
-            <span style={{ color: "#999" }}>-</span>
-            <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" placeholder="相手" style={{ ...input, width: 60, flex: "none", padding: "8px 8px" }} />
-            <span style={{ width: 44, textAlign: "center", fontWeight: 800, fontSize: 12, color: winHint(g) === "WIN" ? "#EE651C" : winHint(g) === "LOSE" ? "#999" : "transparent" }}>{winHint(g) || "—"}</span>
-            <button type="button" onClick={() => delGame(i)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#c33", cursor: "pointer", fontSize: 13 }}>削除</button>
-          </div>
-        ))}
+        <label style={label}>試合スコア（勝敗は自動／不戦勝・不戦敗はスコア入力不要）</label>
+        {games.map((g, i) => {
+          const h = hint(g);
+          const wo = g.walkover !== "";
+          const scoreBox: React.CSSProperties = { ...input, width: 60, flex: "none", padding: "8px 8px", background: wo ? "#f0efec" : "#fff", color: wo ? "#bbb" : undefined };
+          return (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 8, background: "#faf9f7", padding: 10, borderRadius: 10 }}>
+              <input value={g.phase} onChange={(e) => updGame(i, { phase: e.target.value })} list="phases" placeholder="フェーズ" style={{ ...input, flex: "1 1 100px", padding: "8px 10px" }} />
+              <datalist id="phases">{GAME_PHASES.map((p) => <option key={p} value={p} />)}</datalist>
+              <input value={g.opp} onChange={(e) => updGame(i, { opp: e.target.value })} placeholder="対戦相手" style={{ ...input, flex: "2 1 160px", padding: "8px 10px" }} />
+              <select
+                value={g.walkover}
+                onChange={(e) => updGame(i, { walkover: e.target.value as Walkover, ...(e.target.value ? { myScore: "", oppScore: "" } : {}) })}
+                style={{ ...input, flex: "0 1 120px", padding: "8px 8px" }}
+              >
+                <option value="">スコア入力</option>
+                <option value="win">不戦勝</option>
+                <option value="lose">不戦敗</option>
+              </select>
+              <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" placeholder={wo ? "—" : "自"} disabled={wo} style={scoreBox} />
+              <span style={{ color: "#999" }}>-</span>
+              <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" placeholder={wo ? "—" : "相手"} disabled={wo} style={scoreBox} />
+              <span style={{ width: 44, textAlign: "center", fontWeight: 800, fontSize: h?.wo ? 11 : 12, color: h ? (h.win ? "#EE651C" : "#999") : "#ddd" }}>{h ? h.text : "—"}</span>
+              <button type="button" onClick={() => delGame(i)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#c33", cursor: "pointer", fontSize: 13 }}>削除</button>
+            </div>
+          );
+        })}
         <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
 
         <label style={label}>備考（任意・イレギュラーな情報など）</label>

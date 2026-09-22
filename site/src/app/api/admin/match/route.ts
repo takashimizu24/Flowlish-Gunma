@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { gameOutcome, RESULT_VALUE, WALKOVER_SCORE } from "@/lib/result";
 
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const KEY = process.env.MICROCMS_API_KEY;
 
-type GameInput = { phase: string; opp: string; myScore: string; oppScore: string };
+type GameInput = { phase: string; opp: string; myScore: string; oppScore: string; walkover?: "" | "win" | "lose" };
 
 // "2026.8.8" from an ISO/date string
 function ymd(d: string) {
@@ -21,11 +22,14 @@ export async function POST(req: Request) {
   }
 
   const games = (b.games as GameInput[] | undefined)?.filter((g) => g && g.opp) ?? [];
+  // A walkover (不戦勝 / 不戦敗) has no points: it is stored as "W-0" / "0-W"
+  // and the outcome is derived from the score, same as a played game.
   const parsedGames = games.map((g) => {
-    const my = Number(g.myScore);
-    const their = Number(g.oppScore);
-    const result = Number.isFinite(my) && Number.isFinite(their) ? (my > their ? "Win" : "Lose") : "";
-    return { phase: g.phase || "", opp: g.opp, score: `${g.myScore}-${g.oppScore}`, result };
+    const score =
+      g.walkover === "win" || g.walkover === "lose"
+        ? WALKOVER_SCORE[g.walkover]
+        : `${g.myScore}-${g.oppScore}`;
+    return { phase: g.phase || "", opp: g.opp, score, result: RESULT_VALUE[gameOutcome({ score })] };
   });
 
   // Prefix the year (from the date) onto the round so seasons stay distinct,

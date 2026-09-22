@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getMatches } from "@/lib/api";
 import { rankLabel } from "@/lib/rank";
+import { gameOutcome, isWin, isWalkover, OUTCOME_LABEL, type Outcome } from "@/lib/result";
 import type { Match, Player } from "@/lib/types";
 
 export const revalidate = 60;
@@ -31,22 +32,28 @@ function ymd(s?: string) {
   return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 
-function ResultChip({ result }: { result: string }) {
-  const win = result.toLowerCase() === "win";
+// Unknown outcome (no score yet, unreadable score) renders nothing rather than
+// defaulting to LOSE.
+function ResultChip({ outcome }: { outcome: Outcome }) {
+  if (!outcome) return <span style={{ width: 52, flex: "none" }} />;
+  const win = isWin(outcome);
+  const wo = isWalkover(outcome);
   return (
-    <span style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".04em", textTransform: "uppercase", width: 52, padding: "3px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
-      {win ? "WIN" : "LOSE"}
+    <span style={{ fontWeight: 800, fontSize: wo ? 10 : 11, letterSpacing: wo ? 0 : ".04em", textTransform: "uppercase", width: 52, padding: "3px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
+      {OUTCOME_LABEL[outcome]}
     </span>
   );
 }
 
 function GameLine({ g }: { g: Game }) {
+  const outcome = gameOutcome(g);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderTop: "1px solid var(--line)" }}>
       <span style={{ flex: "none", width: 74, fontWeight: 700, fontSize: 10, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE }}>{g.phase}</span>
       <span style={{ flex: "1 1 auto", minWidth: 0, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>vs {g.opp}</span>
-      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{g.score}</span>
-      <ResultChip result={g.result} />
+      {/* a walkover keeps its "W-0" notation, dimmed — no points were scored */}
+      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: isWalkover(outcome) ? 0.45 : 1 }}>{g.score}</span>
+      <ResultChip outcome={outcome} />
     </div>
   );
 }
