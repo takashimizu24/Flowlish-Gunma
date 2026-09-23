@@ -1,9 +1,18 @@
 import { siteConfig } from "@/lib/config";
 
-const COLS: { title: string; links: string[] }[] = [
-  { title: "Team", links: ["選手紹介", "スタッフ", "チーム概要", "SDGs"] },
-  { title: "Game", links: ["ラウンド結果 / 日程", "ニュース", "ホームゲーム"] },
-  { title: "Support", links: ["ファンクラブ", "スクール", "スポンサー募集", "SHOP"] },
+const COLS: { title: string; links: { label: string; href: string }[] }[] = [
+  { title: "Team", links: [
+    { label: "選手紹介", href: "/#roster" }, { label: "スタッフ", href: "#" },
+    { label: "チーム概要", href: "#" }, { label: "SDGs", href: "#" },
+  ] },
+  { title: "Game", links: [
+    { label: "ラウンド結果 / 日程", href: "/schedule" }, { label: "ニュース", href: "/news" },
+    { label: "ホームゲーム", href: "#" },
+  ] },
+  { title: "Support", links: [
+    { label: "ファンクラブ", href: "#" }, { label: "スクール", href: "#" },
+    { label: "スポンサー募集", href: "#" }, { label: "SHOP", href: "#" },
+  ] },
 ];
 
 const SNS = [
@@ -40,7 +49,7 @@ export default function Footer() {
             <div key={c.title}>
               <h4 style={h4}>{c.title}</h4>
               {c.links.map((l) => (
-                <a key={l} href="#" style={linkStyle}>{l}</a>
+                <a key={l.label} href={l.href} style={linkStyle}>{l.label}</a>
               ))}
             </div>
           ))}
