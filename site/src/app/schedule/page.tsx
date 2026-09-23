@@ -31,21 +31,28 @@ function ymd(s?: string) {
   return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 
+// walkover (不戦勝/不戦敗) detection — accepts several stored spellings
+const isWalkover = (r: string) => /^wo-|walkover/i.test(r) || r === "不戦勝" || r === "不戦敗";
+const isWin = (r: string) => { const x = r.toLowerCase(); return x === "win" || x === "wo-win" || r === "不戦勝"; };
+
 function ResultChip({ result }: { result: string }) {
-  const win = result.toLowerCase() === "win";
+  const win = isWin(result);
+  const wo = isWalkover(result);
+  const text = wo ? (win ? "不戦勝" : "不戦敗") : win ? "WIN" : "LOSE";
   return (
-    <span style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".04em", textTransform: "uppercase", width: 52, padding: "3px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
-      {win ? "WIN" : "LOSE"}
+    <span style={{ fontWeight: 800, fontSize: wo ? 10.5 : 11, letterSpacing: wo ? "0" : ".04em", textTransform: "uppercase", width: 52, padding: "3px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", background: win ? ORANGE : "rgba(20,20,20,.10)", color: win ? "#fff" : "rgba(20,20,20,.6)" }}>
+      {text}
     </span>
   );
 }
 
 function GameLine({ g }: { g: Game }) {
+  const wo = isWalkover(g.result);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderTop: "1px solid var(--line)" }}>
       <span style={{ flex: "none", width: 74, fontWeight: 700, fontSize: 10, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE }}>{g.phase}</span>
       <span style={{ flex: "1 1 auto", minWidth: 0, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>vs {g.opp}</span>
-      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{g.score}</span>
+      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: wo ? 0.4 : 1 }}>{wo ? "—" : g.score}</span>
       <ResultChip result={g.result} />
     </div>
   );
@@ -112,7 +119,7 @@ function MatchRow({ m }: { m: Match }) {
           <div style={{ fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE }}>{m.league}</div>
           <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", lineHeight: 1.05, margin: "2px 0 0", textTransform: "uppercase" }}>{m.round}</h2>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
-            <span style={{ fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
+            <span style={{ fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
             {m.venue && <span style={{ opacity: 0.7 }}>{m.venue}</span>}
           </div>
           {games.length > 0 && (

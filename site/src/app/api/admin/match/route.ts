@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const KEY = process.env.MICROCMS_API_KEY;
 
-type GameInput = { phase: string; opp: string; myScore: string; oppScore: string };
+type GameInput = { phase: string; opp: string; myScore: string; oppScore: string; wo?: "" | "win" | "lose" };
 
 // "2026.8.8" from an ISO/date string
 function ymd(d: string) {
@@ -22,6 +22,9 @@ export async function POST(req: Request) {
 
   const games = (b.games as GameInput[] | undefined)?.filter((g) => g && g.opp) ?? [];
   const parsedGames = games.map((g) => {
+    // walkover (不戦勝/不戦敗): no numeric score
+    if (g.wo === "win") return { phase: g.phase || "", opp: g.opp, score: "W-0", result: "WO-Win" };
+    if (g.wo === "lose") return { phase: g.phase || "", opp: g.opp, score: "0-W", result: "WO-Lose" };
     const my = Number(g.myScore);
     const their = Number(g.oppScore);
     const result = Number.isFinite(my) && Number.isFinite(their) ? (my > their ? "Win" : "Lose") : "";

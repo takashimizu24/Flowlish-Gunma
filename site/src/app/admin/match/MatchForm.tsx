@@ -7,7 +7,7 @@ import type { Match } from "@/lib/types";
 
 type PlayerOpt = { id: string; number: number; nameEn: string };
 type MatchListItem = { id: string; round: string; dateLabel: string };
-type Game = { phase: string; opp: string; myScore: string; oppScore: string };
+type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
 
 const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
 const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, border: "1px solid #d8d8d8", borderRadius: 9, background: "#fff" };
@@ -17,9 +17,11 @@ const half: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" }
 function gamesFromScores(scores?: string): Game[] {
   try {
     const v = JSON.parse(scores || "");
-    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string }) => {
+    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string; result?: string }) => {
+      const r = String(g.result ?? "").toLowerCase();
+      const wo: Game["wo"] = r === "wo-win" || g.result === "不戦勝" ? "win" : r === "wo-lose" || g.result === "不戦敗" ? "lose" : "";
       const [my, opp] = String(g.score ?? "").split("-");
-      return { phase: g.phase || "", opp: g.opp || "", myScore: my || "", oppScore: opp || "" };
+      return { phase: g.phase || "", opp: g.opp || "", myScore: wo ? "" : my || "", oppScore: wo ? "" : opp || "", wo };
     });
   } catch {
     return [];
@@ -37,7 +39,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
   }
-  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "" }]);
+  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "", wo: "" }]);
   const updGame = (i: number, patch: Partial<Game>) => setGames((g) => g.map((x, k) => (k === i ? { ...x, ...patch } : x)));
   const delGame = (i: number) => setGames((g) => g.filter((_, k) => k !== i));
 
@@ -78,6 +80,8 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   }
 
   const winHint = (g: Game) => {
+    if (g.wo === "win") return "不戦勝";
+    if (g.wo === "lose") return "不戦敗";
     const a = Number(g.myScore), b = Number(g.oppScore);
     if (!g.myScore || !g.oppScore || !Number.isFinite(a) || !Number.isFinite(b)) return "";
     return a > b ? "WIN" : "LOSE";
@@ -157,10 +161,15 @@ export default function MatchForm({ players, matches, editing }: { players: Play
             <input value={g.phase} onChange={(e) => updGame(i, { phase: e.target.value })} list="phases" placeholder="フェーズ" style={{ ...input, flex: "1 1 100px", padding: "8px 10px" }} />
             <datalist id="phases">{GAME_PHASES.map((p) => <option key={p} value={p} />)}</datalist>
             <input value={g.opp} onChange={(e) => updGame(i, { opp: e.target.value })} placeholder="対戦相手" style={{ ...input, flex: "2 1 160px", padding: "8px 10px" }} />
-            <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" placeholder="自" style={{ ...input, width: 60, flex: "none", padding: "8px 8px" }} />
+            <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" placeholder="自" disabled={!!g.wo} style={{ ...input, width: 56, flex: "none", padding: "8px 8px", opacity: g.wo ? 0.4 : 1 }} />
             <span style={{ color: "#999" }}>-</span>
-            <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" placeholder="相手" style={{ ...input, width: 60, flex: "none", padding: "8px 8px" }} />
-            <span style={{ width: 44, textAlign: "center", fontWeight: 800, fontSize: 12, color: winHint(g) === "WIN" ? "#EE651C" : winHint(g) === "LOSE" ? "#999" : "transparent" }}>{winHint(g) || "—"}</span>
+            <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" placeholder="相手" disabled={!!g.wo} style={{ ...input, width: 56, flex: "none", padding: "8px 8px", opacity: g.wo ? 0.4 : 1 }} />
+            <select value={g.wo} onChange={(e) => updGame(i, { wo: e.target.value as Game["wo"] })} title="不戦勝/不戦敗" style={{ ...input, width: 96, flex: "none", padding: "8px 8px" }}>
+              <option value="">通常</option>
+              <option value="win">不戦勝</option>
+              <option value="lose">不戦敗</option>
+            </select>
+            <span style={{ width: 44, textAlign: "center", fontWeight: 800, fontSize: 12, color: winHint(g) === "WIN" || winHint(g) === "不戦勝" ? "#EE651C" : winHint(g) === "LOSE" || winHint(g) === "不戦敗" ? "#999" : "transparent" }}>{winHint(g) || "—"}</span>
             <button type="button" onClick={() => delGame(i)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#c33", cursor: "pointer", fontSize: 13 }}>削除</button>
           </div>
         ))}
