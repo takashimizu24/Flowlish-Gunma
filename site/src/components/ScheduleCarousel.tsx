@@ -37,8 +37,10 @@ export default function ScheduleCarousel({ children }: { children: React.ReactNo
   };
 
   // left inset = the container's content-left edge, so the first card aligns with
-  // the heading/other sections while the track still bleeds full-width to the right.
-  const insetStyle = { "--sched-inset": "calc(max(0px, (100vw - 1200px) / 2) + clamp(16px, 4.5vw, 56px))" } as React.CSSProperties;
+  // the news panel / other sections while the track still bleeds full-width to the
+  // right. Uses 100% (scrollbar-excluded, like a centered container) rather than
+  // 100vw, so it lines up exactly with the news area.
+  const insetStyle = { "--sched-inset": "calc(max(0px, (100% - 1200px) / 2) + clamp(16px, 4.5vw, 56px))" } as React.CSSProperties;
 
   return (
     <div style={{ position: "relative", ...insetStyle }}>
