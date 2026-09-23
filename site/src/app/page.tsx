@@ -48,7 +48,7 @@ function Schedule({ matches }: { matches: Match[] }) {
     <section id="schedule" style={{ ...section, background: INK, color: "#fff", padding: "52px 0 38px" }}>
       <div style={{ ...container, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <Heading>Schedule</Heading>
-        <a href="/schedule" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>一覧へ →</a>
+        <a href="/schedule" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
       </div>
       {matches.length === 0 ? (
         <div style={container}><Empty label="試合未登録（microCMS「matches」に追加すると、ここにカードが並びます）" /></div>
@@ -110,7 +110,7 @@ function NewsList({ news }: { news: News[] }) {
         <div style={panel}>
           <div style={{ marginBottom: "clamp(22px,3.2vw,40px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <Heading>News</Heading>
-            <a href="/news" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: INK, border: `1.5px solid ${INK}`, borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>一覧へ →</a>
+            <a href="/news" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: INK, border: `1.5px solid ${INK}`, borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
           </div>
           {news.length === 0 ? (
             <Empty label="お知らせ未登録" />
