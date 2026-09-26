@@ -10,7 +10,7 @@ const COLS: { title: string; links: { label: string; href: string }[] }[] = [
     { label: "ホームゲーム", href: "#" },
   ] },
   { title: "Support", links: [
-    { label: "ファンクラブ", href: "#" }, { label: "スクール", href: "#" },
+    { label: "ファンクラブ", href: "/fanclub" }, { label: "スクール", href: "#" },
     { label: "スポンサー募集", href: "#" }, { label: "SHOP", href: "#" },
   ] },
 ];

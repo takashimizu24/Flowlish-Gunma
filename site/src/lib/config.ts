@@ -10,7 +10,7 @@ export const siteConfig = {
     youtube: "https://www.youtube.com/@flowlish3x3",
     line: "https://lin.ee/YORCJaa",
   },
-  fanClubUrl: "#", // TODO: real FAN CLUB URL when available
+  fanClubUrl: "/fanclub", // COMING SOON page until the real fan club launches
   // Orange top bar. Empty string hides it (the mock's "デザイン案" label is
   // dropped for production).
   noteBarText: "",
