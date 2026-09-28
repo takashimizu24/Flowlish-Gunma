@@ -33,7 +33,7 @@ export default async function NewsDetail({ params }: { params: Promise<{ id: str
                 ) : null}
                 {n.body && (
                   /</.test(n.body) ? (
-                    <div style={{ marginTop: 22, fontSize: 15, lineHeight: 1.9 }} dangerouslySetInnerHTML={{ __html: n.body }} />
+                    <div className="news-body" style={{ marginTop: 22, fontSize: 15, lineHeight: 1.9 }} dangerouslySetInnerHTML={{ __html: n.body }} />
                   ) : (
                     <p style={{ marginTop: 22, fontSize: 15, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{n.body}</p>
                   )

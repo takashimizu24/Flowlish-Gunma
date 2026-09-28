@@ -135,3 +135,10 @@ h1, h2, h3, h4 { margin: 0; }
   .pmodal-img { flex: none; width: 100%; aspect-ratio: 4 / 5; }
   .pmodal-body { overflow: visible; min-height: auto; }
 }
+
+/* ===== news article body ===== */
+.news-body a { color: #1a6fd4; text-decoration: underline; }
+.news-body a:hover { color: #0f4f9e; }
+.news-body h3 { font-weight: 800; font-size: 17px; margin: 26px 0 8px; }
+.news-body ul { margin: 8px 0; padding-left: 1.3em; }
+.news-body li { margin: 4px 0; }
