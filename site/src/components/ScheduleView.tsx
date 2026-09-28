@@ -171,7 +171,8 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
     for (const m of matches) {
       if (m.league) lg.add(m.league);
       const y = matchYear(m); if (y) yr.add(y);
-      for (const p of m.entryPlayers ?? []) if (!pl.has(p.id)) pl.set(p.id, { id: p.id, number: p.number, nameEn: p.nameEn });
+      // filter options: current roster only (active players)
+      for (const p of m.entryPlayers ?? []) if (p.active !== false && !pl.has(p.id)) pl.set(p.id, { id: p.id, number: p.number, nameEn: p.nameEn });
     }
     return {
       leagues: [...lg],
