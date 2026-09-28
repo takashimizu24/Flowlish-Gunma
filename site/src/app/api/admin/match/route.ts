@@ -16,8 +16,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "CMS未設定" }, { status: 500 });
   }
   const b = await req.json().catch(() => null);
-  if (!b || !b.round) {
-    return NextResponse.json({ ok: false, error: "ラウンドは必須です" }, { status: 400 });
+  const leagueIn = String(b?.league ?? "").trim();
+  const roundIn = String(b?.round ?? "").trim();
+  if (!b || (!leagueIn && !roundIn)) {
+    return NextResponse.json({ ok: false, error: "リーグ名かラウンド名のどちらかは必須です" }, { status: 400 });
   }
 
   const games = (b.games as GameInput[] | undefined)?.filter((g) => g && g.opp) ?? [];
@@ -33,11 +35,11 @@ export async function POST(req: Request) {
 
   // Round is stored without a year — the season/year is derived from the date and
   // shown next to the league name. Strip any legacy "2026 " prefix that slips in.
-  const round = String(b.round).trim().replace(/^\d{4}\s+/, "");
+  const round = roundIn.replace(/^\d{4}\s+/, "");
 
   const yearNum = Number(b.year);
   const payload: Record<string, unknown> = {
-    league: b.league || "3x3.EXE PREMIER",
+    league: leagueIn,
     year: Number.isFinite(yearNum) && yearNum > 0 ? yearNum : (b.date ? new Date(b.date).getFullYear() : undefined),
     round,
     venue: b.venue || "",

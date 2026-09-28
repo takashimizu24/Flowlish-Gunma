@@ -18,9 +18,15 @@ export function roundTitle(m: Pick<Match, "round">): string {
 // typography than the Latin all-caps titles.
 export const hasJP = (s?: string) => !!s && /[぀-ヿ㐀-鿿ｦ-ﾟ]/.test(s);
 
-// A single-shot tournament has no meaningful round — show the event name big.
-export function isSingle(m: Pick<Match, "round">): boolean {
-  return !roundTitle(m);
+// A single-shot tournament lacks the league+round pair (either the league or the
+// round is empty) — show the remaining name big, with no small league line.
+export function isSingle(m: Pick<Match, "round" | "league">): boolean {
+  return !((m.league || "").trim() && roundTitle(m));
+}
+
+// The big title: the round if present, otherwise the league (event) name.
+export function matchTitle(m: Pick<Match, "round" | "league">): string {
+  return roundTitle(m) || (m.league || "").trim();
 }
 
 // Tournaments shown with their edition (第N回) instead of the year.

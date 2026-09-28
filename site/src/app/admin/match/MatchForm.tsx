@@ -50,9 +50,13 @@ export default function MatchForm({ players, matches, editing }: { players: Play
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    if (!String(f.get("league") || "").trim() && !String(f.get("round") || "").trim()) {
+      setMsg({ ok: false, text: "リーグかラウンドのどちらかは入力してください" });
+      return;
+    }
     setBusy(true);
     setMsg(null);
-    const f = new FormData(e.currentTarget);
     const body = {
       id: editing?.id,
       league: f.get("league"),
@@ -122,16 +126,16 @@ export default function MatchForm({ players, matches, editing }: { players: Play
       <form onSubmit={submit} style={card}>
         <div style={half}>
           <div style={{ flex: "2 1 180px" }}>
-            <label style={label}>リーグ</label>
-            <input name="league" defaultValue={editing?.league ?? "3x3.EXE PREMIER"} style={input} />
+            <label style={label}>リーグ（任意）</label>
+            <input name="league" defaultValue={editing?.league ?? "3x3.EXE PREMIER"} placeholder="空欄も可" style={input} />
           </div>
           <div style={{ flex: "0 1 100px" }}>
             <label style={label}>年</label>
             <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={input} />
           </div>
           <div style={{ flex: "1 1 130px" }}>
-            <label style={label}>ラウンド <span style={{ color: "#EE651C" }}>*</span></label>
-            <input name="round" required defaultValue={roundTitle({ round: editing?.round })} placeholder="ROUND.8" style={input} />
+            <label style={label}>ラウンド（任意）</label>
+            <input name="round" defaultValue={roundTitle({ round: editing?.round })} placeholder="ROUND.8 / 空欄も可" style={input} />
           </div>
         </div>
 
