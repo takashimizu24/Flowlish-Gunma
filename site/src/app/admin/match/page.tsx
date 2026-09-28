@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminMatchPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
   const { id } = await searchParams;
   const [players, matches] = await Promise.all([getAllPlayers(), getMatches(100)]);
-  const opts = players.map((p) => ({ id: p.id, number: p.number, nameEn: p.nameEn }));
+  const opts = players.map((p) => ({ id: p.id, number: p.number, nameEn: p.nameEn, active: p.active !== false }));
   const editing = id ? matches.find((m) => m.id === id) ?? null : null;
   const list = matches.map((m) => ({ id: m.id, league: m.league ?? "", year: m.year, round: m.round ?? "", dateLabel: m.dateLabel || "", date: m.date ?? "" }));
   return <MatchForm players={opts} matches={list} editing={editing} />;

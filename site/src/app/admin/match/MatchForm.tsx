@@ -6,7 +6,7 @@ import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
 import { roundTitle } from "@/lib/match";
 import type { Match } from "@/lib/types";
 
-type PlayerOpt = { id: string; number: number; nameEn: string };
+type PlayerOpt = { id: string; number: number; nameEn: string; active: boolean };
 type MatchListItem = { id: string; league: string; year?: number; round: string; dateLabel: string; date: string };
 
 const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : "");
@@ -37,6 +37,9 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [listOpen, setListOpen] = useState(false);
+  const current = players.filter((p) => p.active);
+  const former = players.filter((p) => !p.active);
+  const [showFormer, setShowFormer] = useState(() => former.some((p) => entry.includes(p.id)));
 
   // show the date input in JST so it round-trips without a day shift
   const dateVal = editing?.date ? new Date(new Date(editing.date).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10) : "";
@@ -169,13 +172,32 @@ export default function MatchForm({ players, matches, editing }: { players: Play
 
         <label style={label}>出場選手（クリックで選択）</label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {players.map((p) => (
+          {current.map((p) => (
             <button type="button" key={p.id} onClick={() => toggleEntry(p.id)}
               style={{ padding: "7px 12px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: "1px solid", borderColor: entry.includes(p.id) ? "#EE651C" : "#ccc", background: entry.includes(p.id) ? "#EE651C" : "#fff", color: entry.includes(p.id) ? "#fff" : "#444" }}>
               #{p.number} {p.nameEn}
             </button>
           ))}
         </div>
+        {former.length > 0 && (
+          <div style={{ marginTop: 10 }}>
+            <button type="button" onClick={() => setShowFormer((v) => !v)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: "#888" }}>
+              <span style={{ transform: showFormer ? "rotate(90deg)" : "none", transition: "transform .15s", color: "#EE651C" }}>▶</span>
+              過去の選手（{former.length}）
+            </button>
+            {showFormer && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                {former.map((p) => (
+                  <button type="button" key={p.id} onClick={() => toggleEntry(p.id)}
+                    style={{ padding: "7px 12px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: "1px dashed", borderColor: entry.includes(p.id) ? "#EE651C" : "#ccc", background: entry.includes(p.id) ? "#EE651C" : "#fafafa", color: entry.includes(p.id) ? "#fff" : "#777" }}>
+                    #{p.number} {p.nameEn}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <label style={label}>試合スコア（勝敗は自動）</label>
         {games.map((g, i) => (
