@@ -7,11 +7,12 @@ import type { Match } from "@/lib/types";
  * "3x3" must keep its lowercase x — so each "3x3" is rendered in a span that
  * opts out of the transform.
  */
+// Render text keeping every "3x3" lowercase even inside an uppercase context.
+export function Keep3x3({ text }: { text: string }) {
+  const parts = text.split(/(3x3)/i);
+  return <>{parts.map((p, i) => (/^3x3$/i.test(p) ? <span key={i} style={{ textTransform: "none" }}>3x3</span> : p))}</>;
+}
+
 export function LeagueLabel({ m }: { m: Pick<Match, "league" | "year" | "date" | "round"> }) {
-  const parts = leagueLabel(m).split(/(3x3)/i);
-  return (
-    <>
-      {parts.map((p, i) => (/^3x3$/i.test(p) ? <span key={i} style={{ textTransform: "none" }}>3x3</span> : p))}
-    </>
-  );
+  return <Keep3x3 text={leagueLabel(m)} />;
 }

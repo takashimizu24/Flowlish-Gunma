@@ -9,8 +9,8 @@ import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/
 import { getVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle } from "@/lib/match";
-import { LeagueLabel } from "@/components/LeagueLabel";
+import { roundTitle, matchYear, leagueLabel, hasJP, isSingle } from "@/lib/match";
+import { LeagueLabel, Keep3x3 } from "@/components/LeagueLabel";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
 
@@ -65,8 +65,14 @@ function Schedule({ matches }: { matches: Match[] }) {
               <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, height: 248, display: "flex", gap: 18, overflow: "hidden" }}>
                 {/* left: league + round big */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></div>
-                  <div style={{ fontWeight: 800, fontSize: 30, lineHeight: 1.04, marginTop: 3, textTransform: "uppercase" }}>{roundTitle(m)}</div>
+                  {isSingle(m) ? (
+                    matchYear(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</div> : null
+                  ) : (
+                    <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></div>
+                  )}
+                  {(() => { const t = isSingle(m) ? (m.league ?? "") : roundTitle(m); const jp = hasJP(t); return (
+                    <div style={{ fontWeight: 800, fontSize: jp ? 22 : 30, lineHeight: jp ? 1.34 : 1.04, marginTop: 3, textTransform: jp ? "none" : "uppercase" }}><Keep3x3 text={t} /></div>
+                  ); })()}
                   <div style={{ fontWeight: 600, fontSize: 24, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>
                     {m.dateLabel || ymd(m.date)}
                   </div>

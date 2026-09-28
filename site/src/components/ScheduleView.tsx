@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle, matchYear } from "@/lib/match";
-import { LeagueLabel } from "@/components/LeagueLabel";
+import { roundTitle, matchYear, leagueLabel, hasJP, isSingle } from "@/lib/match";
+import { LeagueLabel, Keep3x3 } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 
 const ORANGE = "#EE651C";
@@ -115,13 +115,22 @@ function MatchRow({ m }: { m: Match }) {
   const playoff = games.filter((g) => !isQualDraw(g.phase) && !isPool(g.phase));
   const entry = m.entryPlayers ?? [];
   const upcoming = m.status !== "結果" || (!m.resultBadge && games.length === 0);
+  const single = isSingle(m);
+  const year = matchYear(m);
+  const title = single ? (m.league ?? "") : roundTitle(m);
+  const jpTitle = hasJP(title);
+  const jpLeague = hasJP(leagueLabel(m));
 
   return (
     <article style={{ background: "#fff", color: INK, borderRadius: 16, padding: "clamp(18px,3vw,28px)", marginBottom: 16 }}>
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-          <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: ".04em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
-          <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", lineHeight: 1.05, margin: "2px 0 0", textTransform: "uppercase" }}>{roundTitle(m)}</h2>
+          {single ? (
+            year ? <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.25, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null
+          ) : (
+            <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
+          )}
+          <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.4 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: jpTitle ? "none" : "uppercase" }}><Keep3x3 text={title} /></h2>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
             <span style={{ fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
             {m.venue && <span style={{ opacity: 0.7 }}>{m.venue}</span>}
