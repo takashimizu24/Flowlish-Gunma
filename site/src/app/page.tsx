@@ -111,6 +111,8 @@ const YT_PLAY = (
   <svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z" fill="#FF0000" /><path d="M27 34.5l18-10.5-18-10.5z" fill="#fff" /></svg>
 );
 const ytWatch = (id: string) => `https://www.youtube.com/watch?v=${id}`;
+const thumbHi = (id: string) => `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`; // 1280x720
+const thumbMd = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;     // 480x360
 function vdate(s: string) {
   const d = new Date(new Date(s).getTime() + 9 * 3600 * 1000);
   return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
@@ -151,7 +153,7 @@ function Movie({ videos }: { videos: Video[] }) {
       <div style={container}>
         <div className="video-grid">
           <a className="video-feat" href={ytWatch(feat.id)} target="_blank" rel="noopener">
-            <span className="video-thumb" style={{ background: `#000 center/cover url(${feat.thumb})` }}>
+            <span className="video-thumb" style={{ background: `#000 center/cover url(${thumbHi(feat.id)})` }}>
               <span className="video-play">{YT_PLAY}</span>
             </span>
             <span className="video-date">{vdate(feat.date)}</span>
@@ -161,7 +163,7 @@ function Movie({ videos }: { videos: Video[] }) {
             <div className="video-list">
               {rest.map((v) => (
                 <a key={v.id} className="video-item" href={ytWatch(v.id)} target="_blank" rel="noopener">
-                  <span className="video-item-thumb" style={{ background: `#000 center/cover url(${v.thumb})` }}>
+                  <span className="video-item-thumb" style={{ background: `#000 center/cover url(${thumbMd(v.id)})` }}>
                     <span className="video-play video-play--sm">{YT_PLAY}</span>
                   </span>
                   <span className="video-item-txt">
