@@ -7,7 +7,7 @@ import { roundTitle } from "@/lib/match";
 import type { Match } from "@/lib/types";
 
 type PlayerOpt = { id: string; number: number; nameEn: string };
-type MatchListItem = { id: string; league: string; round: string; dateLabel: string; date: string };
+type MatchListItem = { id: string; league: string; year?: number; round: string; dateLabel: string; date: string };
 
 const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : "");
 type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
@@ -109,6 +109,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
             {matches.map((m) => (
               <a key={m.id} href={`/admin/match?id=${m.id}`}
                 style={{ display: "flex", alignItems: "baseline", gap: 8, fontSize: 12.5, padding: "8px 11px", borderRadius: 8, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#eee", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
+                <span style={{ fontWeight: 800, flex: "0 0 auto", minWidth: 38, color: editing?.id === m.id ? "#fff" : "#EE651C", fontVariantNumeric: "tabular-nums" }}>{m.year ?? "—"}</span>
                 <span style={{ fontWeight: 700, opacity: editing?.id === m.id ? 0.85 : 0.55, flex: "0 0 auto", minWidth: 92 }}>{m.league || "—"}</span>
                 <span style={{ fontWeight: 800, flex: "1 1 auto" }}>{roundTitle(m)}</span>
                 <span style={{ opacity: 0.7, flex: "0 0 auto", fontVariantNumeric: "tabular-nums" }}>{ymdShort(m.date, m.dateLabel)}</span>

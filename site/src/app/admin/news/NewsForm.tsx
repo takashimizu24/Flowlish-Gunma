@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
+import RichEditor from "@/components/admin/RichEditor";
 import { NEWS_CATEGORIES } from "@/lib/adminOptions";
 import type { News } from "@/lib/types";
 
@@ -102,7 +103,7 @@ export default function NewsForm({ news, editing }: { news: NewsListItem[]; edit
         <input name="thumbnail" type="file" accept="image/*" style={{ ...input, padding: 9 }} />
 
         <label style={label}>本文</label>
-        <textarea name="body" rows={7} defaultValue={editing?.body ?? ""} placeholder="本文を入力…" style={{ ...input, resize: "vertical", lineHeight: 1.7 }} />
+        <RichEditor name="body" defaultValue={editing?.body ?? ""} />
 
         {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
         <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>

@@ -161,3 +161,13 @@ h1, h2, h3, h4 { margin: 0; }
 .movie-cta { font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #fff; border: 1.5px solid rgba(255,255,255,.5); border-radius: 999px; padding: 11px 24px; transition: background .18s, color .18s; }
 .movie-card:hover .movie-cta { background: #fff; color: #141414; }
 @media (prefers-reduced-motion: reduce) { .movie-card, .movie-play svg { transition: none; } .movie-card:hover { transform: none; } }
+
+/* ===== admin rich text editor ===== */
+.rich-editor { min-height: 200px; box-sizing: border-box; padding: 12px 14px; border: 1px solid #d8d8d8; border-radius: 9px; background: #fff; font-size: 15px; line-height: 1.8; outline: none; }
+.rich-editor:focus { border-color: #EE651C; }
+.rich-editor:empty::before { content: "本文を入力…（ツールバーで装飾・画像挿入）"; color: #aaa; }
+.rich-editor h3 { font-weight: 800; font-size: 17px; margin: 18px 0 6px; }
+.rich-editor ul { margin: 8px 0; padding-left: 1.4em; }
+.rich-editor a { color: #1a6fd4; text-decoration: underline; }
+.rich-editor img { max-width: 100%; height: auto; display: block; border-radius: 8px; margin: 12px 0; }
+.rich-editor p { margin: 8px 0; }
