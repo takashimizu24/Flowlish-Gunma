@@ -3,6 +3,25 @@ import { NextResponse } from "next/server";
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const KEY = process.env.MICROCMS_API_KEY;
 
+export async function DELETE(req: Request) {
+  if (!DOMAIN || !KEY) {
+    return NextResponse.json({ ok: false, error: "CMS未設定" }, { status: 500 });
+  }
+  const id = new URL(req.url).searchParams.get("id")?.trim();
+  if (!id) {
+    return NextResponse.json({ ok: false, error: "id が指定されていません" }, { status: 400 });
+  }
+  const r = await fetch(`https://${DOMAIN}.microcms.io/api/v1/news/${id}`, {
+    method: "DELETE",
+    headers: { "X-MICROCMS-API-KEY": KEY },
+  });
+  if (!r.ok) {
+    const d = await r.json().catch(() => ({}));
+    return NextResponse.json({ ok: false, error: d?.message || "削除に失敗しました" }, { status: 502 });
+  }
+  return NextResponse.json({ ok: true });
+}
+
 export async function POST(req: Request) {
   if (!DOMAIN || !KEY) {
     return NextResponse.json({ ok: false, error: "CMS未設定" }, { status: 500 });

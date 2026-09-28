@@ -11,7 +11,7 @@ const COLS: { title: string; links: { label: string; href: string }[] }[] = [
   ] },
   { title: "Support", links: [
     { label: "ファンクラブ", href: "/fanclub" }, { label: "スクール", href: "#" },
-    { label: "スポンサー募集", href: "#" }, { label: "SHOP", href: "#" },
+    { label: "スポンサー募集", href: "#" }, { label: "SHOP", href: siteConfig.shopUrl },
   ] },
 ];
 
@@ -33,8 +33,10 @@ export default function Footer() {
         <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr", gap: 30 }}>
           <div>
             <img src="/logo.svg" alt="FLOWLISH GUNMA" style={{ height: 72, marginBottom: 20 }} />
-            <p style={{ opacity: 0.85, fontSize: 14, margin: "0 0 18px", maxWidth: "34ch" }}>
-              群馬・高崎を拠点に活動する女子3x3バスケットボールチーム。地域とともに、世界の舞台へ。
+            <p style={{ opacity: 0.85, fontSize: "clamp(12px,3.4vw,14px)", lineHeight: 1.85, margin: "0 0 18px" }}>
+              群馬・高崎を拠点に活動する<br />
+              女子3x3プロバスケットボールチーム<br />
+              地域とともに、世界の舞台へ。
             </p>
             <div style={{ display: "flex", gap: 10 }}>
               {SNS.map((s) => (
@@ -48,9 +50,12 @@ export default function Footer() {
           {COLS.map((c) => (
             <div key={c.title}>
               <h4 style={h4}>{c.title}</h4>
-              {c.links.map((l) => (
-                <a key={l.label} href={l.href} style={linkStyle}>{l.label}</a>
-              ))}
+              {c.links.map((l) => {
+                const external = l.href.startsWith("http");
+                return (
+                  <a key={l.label} href={l.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} style={linkStyle}>{l.label}</a>
+                );
+              })}
             </div>
           ))}
         </div>

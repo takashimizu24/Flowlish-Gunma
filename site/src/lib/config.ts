@@ -11,6 +11,7 @@ export const siteConfig = {
     line: "https://lin.ee/YORCJaa",
   },
   fanClubUrl: "/fanclub", // COMING SOON page until the real fan club launches
+  shopUrl: "https://flowlish3x3.base.shop/", // external online shop (opens in a new tab)
   // Orange top bar. Empty string hides it (the mock's "デザイン案" label is
   // dropped for production).
   noteBarText: "",

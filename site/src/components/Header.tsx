@@ -7,7 +7,7 @@ const NAV = [
   { label: "TEAM", href: "/#roster" },
   { label: "PARTNERS", href: "/#partners" },
   { label: "SCHOOL", href: "#" },
-  { label: "SHOP", href: "#" },
+  { label: "SHOP", href: siteConfig.shopUrl },
 ];
 
 const SNS: { label: string; href: string; icon: string }[] = [
@@ -45,12 +45,15 @@ export default function Header() {
       <nav style={{ background: "#fff", borderTop: "1px solid var(--line)", boxShadow: "0 5px 16px -7px rgba(0,0,0,.22)" }}>
         <div className="nav-wrap" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px,4.5vw,56px)", display: "flex" }}>
           <div className="nav-links" style={{ display: "flex" }}>
-            {NAV.map((n, i) => (
-              <a key={n.label} href={n.href}
-                 style={{ fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" }}>
-                {n.label}
-              </a>
-            ))}
+            {NAV.map((n, i) => {
+              const external = n.href.startsWith("http");
+              return (
+                <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})}
+                   style={{ fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" }}>
+                  {n.label}
+                </a>
+              );
+            })}
           </div>
         </div>
       </nav>

@@ -18,6 +18,21 @@ export default function NewsForm({ news, editing }: { news: NewsListItem[]; edit
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  async function remove() {
+    if (!editing) return;
+    if (!confirm(`このお知らせを削除します。よろしいですか？\n\n「${editing.title}」`)) return;
+    setBusy(true);
+    setMsg(null);
+    const r = await fetch(`/api/admin/news?id=${editing.id}`, { method: "DELETE" });
+    if (r.ok) {
+      location.href = "/admin/news";
+    } else {
+      const d = await r.json().catch(() => ({}));
+      setMsg({ ok: false, text: d.error || "削除に失敗しました" });
+      setBusy(false);
+    }
+  }
+
   const dateVal = editing?.publishedDate ? new Date(editing.publishedDate).toISOString().slice(0, 10) : today();
 
   const toggle = (c: string) => setCats((v) => (v.includes(c) ? v.filter((x) => x !== c) : [...v, c]));
@@ -90,9 +105,16 @@ export default function NewsForm({ news, editing }: { news: NewsListItem[]; edit
         <textarea name="body" rows={7} defaultValue={editing?.body ?? ""} placeholder="本文を入力…" style={{ ...input, resize: "vertical", lineHeight: 1.7 }} />
 
         {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
-        <button type="submit" disabled={busy} style={{ marginTop: 20, padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
-          {busy ? "保存中…" : editing ? "更新する" : "追加する"}
-        </button>
+        <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+          <button type="submit" disabled={busy} style={{ padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
+            {busy ? "保存中…" : editing ? "更新する" : "追加する"}
+          </button>
+          {editing && (
+            <button type="button" onClick={remove} disabled={busy} style={{ padding: "13px 22px", fontSize: 14, fontWeight: 700, color: "#c0392b", background: "#fff", border: "1.5px solid #e0b4ae", borderRadius: 10, cursor: "pointer" }}>
+              削除する
+            </button>
+          )}
+        </div>
       </form>
     </AdminChrome>
   );

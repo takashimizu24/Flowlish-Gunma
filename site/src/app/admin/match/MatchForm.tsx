@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
+import { roundTitle } from "@/lib/match";
 import type { Match } from "@/lib/types";
 
 type PlayerOpt = { id: string; number: number; nameEn: string };
-type MatchListItem = { id: string; round: string; dateLabel: string };
+type MatchListItem = { id: string; league: string; round: string; dateLabel: string; date: string };
+
+const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP") : "");
 type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
 
 const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
@@ -33,6 +36,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   const [games, setGames] = useState<Game[]>(() => gamesFromScores(editing?.scores));
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [listOpen, setListOpen] = useState(false);
 
   const dateVal = editing?.date ? new Date(editing.date).toISOString().slice(0, 10) : "";
 
@@ -89,20 +93,27 @@ export default function MatchForm({ players, matches, editing }: { players: Play
 
   return (
     <AdminChrome title={editing ? "試合を編集" : "試合を追加"}>
-      {/* existing matches to edit */}
+      {/* existing matches to edit (collapsible) */}
       <div style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", marginBottom: 16, boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 13 }}>既存の試合を編集</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <button type="button" onClick={() => setListOpen((v) => !v)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", padding: 0, cursor: "pointer", fontWeight: 700, fontSize: 13, color: "#141414" }}>
+            <span style={{ display: "inline-block", transform: listOpen ? "rotate(90deg)" : "none", transition: "transform .15s", color: "#EE651C" }}>▶</span>
+            既存の試合から選んで編集{editing ? "中" : ""}（{matches.length}）
+          </button>
           <a href="/admin/match" style={{ fontSize: 12, fontWeight: 700, color: editing ? "#EE651C" : "#aaa", textDecoration: "none" }}>＋ 新規作成</a>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 132, overflow: "auto" }}>
-          {matches.map((m) => (
-            <a key={m.id} href={`/admin/match?id=${m.id}`}
-              style={{ fontSize: 12, padding: "5px 10px", borderRadius: 7, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#e2e2e2", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
-              {m.round}{m.dateLabel ? ` (${m.dateLabel})` : ""}
-            </a>
-          ))}
-        </div>
+        {listOpen && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 300, overflow: "auto", marginTop: 12 }}>
+            {matches.map((m) => (
+              <a key={m.id} href={`/admin/match?id=${m.id}`}
+                style={{ display: "flex", alignItems: "baseline", gap: 8, fontSize: 12.5, padding: "8px 11px", borderRadius: 8, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#eee", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
+                <span style={{ fontWeight: 700, opacity: editing?.id === m.id ? 0.85 : 0.55, flex: "0 0 auto", minWidth: 92 }}>{m.league || "—"}</span>
+                <span style={{ fontWeight: 800, flex: "1 1 auto" }}>{roundTitle(m)}</span>
+                <span style={{ opacity: 0.7, flex: "0 0 auto", fontVariantNumeric: "tabular-nums" }}>{ymdShort(m.date, m.dateLabel)}</span>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
 
       <form onSubmit={submit} style={card}>
@@ -113,7 +124,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
           </div>
           <div style={{ flex: "1 1 140px" }}>
             <label style={label}>ラウンド <span style={{ color: "#EE651C" }}>*</span></label>
-            <input name="round" required defaultValue={editing?.round ?? ""} placeholder="ROUND.8" style={input} />
+            <input name="round" required defaultValue={roundTitle({ round: editing?.round })} placeholder="ROUND.8" style={input} />
           </div>
         </div>
 

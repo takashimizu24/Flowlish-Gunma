@@ -31,12 +31,9 @@ export async function POST(req: Request) {
     return { phase: g.phase || "", opp: g.opp, score: `${g.myScore}-${g.oppScore}`, result };
   });
 
-  // Prefix the year (from the date) onto the round so seasons stay distinct,
-  // e.g. "ROUND.8" -> "2026 ROUND.8". Skip if already year-prefixed.
-  let round = String(b.round).trim();
-  if (b.date && !/^\d{4}\s/.test(round)) {
-    round = `${new Date(b.date).getFullYear()} ${round}`;
-  }
+  // Round is stored without a year — the season/year is derived from the date and
+  // shown next to the league name. Strip any legacy "2026 " prefix that slips in.
+  const round = String(b.round).trim().replace(/^\d{4}\s+/, "");
 
   const payload: Record<string, unknown> = {
     league: b.league || "3x3.EXE PREMIER",
