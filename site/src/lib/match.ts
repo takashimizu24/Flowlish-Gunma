@@ -1,8 +1,9 @@
 import type { Match } from "./types";
 
-// Season year — prefer the date, fall back to a leading 4-digit year baked into
-// the round string (legacy data like "2026 ROUND.8").
-export function matchYear(m: Pick<Match, "date" | "round">): string {
+// Season year — prefer the explicit `year` field, then the date, then a leading
+// 4-digit year baked into the round string (legacy data like "2026 ROUND.8").
+export function matchYear(m: Pick<Match, "year" | "date" | "round">): string {
+  if (m.year) return String(m.year);
   if (m.date) return String(new Date(m.date).getFullYear());
   const mm = (m.round || "").match(/^(\d{4})\b/);
   return mm ? mm[1] : "";

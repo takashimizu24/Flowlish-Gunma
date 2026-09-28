@@ -19,7 +19,8 @@ export type News = MicroCMSListContent & {
 // free-text (textArea), status is text. (repeater/relation come later.)
 export type Match = MicroCMSListContent & {
   league?: string;    // EXE PREMIER
-  round?: string;     // ROUND.6
+  round?: string;     // ROUND.6 (no year — the year is its own field)
+  year?: number;      // season year, e.g. 2026 (falls back to the date if unset)
   date?: string;
   dateLabel?: string; // 08/― 日程調整中
   roundName?: string; // 八戸ラウンド
