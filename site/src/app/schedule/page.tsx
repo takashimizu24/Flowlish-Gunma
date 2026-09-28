@@ -144,7 +144,7 @@ function MatchRow({ m }: { m: Match }) {
             ) : m.resultBadge ? (
               <>
                 <div style={{ fontWeight: 700, fontSize: 10, letterSpacing: ".12em", textTransform: "uppercase", opacity: 0.55 }}>Final Ranking</div>
-                <div style={{ fontWeight: 800, fontSize: "clamp(30px,5vw,42px)", lineHeight: 1, color: ORANGE }}>{rankLabel(m.resultBadge)}</div>
+                <div style={{ fontWeight: 700, fontSize: "clamp(30px,5vw,42px)", lineHeight: 1, color: ORANGE }}>{rankLabel(m.resultBadge)}</div>
               </>
             ) : null}
           </div>
