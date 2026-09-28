@@ -127,7 +127,7 @@ function MatchRow({ m }: { m: Match }) {
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         {/* main */}
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-          <div style={{ fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
+          <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: ".04em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
           <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", lineHeight: 1.05, margin: "2px 0 0", textTransform: "uppercase" }}>{roundTitle(m)}</h2>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
             <span style={{ fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
