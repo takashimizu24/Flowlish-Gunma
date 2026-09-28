@@ -27,10 +27,12 @@ function parseGames(s?: string): Game[] {
 const isQualDraw = (phase: string) => /qualif|予選ドロー|予選の予選|(^|[^a-z])qd/i.test(phase);
 const isPool = (phase: string) => /GROUP|POOL|予選|リーグ/i.test(phase);
 
+// Format as a JST date regardless of the server/host timezone (Vercel runs in
+// UTC) so dates never shift by a day.
 function ymd(s?: string) {
   if (!s) return "";
-  const d = new Date(s);
-  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+  const j = new Date(new Date(s).getTime() + 9 * 3600 * 1000);
+  return `${j.getUTCFullYear()}.${j.getUTCMonth() + 1}.${j.getUTCDate()}`;
 }
 
 // walkover (不戦勝/不戦敗) detection — accepts several stored spellings

@@ -36,11 +36,12 @@ function Empty({ label }: { label: string }) {
   return <p style={{ opacity: 0.55, fontSize: 14, margin: 0 }}>{label}</p>;
 }
 
-// "2026.8.8" (year.month.day)
+// "2026.8.8" (year.month.day) — formatted in JST so the day never shifts by
+// the server/host timezone (Vercel runs in UTC).
 function ymd(s?: string) {
   if (!s) return "";
-  const d = new Date(s);
-  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+  const j = new Date(new Date(s).getTime() + 9 * 3600 * 1000);
+  return `${j.getUTCFullYear()}.${j.getUTCMonth() + 1}.${j.getUTCDate()}`;
 }
 
 /* ---------------- sections ---------------- */

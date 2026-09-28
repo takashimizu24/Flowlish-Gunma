@@ -9,7 +9,7 @@ import type { Match } from "@/lib/types";
 type PlayerOpt = { id: string; number: number; nameEn: string };
 type MatchListItem = { id: string; league: string; round: string; dateLabel: string; date: string };
 
-const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP") : "");
+const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : "");
 type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
 
 const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
@@ -38,7 +38,8 @@ export default function MatchForm({ players, matches, editing }: { players: Play
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [listOpen, setListOpen] = useState(false);
 
-  const dateVal = editing?.date ? new Date(editing.date).toISOString().slice(0, 10) : "";
+  // show the date input in JST so it round-trips without a day shift
+  const dateVal = editing?.date ? new Date(new Date(editing.date).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10) : "";
 
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
