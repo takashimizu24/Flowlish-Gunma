@@ -91,7 +91,8 @@ function EntryAvatars({ entry }: { entry: Player[] }) {
 
 function MatchLinks({ m }: { m: Match }) {
   const links: { label: string; href: string; kind: "article" | "event" | "fiba" | "live" }[] = [];
-  if (m.articleUrl) links.push({ label: "記事", href: m.articleUrl, kind: "article" });
+  const article = m.articleUrl?.[0];
+  if (article) links.push({ label: "記事", href: `/news/${article.id}`, kind: "article" });
   if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
   if (m.fibaEventUrl) links.push({ label: "FIBA 3x3", href: m.fibaEventUrl, kind: "fiba" });
   if (m.liveUrl) links.push({ label: "LIVE配信", href: m.liveUrl, kind: "live" });
