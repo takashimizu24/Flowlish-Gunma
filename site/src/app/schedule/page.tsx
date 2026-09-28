@@ -88,20 +88,25 @@ function EntryAvatars({ entry }: { entry: Player[] }) {
 }
 
 function MatchLinks({ m }: { m: Match }) {
-  const links: { label: string; href: string; kind: "event" | "fiba" | "live" }[] = [];
+  const links: { label: string; href: string; kind: "article" | "event" | "fiba" | "live" }[] = [];
+  if (m.articleUrl) links.push({ label: "記事", href: m.articleUrl, kind: "article" });
   if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
   if (m.fibaEventUrl) links.push({ label: "FIBA 3x3", href: m.fibaEventUrl, kind: "fiba" });
   if (m.liveUrl) links.push({ label: "LIVE配信", href: m.liveUrl, kind: "live" });
   if (links.length === 0) return null;
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-      {links.map((l) => (
-        <a key={l.kind} className={`match-link match-link--${l.kind}`} href={l.href} target="_blank" rel="noopener">
-          {l.kind === "fiba" && <svg className="match-link-fiba" viewBox="0 0 841.89 595.28"><use href="/icons.svg#ic-fiba" /></svg>}
-          {l.kind === "live" && <span className="match-link-dot" />}
-          {l.label}
-        </a>
-      ))}
+      {links.map((l) => {
+        const external = /^https?:/i.test(l.href);
+        return (
+          <a key={l.kind} className={`match-link match-link--${l.kind}`} href={l.href} {...(external ? { target: "_blank", rel: "noopener" } : {})}>
+            {l.kind === "article" && <svg className="match-link-article" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h11a2 2 0 0 1 2 2v13H6a2 2 0 0 1-2-2z" /><line x1="7.5" y1="8" x2="13.5" y2="8" /><line x1="7.5" y1="11.5" x2="13.5" y2="11.5" /></svg>}
+            {l.kind === "fiba" && <svg className="match-link-fiba" viewBox="0 0 841.89 595.28"><use href="/icons.svg#ic-fiba" /></svg>}
+            {l.kind === "live" && <span className="match-link-dot" />}
+            {l.label}
+          </a>
+        );
+      })}
     </div>
   );
 }

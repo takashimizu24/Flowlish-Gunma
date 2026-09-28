@@ -87,6 +87,9 @@ h1, h2, h3, h4 { margin: 0; }
 
 /* ===== schedule & results page ===== */
 .match-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12px; letter-spacing: .03em; padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--orange); background: #fff; color: var(--ink); transition: background .15s, border-color .15s; }
+.match-link--article { background: #1a6fd4; border-color: #1a6fd4; color: #fff; }
+.match-link--article:hover { background: #155cb3; border-color: #155cb3; }
+.match-link-article { width: 15px; height: 15px; }
 .match-link--event { background: var(--orange); border-color: var(--orange); color: #fff; }
 .match-link--event:hover { background: #d85713; border-color: #d85713; }
 .match-link--fiba { background: var(--ink); border-color: var(--ink); color: #fff; }

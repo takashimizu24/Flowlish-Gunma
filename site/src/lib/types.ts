@@ -34,6 +34,7 @@ export type Match = MicroCMSListContent & {
   eventUrl?: string;         // 大会公式サイト / event homepage
   fibaEventUrl?: string;     // FIBA 3x3 event page
   liveUrl?: string;          // live-stream link
+  articleUrl?: string;       // related news article (internal /news/... or URL)
 };
 
 export type PlayerPosition = "Guard" | "Forward" | "Center";
