@@ -13,3 +13,8 @@ export function matchYear(m: Pick<Match, "year" | "date" | "round">): string {
 export function roundTitle(m: Pick<Match, "round">): string {
   return (m.round || "").replace(/^\d{4}\s+/, "").trim();
 }
+
+// League + year as one label ("3x3.EXE PREMIER 2026").
+export function leagueLabel(m: Pick<Match, "league" | "year" | "date" | "round">): string {
+  return [m.league, matchYear(m)].filter(Boolean).join(" ");
+}

@@ -2,7 +2,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getMatches } from "@/lib/api";
 import { rankLabel } from "@/lib/rank";
-import { matchYear, roundTitle } from "@/lib/match";
+import { roundTitle } from "@/lib/match";
+import { LeagueLabel } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 
 export const revalidate = 60;
@@ -71,10 +72,11 @@ function GameGroup({ title, games }: { title: string; games: Game[] }) {
 
 function EntryAvatars({ entry }: { entry: Player[] }) {
   if (entry.length === 0) return null;
+  const odd = entry.length % 2 === 1;
   return (
-    <div className="entry-avatars" style={{ display: "grid", gridTemplateColumns: "repeat(2, 54px)", gap: "12px 10px", justifyContent: "flex-end" }}>
-      {entry.map((p) => (
-        <div key={p.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+    <div className="entry-avatars" style={{ display: "grid", gridTemplateColumns: "repeat(2, 54px)", gap: "12px 10px", justifyContent: "center" }}>
+      {entry.map((p, i) => (
+        <div key={p.id} className={odd && i === entry.length - 1 ? "entry-av-solo" : undefined} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
           <span className="entry-av" style={{ width: 48, height: 48, borderRadius: "50%", flex: "none", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=140)` : "#141414" }} />
           <span style={{ fontWeight: 700, fontSize: 9, textTransform: "uppercase", lineHeight: 1.1, textAlign: "center", color: INK, opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 54 }}>
             {p.nameEn?.split(" ").slice(-1)[0]}
@@ -117,10 +119,7 @@ function MatchRow({ m }: { m: Match }) {
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         {/* main */}
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE }}>{m.league}</span>
-            {matchYear(m) && <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: ".06em", color: INK, opacity: 0.4, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</span>}
-          </div>
+          <div style={{ fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
           <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", lineHeight: 1.05, margin: "2px 0 0", textTransform: "uppercase" }}>{roundTitle(m)}</h2>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
             <span style={{ fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
@@ -140,9 +139,9 @@ function MatchRow({ m }: { m: Match }) {
         </div>
 
         {/* aside: entry + ranking */}
-        <div className="sched-aside" style={{ flex: "0 0 150px", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14, borderLeft: "1px solid var(--line)", paddingLeft: 20 }}>
+        <div className="sched-aside" style={{ flex: "0 0 150px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, borderLeft: "1px solid var(--line)", paddingLeft: 20 }}>
           <EntryAvatars entry={entry} />
-          <div style={{ textAlign: "right", marginTop: "auto" }}>
+          <div style={{ textAlign: "center", marginTop: "auto" }}>
             {upcoming ? (
               <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: ".1em", textTransform: "uppercase", color: ORANGE, border: `2px solid ${ORANGE}`, borderRadius: 8, padding: "6px 14px", display: "inline-block" }}>UPCOMING</span>
             ) : m.resultBadge ? (

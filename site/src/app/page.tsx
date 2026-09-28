@@ -7,7 +7,8 @@ import IntroOverlay from "@/components/IntroOverlay";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { siteConfig } from "@/lib/config";
 import { rankLabel } from "@/lib/rank";
-import { matchYear, roundTitle } from "@/lib/match";
+import { roundTitle } from "@/lib/match";
+import { LeagueLabel } from "@/components/LeagueLabel";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
 
@@ -61,10 +62,7 @@ function Schedule({ matches }: { matches: Match[] }) {
               <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, height: 248, display: "flex", gap: 18, overflow: "hidden" }}>
                 {/* left: league + round big */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.15 }}>{m.league}</span>
-                    {matchYear(m) && <span style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".02em", color: INK, opacity: 0.4, lineHeight: 1.15, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</span>}
-                  </div>
+                  <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", textTransform: "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></div>
                   <div style={{ fontWeight: 800, fontSize: 30, lineHeight: 1.04, marginTop: 3, textTransform: "uppercase" }}>{roundTitle(m)}</div>
                   <div style={{ fontWeight: 600, fontSize: 24, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>
                     {m.dateLabel || ymd(m.date)}

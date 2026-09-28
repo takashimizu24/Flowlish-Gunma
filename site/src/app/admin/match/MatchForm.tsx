@@ -55,6 +55,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
     const body = {
       id: editing?.id,
       league: f.get("league"),
+      year: f.get("year"),
       round: f.get("round"),
       date: f.get("date"),
       dateLabel: f.get("dateLabel"),
@@ -118,11 +119,15 @@ export default function MatchForm({ players, matches, editing }: { players: Play
 
       <form onSubmit={submit} style={card}>
         <div style={half}>
-          <div style={{ flex: "1 1 200px" }}>
+          <div style={{ flex: "2 1 180px" }}>
             <label style={label}>リーグ</label>
             <input name="league" defaultValue={editing?.league ?? "3x3.EXE PREMIER"} style={input} />
           </div>
-          <div style={{ flex: "1 1 140px" }}>
+          <div style={{ flex: "0 1 100px" }}>
+            <label style={label}>年</label>
+            <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={input} />
+          </div>
+          <div style={{ flex: "1 1 130px" }}>
             <label style={label}>ラウンド <span style={{ color: "#EE651C" }}>*</span></label>
             <input name="round" required defaultValue={roundTitle({ round: editing?.round })} placeholder="ROUND.8" style={input} />
           </div>

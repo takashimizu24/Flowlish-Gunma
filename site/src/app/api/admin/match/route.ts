@@ -35,8 +35,10 @@ export async function POST(req: Request) {
   // shown next to the league name. Strip any legacy "2026 " prefix that slips in.
   const round = String(b.round).trim().replace(/^\d{4}\s+/, "");
 
+  const yearNum = Number(b.year);
   const payload: Record<string, unknown> = {
     league: b.league || "3x3.EXE PREMIER",
+    year: Number.isFinite(yearNum) && yearNum > 0 ? yearNum : (b.date ? new Date(b.date).getFullYear() : undefined),
     round,
     venue: b.venue || "",
     status: b.status || "",
