@@ -78,12 +78,6 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
               <a key={k} className="hcar-slide" href={b.linkUrl || "#"} style={{ minWidth: "100%", width: "100%", display: "block", background: bg(b, 1200) }} />
             ))}
           </div>
-          <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", top: 16, display: "flex", gap: 8, zIndex: 4 }}>
-            {banners.map((_, k) => {
-              const on = ((i % N) + N) % N === k;
-              return <button key={k} aria-label={`slide ${k + 1}`} onClick={() => setI(k)} style={{ border: "none", cursor: "pointer", padding: 0, height: 9, width: on ? 24 : 9, borderRadius: on ? 5 : "50%", background: on ? "#EE651C" : "rgba(255,255,255,.45)", transition: ".2s" }} />;
-            })}
-          </div>
         </div>
 
         {/* RIGHT — vertical slider (desktop) / 2-up (mobile) */}
@@ -103,6 +97,14 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* pagination dots — below the carousel, centered across the full width */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: "14px 0 4px" }}>
+        {banners.map((_, k) => {
+          const on = ((i % N) + N) % N === k;
+          return <button key={k} aria-label={`slide ${k + 1}`} onClick={() => setI(k)} style={{ border: "none", cursor: "pointer", padding: 0, height: 9, width: on ? 24 : 9, borderRadius: on ? 5 : "50%", background: on ? "#EE651C" : "rgba(255,255,255,.4)", transition: ".2s" }} />;
+        })}
       </div>
     </section>
   );
