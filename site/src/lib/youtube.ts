@@ -26,6 +26,21 @@ async function channelId(): Promise<string | null> {
   }
 }
 
+// A Short's /shorts/<id> URL returns 200; a normal video redirects (30x) to /watch.
+async function isShort(id: string): Promise<boolean> {
+  try {
+    const r = await fetch(`https://www.youtube.com/shorts/${id}`, {
+      method: "HEAD",
+      redirect: "manual",
+      headers: { "user-agent": UA },
+      next: { revalidate: 86400 },
+    });
+    return r.status === 200;
+  } catch {
+    return false;
+  }
+}
+
 export async function getVideos(max = 5): Promise<Video[]> {
   try {
     const cid = await channelId();
@@ -36,10 +51,9 @@ export async function getVideos(max = 5): Promise<Video[]> {
     });
     if (!r.ok) return [];
     const xml = await r.text();
-    return xml
+    const all = xml
       .split("<entry>")
       .slice(1)
-      .slice(0, max)
       .map((e) => {
         const id = e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || "";
         const title = decode(e.match(/<(?:media:)?title[^>]*>([^<]*)<\/(?:media:)?title>/)?.[1] || "");
@@ -48,6 +62,9 @@ export async function getVideos(max = 5): Promise<Video[]> {
         return { id, title, date, thumb };
       })
       .filter((v) => v.id);
+    // exclude Shorts
+    const shorts = await Promise.all(all.map((v) => isShort(v.id)));
+    return all.filter((_, i) => !shorts[i]).slice(0, max);
   } catch {
     return [];
   }
