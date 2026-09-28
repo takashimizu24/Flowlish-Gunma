@@ -1,48 +1,51 @@
-// Latest videos from the team's YouTube channel via the YouTube Data API v3.
-// Requires env YOUTUBE_API_KEY. Channel resolved from the @handle (override with
-// YOUTUBE_CHANNEL_ID). Returns [] when unset/failing so the UI can fall back.
+// Latest videos from the team's YouTube channel via the public RSS feed
+// (no API key needed). The channel id is resolved from the @handle once and
+// cached; override with env YOUTUBE_CHANNEL_ID. Returns [] on any failure.
 
 export type Video = { id: string; title: string; date: string; thumb: string };
 
-const KEY = process.env.YOUTUBE_API_KEY;
 const HANDLE = process.env.YOUTUBE_HANDLE || "flowlish3x3";
+const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
-type YTThumb = { url: string };
-type YTItem = { snippet: { title: string; publishedAt: string; resourceId?: { videoId?: string }; thumbnails: Record<string, YTThumb | undefined> } };
+const decode = (s: string) =>
+  s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&#([0-9]+);/g, (_, n) => String.fromCodePoint(+n));
 
-async function uploadsPlaylistId(): Promise<string | null> {
-  const cid = process.env.YOUTUBE_CHANNEL_ID;
-  if (cid) return "UU" + cid.replace(/^UC/, "");
-  const r = await fetch(
-    `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=${encodeURIComponent(HANDLE)}&key=${KEY}`,
-    { next: { revalidate: 86400 } }
-  );
-  if (!r.ok) return null;
-  const d = await r.json();
-  return d.items?.[0]?.contentDetails?.relatedPlaylists?.uploads ?? null;
+async function channelId(): Promise<string | null> {
+  if (process.env.YOUTUBE_CHANNEL_ID) return process.env.YOUTUBE_CHANNEL_ID;
+  try {
+    const r = await fetch(`https://www.youtube.com/@${HANDLE}`, {
+      headers: { "user-agent": UA, "accept-language": "ja,en;q=0.8" },
+      next: { revalidate: 86400 },
+    });
+    if (!r.ok) return null;
+    const html = await r.text();
+    const m = html.match(/"channelId":"(UC[\w-]+)"/) || html.match(/\/channel\/(UC[\w-]+)/);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getVideos(max = 5): Promise<Video[]> {
-  if (!KEY) return [];
   try {
-    const pl = await uploadsPlaylistId();
-    if (!pl) return [];
-    const r = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${max}&playlistId=${pl}&key=${KEY}`,
-      { next: { revalidate: 3600 } }
-    );
+    const cid = await channelId();
+    if (!cid) return [];
+    const r = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${cid}`, {
+      headers: { "user-agent": UA },
+      next: { revalidate: 3600 },
+    });
     if (!r.ok) return [];
-    const d = await r.json();
-    return ((d.items as YTItem[]) || [])
-      .map((it) => {
-        const s = it.snippet;
-        const t = s.thumbnails;
-        return {
-          id: s.resourceId?.videoId || "",
-          title: s.title,
-          date: s.publishedAt,
-          thumb: (t.maxres || t.standard || t.high || t.medium || t.default)?.url || "",
-        };
+    const xml = await r.text();
+    return xml
+      .split("<entry>")
+      .slice(1)
+      .slice(0, max)
+      .map((e) => {
+        const id = e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || "";
+        const title = decode(e.match(/<(?:media:)?title[^>]*>([^<]*)<\/(?:media:)?title>/)?.[1] || "");
+        const date = e.match(/<published>([^<]+)<\/published>/)?.[1] || "";
+        const thumb = e.match(/<media:thumbnail url="([^"]+)"/)?.[1] || (id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "");
+        return { id, title, date, thumb };
       })
       .filter((v) => v.id);
   } catch {
