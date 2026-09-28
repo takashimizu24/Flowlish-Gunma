@@ -21,10 +21,10 @@ export default function FanClubPage() {
             Coming<br />Soon
           </h1>
 
-          <p style={{ margin: "26px auto 0", maxWidth: "34ch", fontSize: "clamp(14px,2.2vw,16px)", lineHeight: 1.9, opacity: 0.82 }}>
-            公式ファンクラブは現在準備中です。<br />
-            入会方法や特典の詳細が決まり次第、こちらのページでお知らせします。<br />
-            公開までもう少しお待ちください。
+          <p style={{ margin: "26px auto 0", fontSize: "clamp(11px,2.7vw,16px)", lineHeight: 2, opacity: 0.82 }}>
+            <span style={{ display: "block", whiteSpace: "nowrap" }}>公式ファンクラブは現在準備中です。</span>
+            <span style={{ display: "block", whiteSpace: "nowrap" }}>入会方法や特典の詳細が決まり次第、こちらのページでお知らせします。</span>
+            <span style={{ display: "block", whiteSpace: "nowrap" }}>公開までもう少しお待ちください。</span>
           </p>
 
           <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 34, fontWeight: 800, fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "11px 24px" }}>
