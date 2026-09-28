@@ -13,6 +13,23 @@ export function Keep3x3({ text }: { text: string }) {
   return <>{parts.map((p, i) => (/^3x3$/i.test(p) ? <span key={i} style={{ textTransform: "none" }}>3x3</span> : p))}</>;
 }
 
+const JP = /[぀-ヿ㐀-鿿ｦ-ﾟー々〆〜]+/;
+// Title renderer: keeps "3x3" lowercase AND renders Japanese runs a touch smaller
+// and heavier so they sit visually level with the Latin (Barlow) letters.
+export function TitleText({ text }: { text: string }) {
+  const tokens = text.split(/(3x3|[぀-ヿ㐀-鿿ｦ-ﾟー々〆〜]+)/i);
+  return (
+    <>
+      {tokens.map((t, i) => {
+        if (!t) return null;
+        if (/^3x3$/i.test(t)) return <span key={i} style={{ textTransform: "none" }}>3x3</span>;
+        if (JP.test(t)) return <span key={i} style={{ fontSize: "0.84em", fontWeight: 900, textTransform: "none" }}>{t}</span>;
+        return t;
+      })}
+    </>
+  );
+}
+
 export function LeagueLabel({ m }: { m: Pick<Match, "league" | "year" | "date" | "round"> }) {
   return <Keep3x3 text={leagueLabel(m)} />;
 }

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
 import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
-import { LeagueLabel, Keep3x3 } from "@/components/LeagueLabel";
+import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 
 const ORANGE = "#EE651C";
@@ -130,7 +130,7 @@ function MatchRow({ m }: { m: Match }) {
           ) : (
             <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
           )}
-          <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.4 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: jpTitle ? "none" : "uppercase" }}><Keep3x3 text={title} /></h2>
+          <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.32 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: "uppercase" }}><TitleText text={title} /></h2>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
             <span style={{ fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
             {m.venue && <span style={{ opacity: 0.7 }}>{m.venue}</span>}
