@@ -106,6 +106,26 @@ function FanClubBanner() {
   );
 }
 
+function Movie() {
+  return (
+    <section id="movie" style={{ ...section, background: INK, padding: "56px 0" }}>
+      <div style={container}>
+        <div style={{ marginBottom: 24 }}><Heading>Movie</Heading></div>
+        <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" className="movie-card" aria-label="FLOWLISH GUNMA 公式YouTubeチャンネル">
+          <span className="movie-play">
+            <svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z" fill="#FF0000" /><path d="M27 34.5l18-10.5-18-10.5z" fill="#fff" /></svg>
+          </span>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: "clamp(20px,3.4vw,30px)", letterSpacing: ".02em", textTransform: "uppercase", color: "#fff", lineHeight: 1.1 }}>Official YouTube</div>
+            <div style={{ opacity: 0.72, fontSize: "clamp(12px,2.4vw,14px)", marginTop: 8, color: "#fff" }}>試合ハイライトや最新ムービーはYouTube公式チャンネルで公開中。</div>
+          </div>
+          <span className="movie-cta">チャンネルを見る →</span>
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function NewsList({ news }: { news: News[] }) {
   return (
     <section id="news" style={{ ...section, background: INK, padding: "0 0 8px" }}>
@@ -223,6 +243,7 @@ export default async function Home() {
         <Schedule matches={matches} />
         <FanClubBanner />
         <NewsList news={news} />
+        <Movie />
         <Roster players={players} />
         <Partners partners={partners} />
       </main>

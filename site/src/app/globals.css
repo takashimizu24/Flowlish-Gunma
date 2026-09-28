@@ -152,3 +152,12 @@ h1, h2, h3, h4 { margin: 0; }
 .news-body figure img { margin: 0 auto; }
 .news-body figcaption { font-size: 12.5px; opacity: 0.6; text-align: center; margin-top: 6px; }
 .news-body p { margin: 12px 0; }
+
+/* ===== home Movie section ===== */
+.movie-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; text-align: center; border-radius: 18px; padding: clamp(44px,7vw,84px) 24px; background: radial-gradient(120% 130% at 50% 0%, rgba(238,101,28,.22), transparent 62%), #1b1b1b; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 12px 34px -18px rgba(0,0,0,.6); transition: transform .28s ease, box-shadow .28s ease; }
+.movie-card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px -16px rgba(0,0,0,.75); }
+.movie-play svg { width: clamp(64px,10vw,90px); height: auto; display: block; filter: drop-shadow(0 8px 18px rgba(0,0,0,.5)); transition: transform .2s ease; }
+.movie-card:hover .movie-play svg { transform: scale(1.08); }
+.movie-cta { font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #fff; border: 1.5px solid rgba(255,255,255,.5); border-radius: 999px; padding: 11px 24px; transition: background .18s, color .18s; }
+.movie-card:hover .movie-cta { background: #fff; color: #141414; }
+@media (prefers-reduced-motion: reduce) { .movie-card, .movie-play svg { transition: none; } .movie-card:hover { transform: none; } }
