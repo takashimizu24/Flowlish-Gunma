@@ -230,7 +230,6 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
         {active ? (
           <button type="button" className="sched-filter-reset" onClick={reset}>× クリア</button>
         ) : null}
-        <span className="sched-filter-count">{filtered.length}件</span>
       </div>
 
       {filtered.length === 0 ? (
