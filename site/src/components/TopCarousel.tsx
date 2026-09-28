@@ -43,7 +43,7 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
 
   useEffect(() => {
     if (N < 2) return;
-    const t = setInterval(() => setI((x) => x + 1), 3600);
+    const t = setInterval(() => setI((x) => x + 1), 4600);
     return () => clearInterval(t);
   }, [N]);
 
