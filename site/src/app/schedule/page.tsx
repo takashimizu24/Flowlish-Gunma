@@ -9,7 +9,7 @@ const ORANGE = "#EE651C";
 const INK = "#141414";
 
 export default async function SchedulePage() {
-  const matches = await getMatches(50);
+  const matches = await getMatches(100);
 
   return (
     <>
