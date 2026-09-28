@@ -145,3 +145,10 @@ h1, h2, h3, h4 { margin: 0; }
 .news-body h3 { font-weight: 800; font-size: 17px; margin: 26px 0 8px; }
 .news-body ul { margin: 8px 0; padding-left: 1.3em; }
 .news-body li { margin: 4px 0; }
+/* keep embedded images within the column and preserve aspect ratio
+   (height:auto overrides any fixed height attr that stretches them) */
+.news-body img { max-width: 100%; height: auto; display: block; border-radius: 8px; margin: 18px auto; }
+.news-body figure { margin: 18px 0; }
+.news-body figure img { margin: 0 auto; }
+.news-body figcaption { font-size: 12.5px; opacity: 0.6; text-align: center; margin-top: 6px; }
+.news-body p { margin: 12px 0; }
