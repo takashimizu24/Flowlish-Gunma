@@ -36,6 +36,12 @@ export const currentSeason = () => seasonForDate(new Date());
 // "2025-26" -> 2025 (for sorting)
 export const seasonStart = (s: string) => Number((s.match(SEASON_RE) || [])[1] || 0);
 
+// Not played yet: no result status, or a result with neither a placing nor any games.
+export function isUpcoming(m: Pick<Match, "status" | "resultBadge" | "scores">): boolean {
+  const hasGames = /"opp"\s*:/.test(m.scores || "");
+  return m.status !== "結果" || (!m.resultBadge && !hasGames);
+}
+
 // Round title without the leading year prefix ("2026 ROUND.8" -> "ROUND.8").
 export function roundTitle(m: Pick<Match, "round">): string {
   return (m.round || "").replace(/^\d{4}\s+/, "").trim();

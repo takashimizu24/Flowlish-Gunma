@@ -1,4 +1,7 @@
 import { siteConfig } from "@/lib/config";
+import { getMatches } from "@/lib/api";
+import { matchSeason, seasonStart, isUpcoming } from "@/lib/match";
+import ScheduleMenu from "./ScheduleMenu";
 
 const NAV = [
   { label: "HOME", href: "/" },
@@ -18,7 +21,28 @@ const SNS: { label: string; href: string; icon: string }[] = [
   { label: "YouTube", href: siteConfig.sns.youtube, icon: "ic-yt" },
 ];
 
-export default function Header() {
+// Links for the SCHEDULE drop-down: upcoming count, each season, each league
+// (leagues ordered by their most recent match).
+async function scheduleMenu() {
+  const matches = await getMatches(100).catch(() => []);
+  const seasons = new Map<string, number>();
+  const leagues = new Map<string, number>(); // insertion order = newest first (matches come newest first)
+  let upcoming = 0;
+  for (const m of matches) {
+    const s = matchSeason(m);
+    if (s) seasons.set(s, (seasons.get(s) ?? 0) + 1);
+    if (m.league) leagues.set(m.league, (leagues.get(m.league) ?? 0) + 1);
+    if (isUpcoming(m)) upcoming++;
+  }
+  return {
+    upcoming,
+    seasons: [...seasons].sort((a, b) => seasonStart(b[0]) - seasonStart(a[0])).map(([s, count]) => ({ label: `${s} SEASON`, href: `/schedule?season=${s}`, count })),
+    leagues: [...leagues].map(([l, count]) => ({ label: l, href: `/schedule?league=${encodeURIComponent(l)}`, count })),
+  };
+}
+
+export default async function Header() {
+  const menu = await scheduleMenu();
   return (
     <header id="top" style={{ position: "sticky", top: 0, zIndex: 50 }}>
       {/* top dark bar */}
@@ -42,14 +66,15 @@ export default function Header() {
         </div>
       </div>
       {/* white menu bar */}
-      <nav style={{ background: "#fff", borderTop: "1px solid var(--line)", boxShadow: "0 5px 16px -7px rgba(0,0,0,.22)" }}>
+      <nav className="site-nav" style={{ background: "#fff", borderTop: "1px solid var(--line)", boxShadow: "0 5px 16px -7px rgba(0,0,0,.22)" }}>
         <div className="nav-wrap" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px,4.5vw,56px)", display: "flex" }}>
           <div className="nav-links" style={{ display: "flex" }}>
             {NAV.map((n, i) => {
               const external = n.href.startsWith("http");
+              const style: React.CSSProperties = { fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" };
+              if (n.href === "/schedule") return <ScheduleMenu key={n.label} linkStyle={style} {...menu} />;
               return (
-                <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})}
-                   style={{ fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" }}>
+                <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} style={style}>
                   {n.label}
                 </a>
               );

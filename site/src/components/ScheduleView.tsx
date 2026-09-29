@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart } from "@/lib/match";
+import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, isUpcoming } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 import { countryName, flagUrl } from "@/lib/countries";
@@ -127,7 +127,7 @@ function MatchRow({ m }: { m: Match }) {
   const pool = games.filter((g) => !isQualDraw(g.phase) && isPool(g.phase));
   const playoff = games.filter((g) => !isQualDraw(g.phase) && !isPool(g.phase));
   const entry = m.entryPlayers ?? [];
-  const upcoming = m.status !== "結果" || (!m.resultBadge && games.length === 0);
+  const upcoming = isUpcoming(m);
   const single = isSingle(m);
   const year = yearLabel(m);
   const title = matchTitle(m);
@@ -202,15 +202,40 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
   const [fLeague, setFLeague] = useState("");
   const [fSeason, setFSeason] = useState(""); // opens unfiltered: all seasons
   const [fPlayer, setFPlayer] = useState("");
+  const [fView, setFView] = useState(""); // "" | "upcoming" | "results"
 
-  const filtered = useMemo(
-    () => matches.filter((m) =>
+  // Filters live in the URL (?season=&league=&player=&view=) so the header's
+  // schedule menu can link straight to a filtered list, and the URL can be shared.
+  const [urlRead, setUrlRead] = useState(false);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    setFSeason(q.get("season") ?? "");
+    setFLeague(q.get("league") ?? "");
+    setFPlayer(q.get("player") ?? "");
+    setFView(q.get("view") ?? "");
+    setUrlRead(true);
+  }, []);
+  useEffect(() => {
+    if (!urlRead) return;
+    const q = new URLSearchParams();
+    if (fSeason) q.set("season", fSeason);
+    if (fLeague) q.set("league", fLeague);
+    if (fPlayer) q.set("player", fPlayer);
+    if (fView) q.set("view", fView);
+    const qs = q.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }, [urlRead, fSeason, fLeague, fPlayer, fView]);
+
+  const filtered = useMemo(() => {
+    const list = matches.filter((m) =>
       (!fLeague || m.league === fLeague) &&
       (!fSeason || matchSeason(m) === fSeason) &&
-      (!fPlayer || (m.entryPlayers ?? []).some((p) => p.id === fPlayer))
-    ),
-    [matches, fLeague, fSeason, fPlayer]
-  );
+      (!fPlayer || (m.entryPlayers ?? []).some((p) => p.id === fPlayer)) &&
+      (!fView || isUpcoming(m) === (fView === "upcoming"))
+    );
+    // upcoming: soonest first
+    return fView === "upcoming" ? [...list].reverse() : list;
+  }, [matches, fLeague, fSeason, fPlayer, fView]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, Match[]>();
@@ -222,12 +247,20 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
     return [...map.keys()].sort((a, b) => seasonStart(b) - seasonStart(a)).map((y) => ({ y, list: map.get(y)! }));
   }, [filtered]);
 
-  const active = fLeague || fSeason || fPlayer;
-  const reset = () => { setFLeague(""); setFSeason(""); setFPlayer(""); };
+  const active = fLeague || fSeason || fPlayer || fView;
+  const reset = () => { setFLeague(""); setFSeason(""); setFPlayer(""); setFView(""); };
 
   return (
     <>
       <div className="sched-filters">
+        <label className="sched-filter">
+          <span>試合</span>
+          <select value={fView} onChange={(e) => setFView(e.target.value)}>
+            <option value="">すべて</option>
+            <option value="upcoming">今後の予定</option>
+            <option value="results">結果</option>
+          </select>
+        </label>
         <label className="sched-filter">
           <span>シーズン</span>
           <select value={fSeason} onChange={(e) => setFSeason(e.target.value)}>
