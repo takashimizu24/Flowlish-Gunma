@@ -138,8 +138,8 @@ function MatchRow({ m }: { m: Match }) {
     <article style={{ background: "#fff", color: INK, borderRadius: 16, padding: "clamp(18px,3vw,28px)", marginBottom: 16 }}>
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-          {/* competition logo to the left of the league + round lines */}
-          <div className="lg-head lg-head--list">
+          {/* league + round lines, competition logo on the right (as on the home cards) */}
+          <div className="lg-head lg-head--list lg-head--corner">
             <LeagueLogo league={m.league} size="list" />
             <div style={{ flex: "1 1 auto", minWidth: 0 }}>
               {single ? (
