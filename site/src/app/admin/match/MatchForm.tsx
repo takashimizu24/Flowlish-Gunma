@@ -135,7 +135,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         <div style={half}>
           <div style={{ flex: "2 1 180px" }}>
             <label style={label}>リーグ（任意）</label>
-            <input name="league" defaultValue={editing?.league ?? "3x3.EXE PREMIER"} placeholder="空欄も可" style={input} />
+            <input name="league" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="空欄も可" style={input} />
           </div>
           <div style={{ flex: "0 1 100px" }}>
             <label style={label}>年</label>
