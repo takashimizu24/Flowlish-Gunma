@@ -6,6 +6,7 @@ import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import VideoSection from "@/components/VideoSection";
 import FitLine from "@/components/FitLine";
+import LeagueLogo from "@/components/LeagueLogo";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { getChannelVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
@@ -68,15 +69,21 @@ function Schedule({ matches }: { matches: Match[] }) {
                     minHeight (not a fixed height): a long title that wraps grows the card —
                     and, via the track's align-items: stretch, its siblings — instead of clipping. */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  {isSingle(m) ? (
-                    yearLabel(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{yearLabel(m)}</div> : null
-                  ) : (
-                    // long league names (e.g. FIBA 3x3 WOMEN'S SERIES 2026) shrink to stay on one line on PC
-                    <FitLine max={19} min={14} style={{ fontWeight: 800, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></FitLine>
-                  )}
-                  {(() => { const t = matchTitle(m); const jp = hasJP(t); return (
-                    <div style={{ fontWeight: 800, fontSize: 30, lineHeight: jp ? 1.28 : 1.04, marginTop: 3, textTransform: "uppercase" }}><TitleText text={t} /></div>
-                  ); })()}
+                  {/* competition logo to the left of the league + round lines */}
+                  <div className="lg-head">
+                    <LeagueLogo league={m.league} />
+                    <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                      {isSingle(m) ? (
+                        yearLabel(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{yearLabel(m)}</div> : null
+                      ) : (
+                        // long league names (e.g. FIBA 3x3 WOMEN'S SERIES 2026) shrink to stay on one line on PC
+                        <FitLine max={19} min={14} style={{ fontWeight: 800, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></FitLine>
+                      )}
+                      {(() => { const t = matchTitle(m); const jp = hasJP(t); return (
+                        <div style={{ fontWeight: 800, fontSize: 30, lineHeight: jp ? 1.28 : 1.04, marginTop: 3, textTransform: "uppercase" }}><TitleText text={t} /></div>
+                      ); })()}
+                    </div>
+                  </div>
                   <div style={{ fontWeight: 600, fontSize: 24, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>
                     {m.dateLabel || ymd(m.date)}
                   </div>

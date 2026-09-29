@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
 import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, isUpcoming, sortEntry } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
+import LeagueLogo from "@/components/LeagueLogo";
 import type { Match, Player } from "@/lib/types";
 import { countryName, flagEmoji } from "@/lib/countries";
 
@@ -137,12 +138,18 @@ function MatchRow({ m }: { m: Match }) {
     <article style={{ background: "#fff", color: INK, borderRadius: 16, padding: "clamp(18px,3vw,28px)", marginBottom: 16 }}>
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-          {single ? (
-            year ? <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null
-          ) : (
-            <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.2 }}><LeagueLabel m={m} /></div>
-          )}
-          <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.32 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: "uppercase" }}><TitleText text={title} /></h2>
+          {/* competition logo to the left of the league + round lines */}
+          <div className="lg-head lg-head--list">
+            <LeagueLogo league={m.league} />
+            <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+              {single ? (
+                year ? <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null
+              ) : (
+                <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.2 }}><LeagueLabel m={m} /></div>
+              )}
+              <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.32 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: "uppercase" }}><TitleText text={title} /></h2>
+            </div>
+          </div>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
             <span style={{ fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
             {m.venue && <span style={{ opacity: 0.7 }}>{m.venue}</span>}
