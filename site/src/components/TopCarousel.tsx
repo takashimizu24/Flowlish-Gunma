@@ -6,8 +6,21 @@ import type { TopBanner } from "@/lib/types";
 const TR = "transform .6s cubic-bezier(.6,.05,.2,1)";
 const GAP = 8;
 
-function bg(b?: TopBanner, w = 900) {
-  return b?.image ? `#141414 center/cover url(${b.image.url}?w=${w})` : "#141414";
+// Slides are drawn with <img object-fit:cover>, not a background image: the boxes
+// get fractional sizes on phones (e.g. 192.5 x 108.28), and a repeating cover
+// background then wraps a 1px strip of the image's opposite edge into view.
+const slideBox: React.CSSProperties = { position: "relative", overflow: "hidden", display: "block", background: "#141414" };
+
+function Img({ b, w }: { b?: TopBanner; w: number }) {
+  if (!b?.image) return null;
+  return (
+    <img
+      src={`${b.image.url}?w=${w}`}
+      alt={b.title || ""}
+      draggable={false}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+    />
+  );
 }
 
 export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
@@ -60,7 +73,7 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
   if (N === 1) {
     return (
       <section id="news-top" style={{ background: "#141414" }}>
-        <a href={banners[0].linkUrl || "#"} style={{ display: "block", aspectRatio: "16/9", background: bg(banners[0], 1600) }} />
+        <a href={banners[0].linkUrl || "#"} style={{ ...slideBox, aspectRatio: "16/9" }}><Img b={banners[0]} w={1600} /></a>
       </section>
     );
   }
@@ -75,7 +88,7 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
         <div style={{ position: "relative", overflow: "hidden" }}>
           <div className="hcar-track" onTransitionEnd={onEnd} style={{ display: "flex", gap: GAP, transform: `translateX(calc(${-i * 100}% - ${i * GAP}px))`, transition: anim ? TR : "none" }}>
             {hItems.map((b, k) => (
-              <a key={k} className="hcar-slide" href={b.linkUrl || "#"} style={{ minWidth: "100%", width: "100%", display: "block", background: bg(b, 1200) }} />
+              <a key={k} className="hcar-slide" href={b.linkUrl || "#"} style={{ ...slideBox, minWidth: "100%", width: "100%" }}><Img b={b} w={1200} /></a>
             ))}
           </div>
         </div>
@@ -85,14 +98,14 @@ export default function TopCarousel({ banners }: { banners: TopBanner[] }) {
           <div ref={vpRef} className="vcar-vp" style={{ position: "relative", overflow: "hidden", height: vpH ? `${vpH}px` : undefined }}>
             <div className="vcar-track" style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", flexDirection: "column", gap: GAP, transform: `translateY(${-i * pitch}px)`, transition: anim ? TR : "none" }}>
               {vItems.map((b, k) => (
-                <a key={k} className="vcar-item" href={b.linkUrl || "#"} style={{ display: "block", background: bg(b, 800) }} />
+                <a key={k} className="vcar-item" href={b.linkUrl || "#"} style={slideBox}><Img b={b} w={800} /></a>
               ))}
             </div>
           </div>
           <div className="mcar-vp" style={{ overflow: "hidden" }}>
             <div className="mcar-track" style={{ display: "flex", gap: GAP, transform: `translateX(calc(${-i * 50}% - ${i * (GAP / 2)}px))`, transition: anim ? TR : "none" }}>
               {vItems.map((b, k) => (
-                <a key={k} className="mcar-item" href={b.linkUrl || "#"} style={{ display: "block", background: bg(b, 800) }} />
+                <a key={k} className="mcar-item" href={b.linkUrl || "#"} style={slideBox}><Img b={b} w={800} /></a>
               ))}
             </div>
           </div>
