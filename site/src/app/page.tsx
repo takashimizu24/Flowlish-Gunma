@@ -64,11 +64,11 @@ function Schedule({ matches }: { matches: Match[] }) {
           {matches.map((m) => {
             const entry = sortEntry(m.entryPlayers);
             return (
-              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", gap: 18 }}>
-                {/* left: league + round big. The memo (備考) is shown on the schedule page only.
-                    minHeight (not a fixed height): a long title that wraps grows the card —
-                    and, via the track's align-items: stretch, its siblings — instead of clipping. */}
-                <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+                {/* top: logo + league + round big, then date / venue / placing. The memo (備考) is
+                    shown on the schedule page only. minHeight (not a fixed height): a long title
+                    that wraps grows the card — and, via the track's stretch, its siblings. */}
+                <div style={{ minWidth: 0, display: "flex", flexDirection: "column" }}>
                   {/* competition logo to the left of the league + round lines */}
                   <div className="lg-head">
                     <LeagueLogo league={m.league} />
@@ -90,17 +90,19 @@ function Schedule({ matches }: { matches: Match[] }) {
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
                   {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 700, fontSize: 16, padding: "6px 13px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{rankLabel(m.resultBadge)}</span></div>}
                 </div>
-                {/* right: entry members (circular photos, vertical) */}
+                {/* bottom: entry members (circular photos, two columns), pinned to the card's foot */}
                 {entry.length > 0 && (
-                  <div style={{ flex: "0 0 138px", borderLeft: "1px solid var(--line)", paddingLeft: 16, display: "flex", flexDirection: "column", justifyContent: "center", gap: 10 }}>
-                    <div style={{ fontWeight: 800, fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: ORANGE }}>Entry</div>
-                    {entry.map((p) => (
-                      <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ flex: "none", width: 30, height: 30, borderRadius: "50%", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=90)` : "#141414" }} />
-                        <span style={{ fontWeight: 400, fontSize: 19, color: ORANGE, lineHeight: 1, minWidth: 20, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
-                        <span style={{ fontWeight: 700, fontSize: 10, textTransform: "uppercase", lineHeight: 1.1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn}</span>
-                      </div>
-                    ))}
+                  <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 12 }}>
+                    <div style={{ fontWeight: 800, fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: ORANGE, marginBottom: 8 }}>Entry</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "8px 14px" }}>
+                      {entry.map((p) => (
+                        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                          <span style={{ flex: "none", width: 30, height: 30, borderRadius: "50%", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=90)` : "#141414" }} />
+                          <span style={{ flex: "none", fontWeight: 400, fontSize: 19, color: ORANGE, lineHeight: 1, minWidth: 20, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
+                          <span style={{ fontWeight: 700, fontSize: 10, textTransform: "uppercase", lineHeight: 1.1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

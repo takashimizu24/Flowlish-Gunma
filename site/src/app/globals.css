@@ -307,9 +307,6 @@ h1, h2, h3, h4 { margin: 0; }
 .lg-head--list { gap: 18px; }
 .lg-head--list .lg-logo { width: 96px; height: 52px; }
 @media (max-width: 640px) {
-  /* home cards: the text column is ~120px wide, so the logo sits above the lines */
-  .sched-card .lg-head { flex-direction: column; align-items: stretch; gap: 8px; }
-  .sched-card .lg-logo { align-self: flex-start; width: auto; max-width: 110px; height: 26px; object-position: left center; }
   .lg-head--list { gap: 14px; }
   .lg-head--list .lg-logo { width: 64px; height: 36px; }
 }
