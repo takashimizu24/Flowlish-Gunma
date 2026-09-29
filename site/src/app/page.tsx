@@ -10,7 +10,7 @@ import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/
 import { getChannelVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
 import { rankLabel } from "@/lib/rank";
-import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
+import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, sortEntry } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
@@ -61,7 +61,7 @@ function Schedule({ matches }: { matches: Match[] }) {
       ) : (
         <ScheduleCarousel>
           {matches.map((m) => {
-            const entry = m.entryPlayers ?? [];
+            const entry = sortEntry(m.entryPlayers);
             return (
               <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", gap: 18 }}>
                 {/* left: league + round big. The memo (備考) is shown on the schedule page only.

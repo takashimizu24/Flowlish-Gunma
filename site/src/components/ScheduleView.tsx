@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, isUpcoming } from "@/lib/match";
+import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, isUpcoming, sortEntry } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 import { countryName, flagEmoji } from "@/lib/countries";
@@ -125,7 +125,7 @@ function MatchRow({ m }: { m: Match }) {
   const qualDraw = games.filter((g) => isQualDraw(g.phase));
   const pool = games.filter((g) => !isQualDraw(g.phase) && isPool(g.phase));
   const playoff = games.filter((g) => !isQualDraw(g.phase) && !isPool(g.phase));
-  const entry = m.entryPlayers ?? [];
+  const entry = sortEntry(m.entryPlayers);
   const upcoming = isUpcoming(m);
   const single = isSingle(m);
   const year = yearLabel(m);

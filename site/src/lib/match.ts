@@ -42,6 +42,13 @@ export function isUpcoming(m: Pick<Match, "status" | "resultBadge" | "scores">):
   return m.status !== "結果" || (!m.resultBadge && !hasGames);
 }
 
+// Entry players in display order: current roster first, then former players,
+// each by jersey number (lowest first).
+export function sortEntry<P extends { active?: boolean; number?: number }>(players: P[] = []): P[] {
+  const rank = (p: P) => (p.active === false ? 1 : 0);
+  return [...players].sort((a, b) => rank(a) - rank(b) || (a.number ?? 999) - (b.number ?? 999));
+}
+
 // Round title without the leading year prefix ("2026 ROUND.8" -> "ROUND.8").
 export function roundTitle(m: Pick<Match, "round">): string {
   return (m.round || "").replace(/^\d{4}\s+/, "").trim();
