@@ -62,8 +62,10 @@ function Schedule({ matches }: { matches: Match[] }) {
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
             return (
-              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, height: 248, display: "flex", gap: 18, overflow: "hidden" }}>
-                {/* left: league + round big */}
+              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, display: "flex", gap: 18 }}>
+                {/* left: league + round big. The memo (備考) is shown on the schedule page only.
+                    minHeight (not a fixed height): a long title that wraps grows the card —
+                    and, via the track's align-items: stretch, its siblings — instead of clipping. */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   {isSingle(m) ? (
                     matchYear(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</div> : null
@@ -77,7 +79,6 @@ function Schedule({ matches }: { matches: Match[] }) {
                     {m.dateLabel || ymd(m.date)}
                   </div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
-                  {(m.memo || m.note) && <div style={{ fontSize: 11, fontWeight: 700, color: ORANGE, marginTop: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.memo || m.note}</div>}
                   {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 700, fontSize: 16, padding: "6px 13px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{rankLabel(m.resultBadge)}</span></div>}
                 </div>
                 {/* right: entry members (circular photos, vertical) */}
