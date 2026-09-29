@@ -70,7 +70,8 @@ export default function RosterSection({ players }: { players: Player[] }) {
               return <div className="pmodal-img" style={{ backgroundImage: detail ? `url(${detail}?w=760)` : undefined }} aria-hidden />;
             })()}
             <div className="pmodal-body" style={{ padding: 30 }}>
-              <div style={{ display: "flex", gap: 20, alignItems: "center", paddingBottom: 20, borderBottom: "2px solid #141414" }}>
+              {/* PC: number stacked above the position, left-aligned; phones keep number | name side by side */}
+              <div className="pmodal-head" style={{ paddingBottom: 20, borderBottom: "2px solid #141414" }}>
                 <div style={{ fontWeight: 800, fontSize: 62, color: ORANGE, lineHeight: 0.8 }}>{active.number}</div>
                 <div>
                   {active.position && <div style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: ORANGE }}>{active.position}</div>}
