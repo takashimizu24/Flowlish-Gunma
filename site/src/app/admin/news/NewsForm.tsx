@@ -3,14 +3,11 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import RichEditor from "@/components/admin/RichEditor";
+import { Section, Field, Chip, PickList, PickRow, SaveBar, inputStyle as input } from "@/components/admin/ui";
 import { NEWS_CATEGORIES } from "@/lib/adminOptions";
 import type { News } from "@/lib/types";
 
 type NewsListItem = { id: string; title: string; publishedDate: string };
-
-const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
-const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, border: "1px solid #d8d8d8", borderRadius: 9, background: "#fff" };
-const card: React.CSSProperties = { background: "#fff", borderRadius: 14, padding: "8px 24px 24px", boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" };
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -62,60 +59,56 @@ export default function NewsForm({ news, editing }: { news: NewsListItem[]; edit
 
   return (
     <AdminChrome title={editing ? "お知らせを編集" : "お知らせを追加"}>
-      <div style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", marginBottom: 16, boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 13 }}>既存のお知らせを編集</span>
-          <a href="/admin/news" style={{ fontSize: 12, fontWeight: 700, color: editing ? "#EE651C" : "#aaa", textDecoration: "none" }}>＋ 新規作成</a>
-        </div>
+      <PickList title={`既存のお知らせから選んで編集${editing ? "中" : ""}`} count={news.length} newHref="/admin/news" newLabel="新規作成" editing={!!editing}>
         {news.length === 0 ? (
-          <p style={{ fontSize: 12, color: "#999", margin: 0 }}>まだお知らせがありません。</p>
+          <p style={{ fontSize: 13, color: "#999", margin: 0 }}>まだお知らせがありません。</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 180, overflow: "auto" }}>
-            {news.map((n) => (
-              <a key={n.id} href={`/admin/news?id=${n.id}`}
-                style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 7, textDecoration: "none", border: "1px solid", borderColor: editing?.id === n.id ? "#EE651C" : "#eee", background: editing?.id === n.id ? "#EE651C" : "#fafafa", color: editing?.id === n.id ? "#fff" : "#444", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {n.publishedDate ? `${n.publishedDate.slice(0, 10)}　` : ""}{n.title}
-              </a>
-            ))}
-          </div>
+          news.map((n) => (
+            <PickRow key={n.id} href={`/admin/news?id=${n.id}`} active={editing?.id === n.id}>
+              <span style={{ flex: "none", opacity: 0.7, fontVariantNumeric: "tabular-nums" }}>{n.publishedDate.slice(0, 10)}</span>
+              <span style={{ flex: "1 1 auto", minWidth: 0, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.title}</span>
+            </PickRow>
+          ))
         )}
-      </div>
+      </PickList>
 
-      <form onSubmit={submit} style={card}>
-        <label style={label}>タイトル <span style={{ color: "#EE651C" }}>*</span></label>
-        <input name="title" required defaultValue={editing?.title ?? ""} placeholder="例：ROUND.7 結果のお知らせ" style={input} />
+      <form onSubmit={submit}>
+        <Section title="基本情報">
+          <Field label="タイトル" required>
+            <input name="title" required defaultValue={editing?.title ?? ""} placeholder="例：ROUND.7 結果のお知らせ" style={input} />
+          </Field>
+          <Field label="公開日" hint="ニュース一覧はこの日付の新しい順に並びます。">
+            <input name="publishedDate" type="date" defaultValue={dateVal} style={{ ...input, maxWidth: 280 }} />
+          </Field>
+          <Field label="カテゴリ" hint="複数選べます。タップで選択／解除。">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {NEWS_CATEGORIES.map((c) => (
+                <Chip key={c} on={cats.includes(c)} onClick={() => toggle(c)}>{c}</Chip>
+              ))}
+            </div>
+          </Field>
+        </Section>
 
-        <label style={label}>公開日</label>
-        <input name="publishedDate" type="date" defaultValue={dateVal} style={input} />
+        <Section title="サムネイル画像" desc="ニュース一覧とトップのカードに表示されます。横長 16:9 の画像がおすすめです。">
+          <Field label={editing?.thumbnail ? "画像を変更" : "画像"} hint={editing?.thumbnail ? "変更するときだけ選んでください。選ばなければ今の画像のままです。" : undefined}>
+            {editing?.thumbnail && <img src={`${editing.thumbnail.url}?w=480`} alt="" style={{ width: "100%", maxWidth: 320, aspectRatio: "16/9", objectFit: "cover", borderRadius: 10, display: "block", marginBottom: 10 }} />}
+            <input name="thumbnail" type="file" accept="image/*" style={{ ...input, padding: 10 }} />
+          </Field>
+        </Section>
 
-        <label style={label}>カテゴリ（複数選択可）</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {NEWS_CATEGORIES.map((c) => (
-            <button type="button" key={c} onClick={() => toggle(c)}
-              style={{ padding: "7px 12px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: "1px solid", borderColor: cats.includes(c) ? "#EE651C" : "#ccc", background: cats.includes(c) ? "#EE651C" : "#fff", color: cats.includes(c) ? "#fff" : "#444" }}>
-              {c}
-            </button>
-          ))}
-        </div>
+        <Section title="本文" desc="ツールバーで太字・見出し・リスト・リンク・画像を入れられます。">
+          <div style={{ marginTop: 16 }}>
+            <RichEditor name="body" defaultValue={editing?.body ?? ""} />
+          </div>
+        </Section>
 
-        <label style={label}>サムネイル画像（{editing?.thumbnail ? "変更する場合のみ選択" : "任意・16:9推奨"}）</label>
-        {editing?.thumbnail && <img src={`${editing.thumbnail.url}?w=240`} alt="" style={{ width: 160, aspectRatio: "16/9", objectFit: "cover", borderRadius: 8, display: "block", marginBottom: 8 }} />}
-        <input name="thumbnail" type="file" accept="image/*" style={{ ...input, padding: 9 }} />
-
-        <label style={label}>本文</label>
-        <RichEditor name="body" defaultValue={editing?.body ?? ""} />
-
-        {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
-        <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-          <button type="submit" disabled={busy} style={{ padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
-            {busy ? "保存中…" : editing ? "更新する" : "追加する"}
-          </button>
-          {editing && (
-            <button type="button" onClick={remove} disabled={busy} style={{ padding: "13px 22px", fontSize: 14, fontWeight: 700, color: "#c0392b", background: "#fff", border: "1.5px solid #e0b4ae", borderRadius: 10, cursor: "pointer" }}>
+        <SaveBar busy={busy} editing={!!editing} msg={msg}
+          extra={editing && (
+            <button type="button" onClick={remove} disabled={busy} style={{ padding: "13px 20px", fontSize: 14, fontWeight: 700, color: "#c0392b", background: "#fff", border: "1.5px solid #e0b4ae", borderRadius: 10, cursor: "pointer" }}>
               削除する
             </button>
           )}
-        </div>
+        />
       </form>
     </AdminChrome>
   );

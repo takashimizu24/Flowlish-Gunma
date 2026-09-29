@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
+import { Section, Field, Chip, PickList, PickRow, PickHeading, SaveBar, inputStyle as input, ORANGE } from "@/components/admin/ui";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
 import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate } from "@/lib/match";
+import { COUNTRIES, flagUrl } from "@/lib/countries";
 import type { Match } from "@/lib/types";
 
 // override choices: 2022-23 .. next season, newest first
@@ -13,33 +15,31 @@ type PlayerOpt = { id: string; number: number; nameEn: string; active: boolean }
 type MatchListItem = { id: string; league: string; year?: number; season: string; round: string; dateLabel: string; date: string };
 
 const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : "");
-type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
+type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose"; country: string };
 
-const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
-const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, border: "1px solid #d8d8d8", borderRadius: 9, background: "#fff" };
-const card: React.CSSProperties = { background: "#fff", borderRadius: 14, padding: "8px 24px 24px", boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" };
-const half: React.CSSProperties = { display: "flex", gap: 12, flexWrap: "wrap" };
+const small: React.CSSProperties = { ...input, padding: "10px 12px" };
 
 function gamesFromScores(scores?: string): Game[] {
   try {
     const v = JSON.parse(scores || "");
-    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string; result?: string }) => {
+    return (v.games || []).map((g: { phase?: string; opp?: string; score?: string; result?: string; country?: string }) => {
       const r = String(g.result ?? "").toLowerCase();
       const wo: Game["wo"] = r === "wo-win" || g.result === "不戦勝" ? "win" : r === "wo-lose" || g.result === "不戦敗" ? "lose" : "";
       const [my, opp] = String(g.score ?? "").split("-");
-      return { phase: g.phase || "", opp: g.opp || "", myScore: wo ? "" : my || "", oppScore: wo ? "" : opp || "", wo };
+      return { phase: g.phase || "", opp: g.opp || "", myScore: wo ? "" : my || "", oppScore: wo ? "" : opp || "", wo, country: g.country || "" };
     });
   } catch {
     return [];
   }
 }
 
-export default function MatchForm({ players, matches, leagues, sponsors, editing }: { players: PlayerOpt[]; matches: MatchListItem[]; leagues: string[]; sponsors: string[]; editing: Match | null }) {
+export default function MatchForm({ players, matches, leagues, sponsors, oppCountries, editing }: {
+  players: PlayerOpt[]; matches: MatchListItem[]; leagues: string[]; sponsors: string[]; oppCountries: Record<string, string>; editing: Match | null;
+}) {
   const [entry, setEntry] = useState<string[]>(() => (editing?.entryPlayers ?? []).map((p) => p.id));
   const [games, setGames] = useState<Game[]>(() => gamesFromScores(editing?.scores));
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [listOpen, setListOpen] = useState(false);
   const current = players.filter((p) => p.active);
   const former = players.filter((p) => !p.active);
   const [showFormer, setShowFormer] = useState(() => former.some((p) => entry.includes(p.id)));
@@ -53,9 +53,14 @@ export default function MatchForm({ players, matches, leagues, sponsors, editing
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
   }
-  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "", wo: "" }]);
+  const addGame = () => setGames((g) => [...g, { phase: "", opp: "", myScore: "", oppScore: "", wo: "", country: "" }]);
   const updGame = (i: number, patch: Partial<Game>) => setGames((g) => g.map((x, k) => (k === i ? { ...x, ...patch } : x)));
   const delGame = (i: number) => setGames((g) => g.filter((_, k) => k !== i));
+  // typing a team that already has a country on file fills the flag in
+  const setOpp = (i: number, opp: string) => {
+    const known = oppCountries[opp.trim()];
+    updGame(i, known && !games[i].country ? { opp, country: known } : { opp });
+  };
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,159 +118,151 @@ export default function MatchForm({ players, matches, leagues, sponsors, editing
 
   return (
     <AdminChrome title={editing ? "試合を編集" : "試合を追加"}>
-      {/* existing matches to edit (collapsible) */}
-      <div style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", marginBottom: 16, boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <button type="button" onClick={() => setListOpen((v) => !v)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", padding: 0, cursor: "pointer", fontWeight: 700, fontSize: 13, color: "#141414" }}>
-            <span style={{ display: "inline-block", transform: listOpen ? "rotate(90deg)" : "none", transition: "transform .15s", color: "#EE651C" }}>▶</span>
-            既存の試合から選んで編集{editing ? "中" : ""}（{matches.length}）
-          </button>
-          <a href="/admin/match" style={{ fontSize: 12, fontWeight: 700, color: editing ? "#EE651C" : "#aaa", textDecoration: "none" }}>＋ 新規作成</a>
-        </div>
-        {listOpen && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 300, overflow: "auto", marginTop: 12 }}>
-            {matches.map((m, i) => (
-              <div key={m.id} style={{ display: "contents" }}>
-              {m.season !== matches[i - 1]?.season && (
-                <div style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".08em", color: "#EE651C", margin: i ? "10px 2px 2px" : "0 2px 2px" }}>{m.season ? `${m.season} SEASON` : "シーズン不明"}</div>
-              )}
-              <a href={`/admin/match?id=${m.id}`}
-                style={{ display: "flex", alignItems: "baseline", gap: 8, fontSize: 12.5, padding: "8px 11px", borderRadius: 8, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#eee", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
-                <span style={{ fontWeight: 800, flex: "0 0 auto", minWidth: 38, color: editing?.id === m.id ? "#fff" : "#EE651C", fontVariantNumeric: "tabular-nums" }}>{m.year ?? "—"}</span>
-                <span style={{ fontWeight: 700, opacity: editing?.id === m.id ? 0.85 : 0.55, flex: "0 0 auto", minWidth: 92 }}>{m.league || "—"}</span>
-                <span style={{ fontWeight: 800, flex: "1 1 auto" }}>{roundTitle(m)}</span>
-                <span style={{ opacity: 0.7, flex: "0 0 auto", fontVariantNumeric: "tabular-nums" }}>{ymdShort(m.date, m.dateLabel)}</span>
-              </a>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <form onSubmit={submit} style={card}>
-        <div style={half}>
-          <div style={{ flex: "2 1 180px" }}>
-            <label style={label}>リーグ（任意）</label>
-            <input name="league" list="league-names" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="冠スポンサー名は含めない" style={input} />
-            <datalist id="league-names">{leagues.map((l) => <option key={l} value={l} />)}</datalist>
-          </div>
-          <div style={{ flex: "1 1 120px" }}>
-            <label style={label}>冠スポンサー（任意）</label>
-            <input name="leagueSponsor" list="sponsor-names" defaultValue={editing?.leagueSponsor ?? ""} placeholder="例: PLCO" style={input} />
-            <datalist id="sponsor-names">{sponsors.map((s) => <option key={s} value={s} />)}</datalist>
-          </div>
-          <div style={{ flex: "0 1 100px" }}>
-            <label style={label}>年</label>
-            <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={input} />
-          </div>
-          <div style={{ flex: "0 1 150px" }}>
-            <label style={label}>シーズン</label>
-            <select name="season" defaultValue={editing?.season ?? ""} style={input}>
-              <option value="">{autoSeason ? `自動（${autoSeason}）` : "自動（日付から）"}</option>
-              {SEASON_OPTS.map((x) => <option key={x} value={x}>{x}</option>)}
-            </select>
-          </div>
-          <div style={{ flex: "1 1 130px" }}>
-            <label style={label}>ラウンド（任意）</label>
-            <input name="round" defaultValue={roundTitle({ round: editing?.round })} placeholder="ROUND.8 / 空欄も可" style={input} />
-          </div>
-        </div>
-
-        <div style={half}>
-          <div style={{ flex: "1 1 160px" }}>
-            <label style={label}>開催日</label>
-            <input name="date" type="date" defaultValue={dateVal} onChange={(e) => setDateIn(e.target.value)} style={input} />
-          </div>
-          <div style={{ flex: "1 1 160px" }}>
-            <label style={label}>日付表示（空欄なら自動）</label>
-            <input name="dateLabel" defaultValue={editing?.dateLabel ?? ""} placeholder="例：2026.6.13-14" style={input} />
-          </div>
-        </div>
-
-        <label style={label}>会場</label>
-        <input name="venue" defaultValue={editing?.venue ?? ""} placeholder="例：ビエント高崎（群馬県高崎市）" style={input} />
-
-        <div style={half}>
-          <div style={{ flex: "1 1 160px" }}>
-            <label style={label}>状態</label>
-            <select name="status" defaultValue={editing?.status ?? "結果"} style={input}>
-              {MATCH_STATUS.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-          <div style={{ flex: "1 1 160px" }}>
-            <label style={label}>最終順位</label>
-            <input name="resultBadge" defaultValue={editing?.resultBadge ?? ""} list="badges" placeholder="優勝 / 6位 など" style={input} />
-            <datalist id="badges">{RESULT_BADGES.map((b) => <option key={b} value={b} />)}</datalist>
-          </div>
-        </div>
-
-        <label style={label}>出場選手（クリックで選択）</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {current.map((p) => (
-            <button type="button" key={p.id} onClick={() => toggleEntry(p.id)}
-              style={{ padding: "7px 12px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: "1px solid", borderColor: entry.includes(p.id) ? "#EE651C" : "#ccc", background: entry.includes(p.id) ? "#EE651C" : "#fff", color: entry.includes(p.id) ? "#fff" : "#444" }}>
-              #{p.number} {p.nameEn}
-            </button>
-          ))}
-        </div>
-        {former.length > 0 && (
-          <div style={{ marginTop: 10 }}>
-            <button type="button" onClick={() => setShowFormer((v) => !v)}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: "#888" }}>
-              <span style={{ transform: showFormer ? "rotate(90deg)" : "none", transition: "transform .15s", color: "#EE651C" }}>▶</span>
-              過去の選手（{former.length}）
-            </button>
-            {showFormer && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-                {former.map((p) => (
-                  <button type="button" key={p.id} onClick={() => toggleEntry(p.id)}
-                    style={{ padding: "7px 12px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: "1px dashed", borderColor: entry.includes(p.id) ? "#EE651C" : "#ccc", background: entry.includes(p.id) ? "#EE651C" : "#fafafa", color: entry.includes(p.id) ? "#fff" : "#777" }}>
-                    #{p.number} {p.nameEn}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        <label style={label}>試合スコア（勝敗は自動）</label>
-        {games.map((g, i) => (
-          <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 8, background: "#faf9f7", padding: 10, borderRadius: 10 }}>
-            <input value={g.phase} onChange={(e) => updGame(i, { phase: e.target.value })} list="phases" placeholder="フェーズ" style={{ ...input, flex: "1 1 100px", padding: "8px 10px" }} />
-            <datalist id="phases">{GAME_PHASES.map((p) => <option key={p} value={p} />)}</datalist>
-            <input value={g.opp} onChange={(e) => updGame(i, { opp: e.target.value })} placeholder="対戦相手" style={{ ...input, flex: "2 1 160px", padding: "8px 10px" }} />
-            <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" placeholder="自" disabled={!!g.wo} style={{ ...input, width: 56, flex: "none", padding: "8px 8px", opacity: g.wo ? 0.4 : 1 }} />
-            <span style={{ color: "#999" }}>-</span>
-            <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" placeholder="相手" disabled={!!g.wo} style={{ ...input, width: 56, flex: "none", padding: "8px 8px", opacity: g.wo ? 0.4 : 1 }} />
-            <select value={g.wo} onChange={(e) => updGame(i, { wo: e.target.value as Game["wo"] })} title="不戦勝/不戦敗" style={{ ...input, width: 96, flex: "none", padding: "8px 8px" }}>
-              <option value="">通常</option>
-              <option value="win">不戦勝</option>
-              <option value="lose">不戦敗</option>
-            </select>
-            <span style={{ width: 44, textAlign: "center", fontWeight: 800, fontSize: 12, color: winHint(g) === "WIN" || winHint(g) === "不戦勝" ? "#EE651C" : winHint(g) === "LOSE" || winHint(g) === "不戦敗" ? "#999" : "transparent" }}>{winHint(g) || "—"}</span>
-            <button type="button" onClick={() => delGame(i)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#c33", cursor: "pointer", fontSize: 13 }}>削除</button>
+      <PickList title={`既存の試合から選んで編集${editing ? "中" : ""}`} count={matches.length} newHref="/admin/match" newLabel="新規作成" editing={!!editing}>
+        {matches.map((m, i) => (
+          <div key={m.id}>
+            {m.season !== matches[i - 1]?.season && <PickHeading first={i === 0}>{m.season ? `${m.season} SEASON` : "シーズン不明"}</PickHeading>}
+            <PickRow href={`/admin/match?id=${m.id}`} active={editing?.id === m.id}>
+              <span style={{ fontWeight: 700, opacity: 0.6, flex: "0 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.league || "—"}</span>
+              <span style={{ fontWeight: 800, flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{roundTitle(m)}</span>
+              <span style={{ opacity: 0.7, flex: "none", fontVariantNumeric: "tabular-nums" }}>{ymdShort(m.date, m.dateLabel)}</span>
+            </PickRow>
           </div>
         ))}
-        <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
+      </PickList>
 
-        <label style={label}>備考（任意・イレギュラーな情報など／スケジュールページにのみ表示）</label>
-        <textarea name="memo" defaultValue={editing?.memo ?? ""} rows={2} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
+      <form onSubmit={submit}>
+        <Section title="大会" desc="リーグかラウンドのどちらかは必須です。片方だけのときは、その名前がカードに大きく表示されます。">
+          <Field label="リーグ" hint="スケジュールの絞り込みはこの名前でまとまります。冠スポンサー名は含めずに入力してください。">
+            <input name="league" list="league-names" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="例：3XS" style={input} />
+            <datalist id="league-names">{leagues.map((l) => <option key={l} value={l} />)}</datalist>
+          </Field>
+          <Field label="冠スポンサー" hint="リーグ名の前に付けて表示されます（例：PLCO → 「PLCO 3XS」）。">
+            <input name="leagueSponsor" list="sponsor-names" defaultValue={editing?.leagueSponsor ?? ""} placeholder="例：PLCO" style={input} />
+            <datalist id="sponsor-names">{sponsors.map((s) => <option key={s} value={s} />)}</datalist>
+          </Field>
+          <Field label="ラウンド" hint="例：ROUND.8 / PLAYOFFS / FINAL">
+            <input name="round" defaultValue={roundTitle({ round: editing?.round })} placeholder="例：ROUND.8" style={input} />
+          </Field>
+          <Field label="年" hint="リーグ名の横に出る年。空欄なら開催日の年になります。">
+            <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={{ ...input, maxWidth: 200 }} />
+          </Field>
+          <Field label="シーズン" hint="通常は「自動」（4月〜翌3月で判定）。日程とシーズンがずれる大会だけ指定してください。">
+            <select name="season" defaultValue={editing?.season ?? ""} style={{ ...input, maxWidth: 280 }}>
+              <option value="">{autoSeason ? `自動（${autoSeason}）` : "自動（開催日から）"}</option>
+              {SEASON_OPTS.map((x) => <option key={x} value={x}>{x}</option>)}
+            </select>
+          </Field>
+        </Section>
 
-        <label style={label}>大会公式サイト URL（任意）</label>
-        <input name="eventUrl" type="url" defaultValue={editing?.eventUrl ?? ""} placeholder="https://…（大会・イベントのHP）" style={input} />
+        <Section title="日程・会場">
+          <Field label="開催日" hint="複数日の大会は初日を選んでください。">
+            <input name="date" type="date" defaultValue={dateVal} onChange={(e) => setDateIn(e.target.value)} style={{ ...input, maxWidth: 280 }} />
+          </Field>
+          <Field label="日付の表示" hint="空欄なら開催日から自動（例：2026.7.18）。複数日の大会は「2026.7.18-19」のように入力します。">
+            <input name="dateLabel" defaultValue={editing?.dateLabel ?? ""} placeholder="例：2026.6.13-14" style={input} />
+          </Field>
+          <Field label="会場">
+            <input name="venue" defaultValue={editing?.venue ?? ""} placeholder="例：ビエント高崎（群馬県高崎市）" style={input} />
+          </Field>
+        </Section>
 
-        <label style={label}>FIBA 3x3 イベントページ URL（任意）</label>
-        <input name="fibaEventUrl" type="url" defaultValue={editing?.fibaEventUrl ?? ""} placeholder="https://play.fiba3x3.com/events/…" style={input} />
+        <Section title="結果">
+          <Field label="状態" required>
+            <select name="status" defaultValue={editing?.status ?? "結果"} style={{ ...input, maxWidth: 280 }}>
+              {MATCH_STATUS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="最終順位" hint="「優勝」「6位」などで入力すると、サイトでは 1st / 6th と表示されます。">
+            <input name="resultBadge" defaultValue={editing?.resultBadge ?? ""} list="badges" placeholder="例：優勝 / 6位" style={{ ...input, maxWidth: 280 }} />
+            <datalist id="badges">{RESULT_BADGES.map((b) => <option key={b} value={b} />)}</datalist>
+          </Field>
+          <Field label="試合スコア" hint="勝敗はスコアから自動で判定します。海外チームとの試合は「国・地域」を選ぶと、サイトで相手チーム名の前に国旗が付きます（国内チームは空欄のまま）。">
+            {games.map((g, i) => {
+              const hint = winHint(g);
+              const win = hint === "WIN" || hint === "不戦勝";
+              return (
+                <div key={i} style={{ background: "#faf9f7", border: "1px solid #eee", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                    <span style={{ fontWeight: 800, fontSize: 13, color: "#888" }}>第{i + 1}試合</span>
+                    <button type="button" onClick={() => delGame(i)} style={{ background: "none", border: "none", color: "#c33", cursor: "pointer", fontSize: 13, fontWeight: 700, padding: 4 }}>この試合を削除</button>
+                  </div>
+                  <div style={{ display: "grid", gap: 10 }}>
+                    <input value={g.phase} onChange={(e) => updGame(i, { phase: e.target.value })} list="phases" placeholder="フェーズ（例：GROUP-A / 準決勝）" style={small} />
+                    {/* on narrow screens the country picker wraps under the team name */}
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      <input value={g.opp} onChange={(e) => setOpp(i, e.target.value)} placeholder="対戦相手" style={{ ...small, flex: "1 1 220px", minWidth: 0 }} />
+                      <span style={{ display: "flex", gap: 8, alignItems: "center", flex: "none" }}>
+                        <span aria-hidden="true" style={{ flex: "none", width: 28, height: 21, borderRadius: 3, background: flagUrl(g.country) ? `center/cover url(${flagUrl(g.country)})` : "#ececec", boxShadow: flagUrl(g.country) ? "0 0 0 1px rgba(0,0,0,.12)" : "none" }} />
+                        <select value={g.country} onChange={(e) => updGame(i, { country: e.target.value })} title="国・地域（海外チームのみ）" style={{ ...small, width: 160 }}>
+                          <option value="">国内（国旗なし）</option>
+                          {COUNTRIES.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+                        </select>
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      <input value={g.myScore} onChange={(e) => updGame(i, { myScore: e.target.value })} type="number" inputMode="numeric" placeholder="自チーム" disabled={!!g.wo} style={{ ...small, width: 96, opacity: g.wo ? 0.4 : 1 }} />
+                      <span style={{ color: "#999", fontWeight: 700 }}>-</span>
+                      <input value={g.oppScore} onChange={(e) => updGame(i, { oppScore: e.target.value })} type="number" inputMode="numeric" placeholder="相手" disabled={!!g.wo} style={{ ...small, width: 96, opacity: g.wo ? 0.4 : 1 }} />
+                      <select value={g.wo} onChange={(e) => updGame(i, { wo: e.target.value as Game["wo"] })} title="不戦勝/不戦敗" style={{ ...small, width: 110 }}>
+                        <option value="">通常</option>
+                        <option value="win">不戦勝</option>
+                        <option value="lose">不戦敗</option>
+                      </select>
+                      {hint && <span style={{ fontWeight: 800, fontSize: 12.5, padding: "5px 10px", borderRadius: 6, background: win ? ORANGE : "#e6e6e6", color: win ? "#fff" : "#777" }}>{hint}</span>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <datalist id="phases">{GAME_PHASES.map((p) => <option key={p} value={p} />)}</datalist>
+            <button type="button" onClick={addGame} style={{ width: "100%", padding: "12px 16px", fontSize: 14, fontWeight: 700, color: ORANGE, background: "#fff", border: `1px dashed ${ORANGE}`, borderRadius: 10, cursor: "pointer" }}>＋ 試合を追加</button>
+          </Field>
+        </Section>
 
-        <label style={label}>ライブ配信 URL（任意）</label>
-        <input name="liveUrl" type="url" defaultValue={editing?.liveUrl ?? ""} placeholder="https://youtube.com/… など" style={input} />
+        <Section title="出場選手" desc="選んだ選手が、試合カードの右側に丸い写真で表示されます。タップで選択／解除。">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+            {current.map((p) => (
+              <Chip key={p.id} on={entry.includes(p.id)} onClick={() => toggleEntry(p.id)}>#{p.number} {p.nameEn}</Chip>
+            ))}
+          </div>
+          {former.length > 0 && (
+            <div style={{ marginTop: 14 }}>
+              <button type="button" onClick={() => setShowFormer((v) => !v)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#888" }}>
+                <span style={{ transform: showFormer ? "rotate(90deg)" : "none", transition: "transform .15s", color: ORANGE, fontSize: 11 }}>▶</span>
+                過去の選手（{former.length}）
+              </button>
+              {showFormer && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                  {former.map((p) => (
+                    <Chip key={p.id} dashed on={entry.includes(p.id)} onClick={() => toggleEntry(p.id)}>#{p.number} {p.nameEn}</Chip>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </Section>
 
-        <div>
-          {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
-          <button type="submit" disabled={busy} style={{ marginTop: 20, padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
-            {busy ? "保存中…" : editing ? "更新する" : "追加する"}
-          </button>
-        </div>
+        <Section title="リンク" desc="入力したものだけ、スケジュールページにボタンとして表示されます。">
+          <Field label="大会公式サイト URL">
+            <input name="eventUrl" type="url" defaultValue={editing?.eventUrl ?? ""} placeholder="https://…（大会・イベントのHP）" style={input} />
+          </Field>
+          <Field label="FIBA 3x3 イベントページ URL">
+            <input name="fibaEventUrl" type="url" defaultValue={editing?.fibaEventUrl ?? ""} placeholder="https://play.fiba3x3.com/events/…" style={input} />
+          </Field>
+          <Field label="ライブ配信 URL">
+            <input name="liveUrl" type="url" defaultValue={editing?.liveUrl ?? ""} placeholder="https://youtube.com/… など" style={input} />
+          </Field>
+        </Section>
+
+        <Section title="備考">
+          <Field label="備考" hint="会場変更・順延などイレギュラーな情報。スケジュールページにのみ表示されます（ホームのカードには出ません）。">
+            <textarea name="memo" defaultValue={editing?.memo ?? ""} rows={3} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
+          </Field>
+        </Section>
+
+        <SaveBar busy={busy} editing={!!editing} msg={msg} />
       </form>
     </AdminChrome>
   );

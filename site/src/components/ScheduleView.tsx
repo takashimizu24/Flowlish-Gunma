@@ -5,11 +5,12 @@ import { rankLabel } from "@/lib/rank";
 import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, currentSeason } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
+import { countryName, flagUrl } from "@/lib/countries";
 
 const ORANGE = "#EE651C";
 const INK = "#141414";
 
-type Game = { phase: string; opp: string; score: string; result: string };
+type Game = { phase: string; opp: string; score: string; result: string; country?: string };
 
 function parseGames(s?: string): Game[] {
   if (!s) return [];
@@ -49,7 +50,15 @@ function GameLine({ g }: { g: Game }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderTop: "1px solid var(--line)" }}>
       <span style={{ flex: "none", width: 74, fontWeight: 700, fontSize: 10, letterSpacing: ".06em", textTransform: "uppercase", color: ORANGE }}>{g.phase}</span>
-      <span style={{ flex: "1 1 auto", minWidth: 0, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>vs {g.opp}</span>
+      <span style={{ flex: "1 1 auto", minWidth: 0, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }}>
+        <span style={{ flex: "none" }}>vs</span>
+        {/* overseas opponents only: a game with no country is a domestic team */}
+        {flagUrl(g.country) && (
+          <img src={flagUrl(g.country)} alt={countryName(g.country)} title={countryName(g.country)} width={18} height={13.5}
+            style={{ flex: "none", width: 18, height: 13.5, objectFit: "cover", borderRadius: 2, boxShadow: "0 0 0 1px rgba(20,20,20,.12)" }} />
+        )}
+        <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.opp}</span>
+      </span>
       <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: wo ? 0.4 : 1 }}>{wo ? "—" : g.score}</span>
       <ResultChip result={g.result} />
     </div>

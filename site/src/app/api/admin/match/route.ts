@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const KEY = process.env.MICROCMS_API_KEY;
 
-type GameInput = { phase: string; opp: string; myScore: string; oppScore: string; wo?: "" | "win" | "lose" };
+type GameInput = { phase: string; opp: string; myScore: string; oppScore: string; wo?: "" | "win" | "lose"; country?: string };
 
 // "2026.8.8" from an ISO/date string
 function ymd(d: string) {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   }
 
   const games = (b.games as GameInput[] | undefined)?.filter((g) => g && g.opp) ?? [];
-  const parsedGames = games.map((g) => {
+  const baseGame = (g: GameInput) => {
     // walkover (不戦勝/不戦敗): no numeric score
     if (g.wo === "win") return { phase: g.phase || "", opp: g.opp, score: "W-0", result: "WO-Win" };
     if (g.wo === "lose") return { phase: g.phase || "", opp: g.opp, score: "0-W", result: "WO-Lose" };
@@ -31,6 +31,11 @@ export async function POST(req: Request) {
     const their = Number(g.oppScore);
     const result = Number.isFinite(my) && Number.isFinite(their) ? (my > their ? "Win" : "Lose") : "";
     return { phase: g.phase || "", opp: g.opp, score: `${g.myScore}-${g.oppScore}`, result };
+  };
+  // overseas opponent's country (ISO alpha-2); empty = domestic, so it's only stored when set
+  const parsedGames = games.map((g) => {
+    const c = String(g.country ?? "").trim().toLowerCase();
+    return /^[a-z]{2}$/.test(c) ? { ...baseGame(g), country: c } : baseGame(g);
   });
 
   // Round is stored without a year — the season/year is derived from the date and

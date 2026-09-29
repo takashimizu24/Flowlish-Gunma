@@ -2,19 +2,25 @@
 
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
+import { Section, Field, PickList, PickRow, PickHeading, SaveBar, inputStyle as input, ORANGE } from "@/components/admin/ui";
 import { PLAYER_POSITIONS, NATIONALITIES } from "@/lib/adminOptions";
 import type { Player } from "@/lib/types";
 
 type PlayerListItem = { id: string; nameJa: string; number: number; active: boolean };
 
-const label: React.CSSProperties = { display: "block", fontWeight: 700, fontSize: 13, margin: "18px 0 6px" };
-const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, border: "1px solid #d8d8d8", borderRadius: 9, background: "#fff" };
-const card: React.CSSProperties = { background: "#fff", borderRadius: 14, padding: "8px 24px 24px", boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" };
-const half: React.CSSProperties = { display: "flex", gap: 14, flexWrap: "wrap" };
-const col: React.CSSProperties = { flex: "1 1 160px", minWidth: 0 };
-
 // Birthdays are stored as JST midnight; format the stored instant in JST for the date input.
 const bdVal = (s?: string) => (s ? new Date(new Date(s).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10) : "");
+
+const narrow: React.CSSProperties = { ...input, maxWidth: 280 };
+
+function PhotoField({ name, label, hint, current }: { name: string; label: string; hint: string; current?: string }) {
+  return (
+    <Field label={label} hint={current ? `${hint} 変更するときだけ選んでください。` : hint}>
+      {current && <img src={`${current}?w=240`} alt="" style={{ width: 120, aspectRatio: "3/4", objectFit: "cover", borderRadius: 10, display: "block", marginBottom: 10 }} />}
+      <input name={name} type="file" accept="image/*" style={{ ...input, padding: 10 }} />
+    </Field>
+  );
+}
 
 export default function PlayerForm({ players, editing }: { players: PlayerListItem[]; editing: Player | null }) {
   const [active, setActive] = useState<boolean>(() => editing?.active !== false);
@@ -43,124 +49,89 @@ export default function PlayerForm({ players, editing }: { players: PlayerListIt
 
   return (
     <AdminChrome title={editing ? "選手を編集" : "選手を追加"}>
-      <div style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", marginBottom: 16, boxShadow: "0 6px 20px -14px rgba(0,0,0,.3)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 13 }}>既存の選手を編集</span>
-          <a href="/admin/players" style={{ fontSize: 12, fontWeight: 700, color: editing ? "#EE651C" : "#aaa", textDecoration: "none" }}>＋ 新規追加</a>
-        </div>
+      <PickList title={`既存の選手から選んで編集${editing ? "中" : ""}`} count={players.length} newHref="/admin/players" newLabel="新規追加" editing={!!editing} defaultOpen>
         {players.length === 0 ? (
-          <p style={{ fontSize: 12, color: "#999", margin: 0 }}>まだ選手がいません。</p>
+          <p style={{ fontSize: 13, color: "#999", margin: 0 }}>まだ選手がいません。</p>
         ) : (
-          <div style={{ maxHeight: 220, overflow: "auto" }}>
-            {[{ t: "現役", list: current }, { t: "過去の選手", list: former }].map(({ t, list }) =>
-              list.length === 0 ? null : (
-                <div key={t} style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#aaa", margin: "6px 0 4px", letterSpacing: ".08em" }}>{t}</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {list.map((p) => (
-                      <a key={p.id} href={`/admin/players?id=${p.id}`}
-                        style={{ fontSize: 12.5, padding: "6px 10px", borderRadius: 7, textDecoration: "none", border: "1px solid", borderColor: editing?.id === p.id ? "#EE651C" : "#eee", background: editing?.id === p.id ? "#EE651C" : "#fafafa", color: editing?.id === p.id ? "#fff" : "#444" }}>
-                        #{p.number}　{p.nameJa}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )
-            )}
-          </div>
+          [{ t: "現役", list: current }, { t: "過去の選手", list: former }].map(({ t, list }, gi) =>
+            list.length === 0 ? null : (
+              <div key={t}>
+                <PickHeading first={gi === 0}>{t}（{list.length}）</PickHeading>
+                {list.map((p) => (
+                  <PickRow key={p.id} href={`/admin/players?id=${p.id}`} active={editing?.id === p.id}>
+                    <span style={{ flex: "none", minWidth: 34, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>#{p.number}</span>
+                    <span style={{ fontWeight: 700 }}>{p.nameJa}</span>
+                  </PickRow>
+                ))}
+              </div>
+            )
+          )
         )}
-      </div>
+      </PickList>
 
-      <form onSubmit={submit} style={card}>
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>選手名（日本語）<span style={{ color: "#EE651C" }}>*</span></label>
+      <form onSubmit={submit}>
+        <Section title="基本情報">
+          <Field label="選手名（日本語）" required hint="姓と名の間は半角スペース（例：横井 美沙）。">
             <input name="nameJa" required defaultValue={editing?.nameJa ?? ""} placeholder="例：横井 美沙" style={input} />
-          </div>
-          <div style={col}>
-            <label style={label}>選手名（英語）</label>
-            <input name="nameEn" defaultValue={editing?.nameEn ?? ""} placeholder="例：MISA YOKOI" style={input} />
-          </div>
-        </div>
-
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>背番号</label>
-            <input name="number" type="number" inputMode="numeric" defaultValue={editing?.number ?? ""} placeholder="7" style={input} />
-          </div>
-          <div style={col}>
-            <label style={label}>ポジション</label>
-            <input name="position" list="positions" defaultValue={editing?.position ?? ""} placeholder="Guard" style={input} />
-            <datalist id="positions">{PLAYER_POSITIONS.map((p) => <option key={p} value={p} />)}</datalist>
-          </div>
-          <div style={col}>
-            <label style={label}>身長(cm)</label>
-            <input name="height" defaultValue={editing?.height ?? ""} placeholder="170" style={input} />
-          </div>
-        </div>
-
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>出身</label>
-            <input name="hometown" defaultValue={editing?.hometown ?? ""} placeholder="例：長野県上田市" style={input} />
-          </div>
-          <div style={col}>
-            <label style={label}>国籍</label>
-            <input name="nationality" list="nats" defaultValue={editing?.nationality ?? ""} placeholder="Japan" style={input} />
-            <datalist id="nats">{NATIONALITIES.map((n) => <option key={n} value={n} />)}</datalist>
-          </div>
-          <div style={col}>
-            <label style={label}>生年月日</label>
-            <input name="birthdate" type="date" defaultValue={bdVal(editing?.birthdate)} style={input} />
-          </div>
-        </div>
-
-        <label style={label}>プロフィール / 経歴</label>
-        <textarea name="bio" rows={3} defaultValue={editing?.bio ?? ""} placeholder="任意" style={{ ...input, resize: "vertical", lineHeight: 1.7 }} />
-
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>Instagram URL</label>
-            <input name="snsInstagram" defaultValue={editing?.snsInstagram ?? ""} placeholder="https://www.instagram.com/..." style={input} />
-          </div>
-          <div style={col}>
-            <label style={label}>X URL</label>
-            <input name="snsX" defaultValue={editing?.snsX ?? ""} placeholder="https://x.com/..." style={input} />
-          </div>
-        </div>
-        <label style={label}>FIBA 3x3 個人ページ URL</label>
-        <input name="fibaUrl" defaultValue={editing?.fibaUrl ?? ""} placeholder="https://play.fiba3x3.com/players/..." style={input} />
-
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>ロースター写真（3:4／{editing?.photo ? "変更時のみ" : "任意"}）</label>
-            {editing?.photo && <img src={`${editing.photo.url}?w=140`} alt="" style={{ width: 96, aspectRatio: "3/4", objectFit: "cover", borderRadius: 8, display: "block", marginBottom: 8 }} />}
-            <input name="photo" type="file" accept="image/*" style={{ ...input, padding: 9 }} />
-          </div>
-          <div style={col}>
-            <label style={label}>モーダル用ポートレート（縦／{editing?.photoDetail ? "変更時のみ" : "任意"}）</label>
-            {editing?.photoDetail && <img src={`${editing.photoDetail.url}?w=140`} alt="" style={{ width: 96, aspectRatio: "3/4", objectFit: "cover", borderRadius: 8, display: "block", marginBottom: 8 }} />}
-            <input name="photoDetail" type="file" accept="image/*" style={{ ...input, padding: 9 }} />
-          </div>
-        </div>
-
-        <div style={half}>
-          <div style={col}>
-            <label style={label}>表示順（order・小さいほど先）</label>
-            <input name="order" type="number" inputMode="numeric" defaultValue={(editing as { order?: number } | null)?.order ?? ""} placeholder="1" style={input} />
-          </div>
-          <div style={{ ...col, display: "flex", alignItems: "flex-end", paddingBottom: 2 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontWeight: 700, fontSize: 14 }}>
-              <input type="checkbox" name="active" checked={active} onChange={(e) => setActive(e.target.checked)} style={{ width: 20, height: 20 }} />
-              現役ロースターに表示（オフ＝過去の選手）
+          </Field>
+          <Field label="選手名（英語）" required hint="サイトの選手カードに大きく表示されます。">
+            <input name="nameEn" required defaultValue={editing?.nameEn ?? ""} placeholder="例：MISA YOKOI" style={input} />
+          </Field>
+          <Field label="背番号" required>
+            <input name="number" type="number" inputMode="numeric" required defaultValue={editing?.number ?? ""} placeholder="7" style={narrow} />
+          </Field>
+          <Field label="在籍" required hint="オフにすると「過去の選手」になり、トップのロースターに表示されなくなります（過去の試合の出場記録は残ります）。">
+            <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontWeight: 700, fontSize: 15, padding: "12px 14px", border: "1px solid #d6d6d6", borderRadius: 10, background: active ? "#fff6f0" : "#fafafa", borderColor: active ? ORANGE : "#d6d6d6" }}>
+              <input type="checkbox" name="active" checked={active} onChange={(e) => setActive(e.target.checked)} style={{ width: 22, height: 22, accentColor: ORANGE }} />
+              {active ? "現役ロースターに表示する" : "過去の選手（ロースターに表示しない）"}
             </label>
-          </div>
-        </div>
+          </Field>
+          <Field label="表示順" hint="ロースターの並び順。小さい数字ほど先に表示されます。">
+            <input name="order" type="number" inputMode="numeric" defaultValue={(editing as { order?: number } | null)?.order ?? ""} placeholder="1" style={narrow} />
+          </Field>
+        </Section>
 
-        {msg && <p style={{ marginTop: 16, fontSize: 14, fontWeight: 700, color: msg.ok ? "#1a8f3c" : "#d11" }}>{msg.text}</p>}
-        <button type="submit" disabled={busy} style={{ marginTop: 20, padding: "13px 28px", fontSize: 15, fontWeight: 800, color: "#fff", background: busy ? "#f0a877" : "#EE651C", border: "none", borderRadius: 10, cursor: "pointer" }}>
-          {busy ? "保存中…" : editing ? "更新する" : "追加する"}
-        </button>
+        <Section title="プロフィール" desc="選手の詳細画面に表示されます。空欄の項目は表示されません。">
+          <Field label="ポジション">
+            <input name="position" list="positions" defaultValue={editing?.position ?? ""} placeholder="Guard" style={narrow} />
+            <datalist id="positions">{PLAYER_POSITIONS.map((p) => <option key={p} value={p} />)}</datalist>
+          </Field>
+          <Field label="身長" hint="数字だけ（cm）">
+            <input name="height" inputMode="numeric" defaultValue={editing?.height ?? ""} placeholder="170" style={narrow} />
+          </Field>
+          <Field label="生年月日">
+            <input name="birthdate" type="date" defaultValue={bdVal(editing?.birthdate)} style={narrow} />
+          </Field>
+          <Field label="出身">
+            <input name="hometown" defaultValue={editing?.hometown ?? ""} placeholder="例：長野県上田市" style={input} />
+          </Field>
+          <Field label="国籍">
+            <input name="nationality" list="nats" defaultValue={editing?.nationality ?? ""} placeholder="Japan" style={narrow} />
+            <datalist id="nats">{NATIONALITIES.map((n) => <option key={n} value={n} />)}</datalist>
+          </Field>
+          <Field label="プロフィール / 経歴">
+            <textarea name="bio" rows={4} defaultValue={editing?.bio ?? ""} style={{ ...input, resize: "vertical", lineHeight: 1.7 }} />
+          </Field>
+        </Section>
+
+        <Section title="SNS・リンク" desc="入力したものだけ、選手の詳細画面にアイコンで表示されます。URL はそのまま貼り付けてください。">
+          <Field label="Instagram URL">
+            <input name="snsInstagram" defaultValue={editing?.snsInstagram ?? ""} placeholder="https://www.instagram.com/..." style={input} />
+          </Field>
+          <Field label="X URL">
+            <input name="snsX" defaultValue={editing?.snsX ?? ""} placeholder="https://x.com/..." style={input} />
+          </Field>
+          <Field label="FIBA 3x3 個人ページ URL">
+            <input name="fibaUrl" defaultValue={editing?.fibaUrl ?? ""} placeholder="https://play.fiba3x3.com/players/..." style={input} />
+          </Field>
+        </Section>
+
+        <Section title="写真">
+          <PhotoField name="photo" label="ロースター写真" hint="トップのロースターに表示。縦長 3:4 の画像。" current={editing?.photo?.url} />
+          <PhotoField name="photoDetail" label="詳細画面用ポートレート" hint="選手をタップしたときの詳細画面に表示。縦長の画像。" current={editing?.photoDetail?.url} />
+        </Section>
+
+        <SaveBar busy={busy} editing={!!editing} msg={msg} />
       </form>
     </AdminChrome>
   );

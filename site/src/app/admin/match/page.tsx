@@ -16,5 +16,12 @@ export default async function AdminMatchPage({ searchParams }: { searchParams: P
   const uniq = (xs: (string | undefined)[]) => [...new Set(xs.map((x) => (x || "").trim()).filter(Boolean))].sort();
   const leagues = uniq(matches.map((m) => m.league));
   const sponsors = uniq(matches.map((m) => m.leagueSponsor));
-  return <MatchForm players={opts} matches={list} leagues={leagues} sponsors={sponsors} editing={editing} />;
+  // opponent -> country seen in past games, to pre-fill the flag when a team is typed again
+  const oppCountries: Record<string, string> = {};
+  for (const m of matches) {
+    try {
+      for (const g of JSON.parse(m.scores || "{}").games ?? []) if (g?.opp && g?.country) oppCountries[String(g.opp).trim()] = g.country;
+    } catch {}
+  }
+  return <MatchForm players={opts} matches={list} leagues={leagues} sponsors={sponsors} oppCountries={oppCountries} editing={editing} />;
 }
