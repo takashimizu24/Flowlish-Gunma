@@ -23,8 +23,9 @@ export default function RosterSection({ players }: { players: Player[] }) {
     <>
       <div className="roster-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 9 }}>
         {players.map((p) => (
+          // the cell carries the hover lift + shadow; the card inside is masked (see .roster-card)
+          <div key={p.id} className="roster-cell">
           <button
-            key={p.id}
             onClick={() => setActive(p)}
             className="roster-card"
             // explicit resets instead of `all: unset`: an inline `all` would also wipe the
@@ -33,7 +34,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
               appearance: "none", margin: 0, padding: 0, font: "inherit", color: "inherit", textAlign: "left", width: "100%", boxSizing: "border-box",
               cursor: "pointer", position: "relative", isolation: "isolate", borderRadius: 14, overflow: "hidden",
               aspectRatio: "3/4", background: "#1d1d1d",
-              border: "2px solid #fff", display: "flex", flexDirection: "column", justifyContent: "flex-end",
+              border: "none", display: "flex", flexDirection: "column", justifyContent: "flex-end",
             }}
           >
             {/* photo as its own layer so it can zoom on hover without moving the text */}
@@ -47,6 +48,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
               </div>
             </div>
           </button>
+          </div>
         ))}
       </div>
 
