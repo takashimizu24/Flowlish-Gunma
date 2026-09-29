@@ -10,7 +10,7 @@ import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/
 import { getChannelVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
+import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import { isCmsConfigured } from "@/lib/microcms";
 import type { News, Match, Player } from "@/lib/types";
@@ -69,7 +69,7 @@ function Schedule({ matches }: { matches: Match[] }) {
                     and, via the track's align-items: stretch, its siblings — instead of clipping. */}
                 <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   {isSingle(m) ? (
-                    matchYear(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</div> : null
+                    yearLabel(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{yearLabel(m)}</div> : null
                   ) : (
                     // long league names (e.g. FIBA 3x3 WOMEN'S SERIES 2026) shrink to stay on one line on PC
                     <FitLine max={19} min={14} style={{ fontWeight: 800, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></FitLine>

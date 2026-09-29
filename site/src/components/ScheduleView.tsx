@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart } from "@/lib/match";
+import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 import { countryName, flagUrl } from "@/lib/countries";
@@ -129,7 +129,7 @@ function MatchRow({ m }: { m: Match }) {
   const entry = m.entryPlayers ?? [];
   const upcoming = m.status !== "結果" || (!m.resultBadge && games.length === 0);
   const single = isSingle(m);
-  const year = matchYear(m);
+  const year = yearLabel(m);
   const title = matchTitle(m);
   const jpTitle = hasJP(title);
   const jpLeague = hasJP(leagueLabel(m));

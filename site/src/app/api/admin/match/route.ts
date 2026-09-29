@@ -69,6 +69,8 @@ export async function POST(req: Request) {
   // title sponsor (冠スポンサー) — same "only when set or being cleared" rule
   const sponsor = String(b.leagueSponsor ?? "").trim();
   if (sponsor || b.prevLeagueSponsor) payload.leagueSponsor = sponsor;
+  // "2025-26 SEASON" instead of the year — sent only when on or being switched off
+  if (b.showSeason || b.prevShowSeason) payload.showSeason = !!b.showSeason;
 
   const editing = typeof b.id === "string" && b.id;
   const r = await fetch(

@@ -79,6 +79,8 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
       year: f.get("year"),
       season: f.get("season"),
       prevSeason: editing?.season ?? "",
+      showSeason: f.get("showSeason") === "on",
+      prevShowSeason: !!editing?.showSeason,
       round: f.get("round"),
       date: f.get("date"),
       dateLabel: f.get("dateLabel"),
@@ -146,6 +148,10 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
           </Field>
           <Field label="年" hint="リーグ名の横に出る年。空欄なら開催日の年になります。">
             <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={{ ...input, maxWidth: 200 }} />
+            <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
+              <input type="checkbox" name="showSeason" defaultChecked={!!editing?.showSeason} style={{ width: 20, height: 20, accentColor: ORANGE, flex: "none" }} />
+              年の代わりにシーズンを表示（例：3XS 2025-26 SEASON）
+            </label>
           </Field>
           <Field label="シーズン" hint="通常は「自動」（4月〜翌3月で判定）。日程とシーズンがずれる大会だけ指定してください。">
             <select name="season" defaultValue={editing?.season ?? ""} style={{ ...input, maxWidth: 280 }}>

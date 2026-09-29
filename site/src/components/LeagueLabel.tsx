@@ -30,6 +30,6 @@ export function TitleText({ text }: { text: string }) {
   );
 }
 
-export function LeagueLabel({ m }: { m: Pick<Match, "league" | "leagueSponsor" | "year" | "date" | "round"> }) {
+export function LeagueLabel({ m }: { m: Pick<Match, "league" | "leagueSponsor" | "year" | "date" | "round" | "season" | "showSeason"> }) {
   return <TitleText text={leagueLabel(m)} />;
 }
