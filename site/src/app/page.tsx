@@ -5,6 +5,7 @@ import TopCarousel from "@/components/TopCarousel";
 import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import VideoSection from "@/components/VideoSection";
+import FitLine from "@/components/FitLine";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { getChannelVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
@@ -62,7 +63,7 @@ function Schedule({ matches }: { matches: Match[] }) {
           {matches.map((m) => {
             const entry = m.entryPlayers ?? [];
             return (
-              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, display: "flex", gap: 18 }}>
+              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", gap: 18 }}>
                 {/* left: league + round big. The memo (備考) is shown on the schedule page only.
                     minHeight (not a fixed height): a long title that wraps grows the card —
                     and, via the track's align-items: stretch, its siblings — instead of clipping. */}
@@ -70,7 +71,8 @@ function Schedule({ matches }: { matches: Match[] }) {
                   {isSingle(m) ? (
                     matchYear(m) ? <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: ".03em", color: ORANGE, lineHeight: 1.12, fontVariantNumeric: "tabular-nums" }}>{matchYear(m)}</div> : null
                   ) : (
-                    <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></div>
+                    // long league names (e.g. FIBA 3x3 WOMEN'S SERIES 2026) shrink to stay on one line on PC
+                    <FitLine max={19} min={14} style={{ fontWeight: 800, letterSpacing: hasJP(leagueLabel(m)) ? "0" : ".03em", textTransform: hasJP(leagueLabel(m)) ? "none" : "uppercase", color: ORANGE, lineHeight: 1.12 }}><LeagueLabel m={m} /></FitLine>
                   )}
                   {(() => { const t = matchTitle(m); const jp = hasJP(t); return (
                     <div style={{ fontWeight: 800, fontSize: 30, lineHeight: jp ? 1.28 : 1.04, marginTop: 3, textTransform: "uppercase" }}><TitleText text={t} /></div>
