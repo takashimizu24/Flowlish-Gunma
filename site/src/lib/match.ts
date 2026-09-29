@@ -51,9 +51,15 @@ export function isSingle(m: Pick<Match, "round" | "league">): boolean {
   return !((m.league || "").trim() && roundTitle(m));
 }
 
+// League as displayed: title sponsor + league ("PLCO 3XS"). The sponsor lives in
+// its own field so the schedule filter still groups by the plain league name.
+export function leagueName(m: Pick<Match, "league" | "leagueSponsor">): string {
+  return [m.leagueSponsor, m.league].map((s) => (s || "").trim()).filter(Boolean).join(" ");
+}
+
 // The big title: the round if present, otherwise the league (event) name.
-export function matchTitle(m: Pick<Match, "round" | "league">): string {
-  return roundTitle(m) || (m.league || "").trim();
+export function matchTitle(m: Pick<Match, "round" | "league" | "leagueSponsor">): string {
+  return roundTitle(m) || leagueName(m);
 }
 
 // Tournaments shown with their edition (第N回) instead of the year.
@@ -62,14 +68,14 @@ const EDITION: Record<string, number> = { "3x3 日本選手権": 2015 };
 
 // League + year as one label ("3x3.EXE PREMIER 2026"). For editioned tournaments
 // the edition replaces the year ("第11回 3x3日本選手権").
-export function leagueLabel(m: Pick<Match, "league" | "year" | "date" | "round">): string {
+export function leagueLabel(m: Pick<Match, "league" | "leagueSponsor" | "year" | "date" | "round">): string {
   const base = m.league ? EDITION[m.league] : undefined;
   if (base !== undefined) {
     const y = Number(matchYear(m));
     // qualifiers (県予選) run in Nov of the previous year -> championship is year+1
     const champYear = y && (m.round || "").includes("予選") ? y + 1 : y;
     const ed = champYear ? champYear - base : 0;
-    if (ed >= 1) return `第${ed}回 ${m.league}`;
+    if (ed >= 1) return `第${ed}回 ${leagueName(m)}`;
   }
-  return [m.league, matchYear(m)].filter(Boolean).join(" ");
+  return [leagueName(m), matchYear(m)].filter(Boolean).join(" ");
 }

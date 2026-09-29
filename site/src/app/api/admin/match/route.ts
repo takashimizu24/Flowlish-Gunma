@@ -61,6 +61,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "シーズンは 2025-26 の形式で指定してください" }, { status: 400 });
   }
   if (season || b.prevSeason) payload.season = season;
+  // title sponsor (冠スポンサー) — same "only when set or being cleared" rule
+  const sponsor = String(b.leagueSponsor ?? "").trim();
+  if (sponsor || b.prevLeagueSponsor) payload.leagueSponsor = sponsor;
 
   const editing = typeof b.id === "string" && b.id;
   const r = await fetch(
