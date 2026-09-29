@@ -81,7 +81,9 @@ h1, h2, h3, h4 { margin: 0; }
 .sched-dot.is-active { width: 22px; background: var(--orange); }
 
 @media (max-width: 640px) {
-  .sched-card { flex-basis: calc(100vw - 2 * clamp(16px, 4.5vw, 48px)); }
+  /* 100% = the track's inner width (both side gutters removed). Unlike 100vw it
+     excludes a desktop scrollbar, so the card always matches the news panel. */
+  .sched-card { flex-basis: 100%; }
   /* gap = side gutter + 8px, so a snapped card never shows a sliver of its
      neighbours (a flat 20px was within 1px of the gutter on 430px+ phones) */
   .sched-track { gap: calc(clamp(16px, 4.5vw, 48px) + 8px); }
@@ -119,7 +121,12 @@ h1, h2, h3, h4 { margin: 0; }
 @media (max-width: 900px) {
   .sns { display: none !important; }                 /* header SNS hidden */
   .cta { height: 30px !important; padding: 0 13px !important; font-size: 10px !important; border-radius: 6px !important; }
-  .nav-links { width: 100% !important; justify-content: space-between !important; }
+  /* nav spans the full width with equal space at both ends and between words
+     (space-evenly, no side padding). The negative right margin cancels the
+     letter-spacing trailing the last letter, so the visible gaps are exact. */
+  .nav-wrap { padding: 0 !important; }
+  .nav-links { width: 100% !important; justify-content: space-evenly !important; }
+  .nav-links a { padding: 10px 0 !important; margin-right: -.1em; }
   .topnews-grid { grid-template-columns: 1fr !important; }   /* stack big + right */
   .vcar-vp { display: none !important; }                     /* hide desktop vertical slider */
   .mcar-vp { display: block !important; }                    /* show mobile horizontal carousel */
@@ -130,9 +137,7 @@ h1, h2, h3, h4 { margin: 0; }
   .footer-grid > div:first-child { grid-column: 1 / -1 !important; }
 }
 @media (max-width: 600px) {
-  .nav-wrap { padding: 0 !important; }
-  .nav-links { justify-content: space-evenly !important; }
-  .nav-links a { padding: 10px 0 !important; font-size: 13px !important; letter-spacing: .01em !important; }
+  .nav-links a { font-size: 13px !important; letter-spacing: .01em !important; margin-right: -.01em; }
   .news-grid { grid-template-columns: 1fr !important; }
   .roster-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .partners-grid { grid-template-columns: repeat(2, 1fr) !important; }
