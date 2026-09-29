@@ -10,6 +10,8 @@ export const siteConfig = {
     youtube: "https://www.youtube.com/@flowlish3x3",
     line: "https://lin.ee/YORCJaa",
   },
+  // YouTube channel for the home VIDEO section (the public feed needs the UC… id, not the @handle)
+  youtubeChannelId: "UCs77Oh4IkE3flrtPvt0vVQw",
   fanClubUrl: "/fanclub", // COMING SOON page until the real fan club launches
   shopUrl: "https://flowlish3x3.base.shop/", // external online shop (opens in a new tab)
   // Orange top bar. Empty string hides it (the mock's "デザイン案" label is

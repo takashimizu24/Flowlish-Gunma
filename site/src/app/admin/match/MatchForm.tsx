@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
-import { roundTitle } from "@/lib/match";
+import { roundTitle, seasonOf, seasonStart, currentSeason } from "@/lib/match";
 import type { Match } from "@/lib/types";
+
+// override choices: 2022-23 .. next season, newest first
+const SEASON_OPTS = Array.from({ length: seasonStart(currentSeason()) + 2 - 2022 }, (_, i) => seasonOf(seasonStart(currentSeason()) + 1 - i));
 
 type PlayerOpt = { id: string; number: number; nameEn: string; active: boolean };
 type MatchListItem = { id: string; league: string; year?: number; round: string; dateLabel: string; date: string };
@@ -64,6 +67,8 @@ export default function MatchForm({ players, matches, editing }: { players: Play
       id: editing?.id,
       league: f.get("league"),
       year: f.get("year"),
+      season: f.get("season"),
+      prevSeason: editing?.season ?? "",
       round: f.get("round"),
       date: f.get("date"),
       dateLabel: f.get("dateLabel"),
@@ -135,6 +140,13 @@ export default function MatchForm({ players, matches, editing }: { players: Play
           <div style={{ flex: "0 1 100px" }}>
             <label style={label}>年</label>
             <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={input} />
+          </div>
+          <div style={{ flex: "0 1 150px" }}>
+            <label style={label}>シーズン</label>
+            <select name="season" defaultValue={editing?.season ?? ""} style={input}>
+              <option value="">自動（日付から）</option>
+              {SEASON_OPTS.map((x) => <option key={x} value={x}>{x}</option>)}
+            </select>
           </div>
           <div style={{ flex: "1 1 130px" }}>
             <label style={label}>ラウンド（任意）</label>

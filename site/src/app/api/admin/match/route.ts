@@ -54,6 +54,13 @@ export async function POST(req: Request) {
     liveUrl: b.liveUrl || "",
   };
   if (b.date) payload.date = new Date(b.date).toISOString();
+  // season override ("2025-26"); only sent when set or being cleared, so the form
+  // still works before the `season` field exists in the CMS schema.
+  const season = String(b.season ?? "").trim();
+  if (season && !/^\d{4}-\d{2}$/.test(season)) {
+    return NextResponse.json({ ok: false, error: "シーズンは 2025-26 の形式で指定してください" }, { status: 400 });
+  }
+  if (season || b.prevSeason) payload.season = season;
 
   const editing = typeof b.id === "string" && b.id;
   const r = await fetch(

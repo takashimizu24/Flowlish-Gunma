@@ -20,7 +20,8 @@ export type News = MicroCMSListContent & {
 export type Match = MicroCMSListContent & {
   league?: string;    // EXE PREMIER
   round?: string;     // ROUND.6 (no year — the year is its own field)
-  year?: number;      // season year, e.g. 2026 (falls back to the date if unset)
+  year?: number;      // league year shown next to the league, e.g. 2026 (falls back to the date if unset)
+  season?: string;    // season override, e.g. "2025-26" (derived from the date if unset)
   date?: string;
   dateLabel?: string; // 08/― 日程調整中
   roundName?: string; // 八戸ラウンド

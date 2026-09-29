@@ -4,9 +4,9 @@ import RosterSection from "@/components/RosterSection";
 import TopCarousel from "@/components/TopCarousel";
 import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
-import VideoGallery from "@/components/VideoGallery";
+import VideoSection from "@/components/VideoSection";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
-import { getVideos, type Video } from "@/lib/youtube";
+import { getChannelVideos, type Video } from "@/lib/youtube";
 import { siteConfig } from "@/lib/config";
 import { rankLabel } from "@/lib/rank";
 import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
@@ -114,42 +114,20 @@ function FanClubBanner() {
   );
 }
 
-const YT_PLAY = (
-  <svg viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z" fill="#FF0000" /><path d="M27 34.5l18-10.5-18-10.5z" fill="#fff" /></svg>
-);
-function MovieHeading() {
+/**
+ * 公式チャンネルの最新動画。microCMS は使わず、チャンネルの公開フィードから
+ * そのまま拾う。動画が取れなかったときは何も描かない（セクションごと消える）。
+ */
+function VideoBlock({ videos }: { videos: Video[] }) {
+  if (videos.length === 0) return null;
   return (
-    <div style={{ ...container, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-      <Heading>Movie</Heading>
-      <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>View All →</a>
-    </div>
-  );
-}
-
-function Movie({ videos }: { videos: Video[] }) {
-  if (videos.length === 0) {
-    // fallback: no API key / no videos yet — simple channel CTA
-    return (
-      <section id="movie" style={{ ...section, background: INK, padding: "56px 0" }}>
-        <MovieHeading />
-        <div style={container}>
-          <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" className="movie-card" aria-label="FLOWLISH GUNMA 公式YouTubeチャンネル">
-            <span className="movie-play">{YT_PLAY}</span>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: "clamp(20px,3.4vw,30px)", letterSpacing: ".02em", textTransform: "uppercase", color: "#fff", lineHeight: 1.1 }}>Official YouTube</div>
-              <div style={{ opacity: 0.72, fontSize: "clamp(12px,2.4vw,14px)", marginTop: 8, color: "#fff" }}>試合ハイライトや最新ムービーはYouTube公式チャンネルで公開中。</div>
-            </div>
-            <span className="movie-cta">チャンネルを見る →</span>
-          </a>
-        </div>
-      </section>
-    );
-  }
-  return (
-    <section id="movie" style={{ ...section, background: INK, padding: "56px 0" }}>
-      <MovieHeading />
+    <section id="video" style={{ ...section, background: INK, color: "#fff", padding: "56px 0" }}>
+      <div style={{ ...container, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <Heading>Video</Heading>
+        <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
+      </div>
       <div style={container}>
-        <VideoGallery videos={videos} />
+        <VideoSection videos={videos} />
       </div>
     </section>
   );
@@ -257,7 +235,7 @@ function Partners({ partners }: { partners: { id: string; name: string; logo?: {
 
 export default async function Home() {
   const [players, news, matches, partners, banners, videos] = await Promise.all([
-    getPlayers(), getNews(), getMatches(), getPartners(), getBanners(), getVideos(5),
+    getPlayers(), getNews(), getMatches(), getPartners(), getBanners(), getChannelVideos(siteConfig.youtubeChannelId, 5),
   ]);
 
   return (
@@ -272,7 +250,7 @@ export default async function Home() {
         <Schedule matches={matches} />
         <FanClubBanner />
         <NewsList news={news} />
-        <Movie videos={videos} />
+        <VideoBlock videos={videos} />
         <Roster players={players} />
         <Partners partners={partners} />
       </main>

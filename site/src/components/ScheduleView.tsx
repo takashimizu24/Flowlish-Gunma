@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle } from "@/lib/match";
+import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, currentSeason } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 
@@ -169,31 +169,35 @@ function MatchRow({ m }: { m: Match }) {
 const selStyle: React.CSSProperties = {};
 
 export default function ScheduleView({ matches }: { matches: Match[] }) {
-  const [fLeague, setFLeague] = useState("");
-  const [fSeason, setFSeason] = useState("");
-  const [fPlayer, setFPlayer] = useState("");
-
   const { leagues, seasons, players } = useMemo(() => {
     const lg = new Set<string>();
-    const yr = new Set<string>();
+    const ss = new Set<string>();
     const pl = new Map<string, { id: string; number: number; nameEn: string }>();
     for (const m of matches) {
       if (m.league) lg.add(m.league);
-      const y = matchYear(m); if (y) yr.add(y);
+      const s = matchSeason(m); if (s) ss.add(s);
       // filter options: current roster only (active players)
       for (const p of m.entryPlayers ?? []) if (p.active !== false && !pl.has(p.id)) pl.set(p.id, { id: p.id, number: p.number, nameEn: p.nameEn });
     }
     return {
       leagues: [...lg],
-      seasons: [...yr].sort((a, b) => Number(b) - Number(a)),
+      seasons: [...ss].sort((a, b) => seasonStart(b) - seasonStart(a)),
       players: [...pl.values()].sort((a, b) => (a.number || 99) - (b.number || 99)),
     };
   }, [matches]);
 
+  const [fLeague, setFLeague] = useState("");
+  // open on the current season (or the latest one that has matches)
+  const [fSeason, setFSeason] = useState(() => {
+    const cur = currentSeason();
+    return seasons.includes(cur) ? cur : seasons[0] ?? "";
+  });
+  const [fPlayer, setFPlayer] = useState("");
+
   const filtered = useMemo(
     () => matches.filter((m) =>
       (!fLeague || m.league === fLeague) &&
-      (!fSeason || matchYear(m) === fSeason) &&
+      (!fSeason || matchSeason(m) === fSeason) &&
       (!fPlayer || (m.entryPlayers ?? []).some((p) => p.id === fPlayer))
     ),
     [matches, fLeague, fSeason, fPlayer]
@@ -202,31 +206,31 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
   const grouped = useMemo(() => {
     const map = new Map<string, Match[]>();
     for (const m of filtered) {
-      const y = matchYear(m) || "0";
+      const y = matchSeason(m) || "0";
       if (!map.has(y)) map.set(y, []);
       map.get(y)!.push(m);
     }
-    return [...map.keys()].sort((a, b) => Number(b) - Number(a)).map((y) => ({ y, list: map.get(y)! }));
+    return [...map.keys()].sort((a, b) => seasonStart(b) - seasonStart(a)).map((y) => ({ y, list: map.get(y)! }));
   }, [filtered]);
 
-  const active = fLeague || fSeason || fPlayer;
-  const reset = () => { setFLeague(""); setFSeason(""); setFPlayer(""); };
+  const active = fLeague || fPlayer;
+  const reset = () => { setFLeague(""); setFPlayer(""); };
 
   return (
     <>
       <div className="sched-filters">
         <label className="sched-filter">
+          <span>シーズン</span>
+          <select value={fSeason} onChange={(e) => setFSeason(e.target.value)}>
+            {seasons.map((y) => <option key={y} value={y}>{y} SEASON</option>)}
+            <option value="">全シーズン</option>
+          </select>
+        </label>
+        <label className="sched-filter">
           <span>リーグ</span>
           <select value={fLeague} onChange={(e) => setFLeague(e.target.value)} style={selStyle}>
             <option value="">すべて</option>
             {leagues.map((l) => <option key={l} value={l}>{l}</option>)}
-          </select>
-        </label>
-        <label className="sched-filter">
-          <span>シーズン</span>
-          <select value={fSeason} onChange={(e) => setFSeason(e.target.value)}>
-            <option value="">すべて</option>
-            {seasons.map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </label>
         <label className="sched-filter">

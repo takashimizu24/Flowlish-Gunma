@@ -1,70 +1,69 @@
-// Latest videos from the team's YouTube channel via the public RSS feed
-// (no API key needed). The channel id is resolved from the @handle once and
-// cached; override with env YOUTUBE_CHANNEL_ID. Returns [] on any failure.
+/**
+ * YouTube チャンネルの最新動画。
+ *
+ * 公開フィード（`/feeds/videos.xml`）を読むだけなので、APIキーも microCMS の
+ * 枠も使わない。チャンネルに投稿すればサイト側は勝手に新しくなる。
+ * 返るのは最新15本まで（YouTube 側の仕様）。
+ */
 
-export type Video = { id: string; title: string; date: string; thumb: string };
+export type Video = {
+  id: string;
+  title: string;
+  published: string;
+  url: string;
+};
 
-const HANDLE = process.env.YOUTUBE_HANDLE || "flowlish3x3";
-const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-
-const decode = (s: string) =>
-  s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&#([0-9]+);/g, (_, n) => String.fromCodePoint(+n));
-
-async function channelId(): Promise<string | null> {
-  if (process.env.YOUTUBE_CHANNEL_ID) return process.env.YOUTUBE_CHANNEL_ID;
-  try {
-    const r = await fetch(`https://www.youtube.com/@${HANDLE}`, {
-      headers: { "user-agent": UA, "accept-language": "ja,en;q=0.8" },
-      next: { revalidate: 86400 },
-    });
-    if (!r.ok) return null;
-    const html = await r.text();
-    const m = html.match(/"channelId":"(UC[\w-]+)"/) || html.match(/\/channel\/(UC[\w-]+)/);
-    return m ? m[1] : null;
-  } catch {
-    return null;
-  }
+/** RSS は実体参照が入るので、使うものだけ戻す。 */
+function decode(s: string): string {
+  return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
 }
 
-// A Short's /shorts/<id> URL returns 200; a normal video redirects (30x) to /watch.
-async function isShort(id: string): Promise<boolean> {
-  try {
-    const r = await fetch(`https://www.youtube.com/shorts/${id}`, {
-      method: "HEAD",
-      redirect: "manual",
-      headers: { "user-agent": UA },
-      next: { revalidate: 86400 },
-    });
-    return r.status === 200;
-  } catch {
-    return false;
-  }
+/**
+ * サムネイル。`maxresdefault` は HD 以外の動画には存在しないので、
+ * 背景画像として2枚重ね、無いときは下の `hqdefault` が出るようにする。
+ * どちらも 16:9 で cover すると、hqdefault の上下の黒帯がちょうど切れる。
+ */
+export function thumbLayers(id: string): string {
+  return `url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg), url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)`;
 }
 
-export async function getVideos(max = 5): Promise<Video[]> {
+/**
+ * 最新動画を取得する。取れなかったときは空配列を返し、セクションごと隠す。
+ * （YouTube が落ちていてもトップページは出したい）
+ */
+export async function getChannelVideos(channelId: string, limit = 5): Promise<Video[]> {
+  if (!channelId) return [];
   try {
-    const cid = await channelId();
-    if (!cid) return [];
-    const r = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${cid}`, {
-      headers: { "user-agent": UA },
-      next: { revalidate: 3600 },
-    });
-    if (!r.ok) return [];
-    const xml = await r.text();
-    const all = xml
-      .split("<entry>")
-      .slice(1)
-      .map((e) => {
-        const id = e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || "";
-        const title = decode(e.match(/<(?:media:)?title[^>]*>([^<]*)<\/(?:media:)?title>/)?.[1] || "");
-        const date = e.match(/<published>([^<]+)<\/published>/)?.[1] || "";
-        const thumb = e.match(/<media:thumbnail url="([^"]+)"/)?.[1] || (id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "");
-        return { id, title, date, thumb };
-      })
-      .filter((v) => v.id);
-    // exclude Shorts
-    const shorts = await Promise.all(all.map((v) => isShort(v.id)));
-    return all.filter((_, i) => !shorts[i]).slice(0, max);
+    const res = await fetch(
+      `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`,
+      { next: { revalidate: 3600 } } // 1時間キャッシュ。投稿の反映はこの間隔。
+    );
+    if (!res.ok) return [];
+    const xml = await res.text();
+
+    const videos: Video[] = [];
+    for (const entry of xml.match(/<entry>[\s\S]*?<\/entry>/g) ?? []) {
+      const id = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)?.[1];
+      const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1];
+      const published = entry.match(/<published>(.*?)<\/published>/)?.[1];
+      if (!id || !title) continue;
+      // Shorts は縦長で一覧に合わないので外す。フィード上はリンクが /shorts/ になる。
+      if (/<link[^>]+href="[^"]*\/shorts\//.test(entry)) continue;
+      videos.push({
+        id,
+        title: decode(title).trim(),
+        published: published ?? "",
+        url: `https://www.youtube.com/watch?v=${id}`,
+      });
+      if (videos.length >= limit) break;
+    }
+    return videos;
   } catch {
     return [];
   }
