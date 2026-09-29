@@ -31,5 +31,5 @@ export function TitleText({ text }: { text: string }) {
 }
 
 export function LeagueLabel({ m }: { m: Pick<Match, "league" | "year" | "date" | "round"> }) {
-  return <Keep3x3 text={leagueLabel(m)} />;
+  return <TitleText text={leagueLabel(m)} />;
 }
