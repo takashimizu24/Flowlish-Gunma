@@ -5,7 +5,7 @@ import { rankLabel } from "@/lib/rank";
 import { yearLabel, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, isUpcoming } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
-import { countryName, flagUrl } from "@/lib/countries";
+import { countryName, flagEmoji } from "@/lib/countries";
 
 const ORANGE = "#EE651C";
 const INK = "#141414";
@@ -54,9 +54,8 @@ function GameLine({ g }: { g: Game }) {
         <span style={{ flex: "none" }}>vs</span>
         <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.opp}</span>
         {/* overseas opponents only (a game with no country is a domestic team); stays visible when a long name truncates */}
-        {flagUrl(g.country) && (
-          <img src={flagUrl(g.country)} alt={countryName(g.country)} title={countryName(g.country)} width={18} height={13.5}
-            style={{ flex: "none", width: 18, height: 13.5, objectFit: "cover", borderRadius: 2, boxShadow: "0 0 0 1px rgba(20,20,20,.12)" }} />
+        {flagEmoji(g.country) && (
+          <span className="flag-emoji" role="img" aria-label={countryName(g.country)} title={countryName(g.country)} style={{ flex: "none", fontSize: 17 }}>{flagEmoji(g.country)}</span>
         )}
       </span>
       <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: wo ? 0.4 : 1 }}>{wo ? "—" : g.score}</span>

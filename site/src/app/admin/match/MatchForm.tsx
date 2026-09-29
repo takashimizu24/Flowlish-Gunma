@@ -5,7 +5,7 @@ import { AdminChrome } from "@/components/admin/AdminChrome";
 import { Section, Field, Chip, PickList, PickRow, PickHeading, SaveBar, inputStyle as input, ORANGE } from "@/components/admin/ui";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
 import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate } from "@/lib/match";
-import { COUNTRY_GROUPS, flagUrl } from "@/lib/countries";
+import { COUNTRY_GROUPS, flagEmoji } from "@/lib/countries";
 import type { Match } from "@/lib/types";
 
 // override choices: 2022-23 .. next season, newest first
@@ -213,7 +213,7 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <input value={g.opp} onChange={(e) => setOpp(i, e.target.value)} placeholder="対戦相手" style={{ ...small, flex: "1 1 220px", minWidth: 0 }} />
                       <span style={{ display: "flex", gap: 8, alignItems: "center", flex: "none" }}>
-                        <span aria-hidden="true" style={{ flex: "none", width: 28, height: 21, borderRadius: 3, background: flagUrl(g.country) ? `center/cover url(${flagUrl(g.country)})` : "#ececec", boxShadow: flagUrl(g.country) ? "0 0 0 1px rgba(0,0,0,.12)" : "none" }} />
+                        <span aria-hidden="true" className="flag-emoji" style={{ flex: "none", width: 28, textAlign: "center", fontSize: 24 }}>{flagEmoji(g.country) || <span style={{ display: "inline-block", width: 24, height: 18, borderRadius: 3, background: "#ececec", verticalAlign: "middle" }} />}</span>
                         <select value={g.country} onChange={(e) => updGame(i, { country: e.target.value })} title="国・地域（海外チームのみ）" style={{ ...small, width: 160 }}>
                           <option value="">国内（国旗なし）</option>
                           {COUNTRY_GROUPS.map((grp) => (

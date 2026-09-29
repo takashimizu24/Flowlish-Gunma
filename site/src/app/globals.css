@@ -296,3 +296,7 @@ h1, h2, h3, h4 { margin: 0; }
   .nav-drop-cols { grid-template-columns: 1fr 1fr; gap: 2px 16px; padding: 14px 16px 16px; max-height: 70vh; overflow: auto; }
   .nav-drop-link { font-size: 13px; white-space: normal; }
 }
+
+/* flag emoji after an opponent's name: Apple's own emoji on iPhone/Mac, the
+   Noto Color Emoji web font elsewhere (both are the waving-flag style) */
+.flag-emoji { font-family: "Apple Color Emoji", var(--font-emoji), "Noto Color Emoji", sans-serif; font-style: normal; font-weight: 400; line-height: 1; letter-spacing: 0; text-transform: none; }

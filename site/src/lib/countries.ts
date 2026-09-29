@@ -73,5 +73,18 @@ export const isCountryCode = (code?: string) => !!code && CODE.test(code.toLower
 
 export const countryName = (code?: string) => (code ? NAMES.get(code.toLowerCase()) ?? code.toUpperCase() : "");
 
-/** Flag image (SVG) for a country code, or "" for domestic / unknown. */
-export const flagUrl = (code?: string) => (isCountryCode(code) ? `https://flagcdn.com/${code!.toLowerCase()}.svg` : "");
+// The UK home nations are emoji tag sequences (🏴 + tag letters + cancel tag);
+// Northern Ireland has no emoji, so it falls back to the Union flag.
+const TAG_FLAGS: Record<string, string> = { "gb-eng": "gbeng", "gb-sct": "gbsct", "gb-wls": "gbwls" };
+
+/**
+ * Flag as an emoji ("jp" -> 🇯🇵), or "" for domestic / unknown. Rendered with the
+ * device's emoji font (Apple's waving flags on iPhone/Mac) — see `.flag-emoji`.
+ */
+export function flagEmoji(code?: string): string {
+  if (!isCountryCode(code)) return "";
+  const c = code!.toLowerCase();
+  if (TAG_FLAGS[c]) return "\u{1F3F4}" + [...TAG_FLAGS[c]].map((ch) => String.fromCodePoint(0xe0000 + ch.charCodeAt(0))).join("") + "\u{E007F}";
+  const cc = c === "gb-nir" ? "gb" : c.slice(0, 2);
+  return [...cc.toUpperCase()].map((ch) => String.fromCodePoint(0x1f1e6 + ch.charCodeAt(0) - 65)).join("");
+}
