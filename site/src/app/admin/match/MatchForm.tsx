@@ -5,7 +5,7 @@ import { AdminChrome } from "@/components/admin/AdminChrome";
 import { Section, Field, Chip, PickList, PickRow, PickHeading, SaveBar, inputStyle as input, ORANGE } from "@/components/admin/ui";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
 import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate } from "@/lib/match";
-import { COUNTRIES, flagUrl } from "@/lib/countries";
+import { COUNTRY_GROUPS, flagUrl } from "@/lib/countries";
 import type { Match } from "@/lib/types";
 
 // override choices: 2022-23 .. next season, newest first
@@ -197,7 +197,7 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
             <input name="resultBadge" defaultValue={editing?.resultBadge ?? ""} list="badges" placeholder="例：優勝 / 6位" style={{ ...input, maxWidth: 280 }} />
             <datalist id="badges">{RESULT_BADGES.map((b) => <option key={b} value={b} />)}</datalist>
           </Field>
-          <Field label="試合スコア" hint="勝敗はスコアから自動で判定します。海外チームとの試合は「国・地域」を選ぶと、サイトで相手チーム名の後ろに国旗が付きます（国内チームは空欄のまま）。">
+          <Field label="試合スコア" hint="勝敗はスコアから自動で判定します。「国・地域」を選ぶと、サイトで相手チーム名の後ろに国旗が付きます。国内の大会は空欄のまま、国際大会では日本のチームにも「日本」を選んでください。">
             {games.map((g, i) => {
               const hint = winHint(g);
               const win = hint === "WIN" || hint === "不戦勝";
@@ -216,7 +216,11 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
                         <span aria-hidden="true" style={{ flex: "none", width: 28, height: 21, borderRadius: 3, background: flagUrl(g.country) ? `center/cover url(${flagUrl(g.country)})` : "#ececec", boxShadow: flagUrl(g.country) ? "0 0 0 1px rgba(0,0,0,.12)" : "none" }} />
                         <select value={g.country} onChange={(e) => updGame(i, { country: e.target.value })} title="国・地域（海外チームのみ）" style={{ ...small, width: 160 }}>
                           <option value="">国内（国旗なし）</option>
-                          {COUNTRIES.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+                          {COUNTRY_GROUPS.map((grp) => (
+                            <optgroup key={grp.region} label={grp.region}>
+                              {grp.list.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+                            </optgroup>
+                          ))}
                         </select>
                       </span>
                     </div>

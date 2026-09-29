@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isCountryCode } from "@/lib/countries";
 
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const KEY = process.env.MICROCMS_API_KEY;
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
   // overseas opponent's country (ISO alpha-2); empty = domestic, so it's only stored when set
   const parsedGames = games.map((g) => {
     const c = String(g.country ?? "").trim().toLowerCase();
-    return /^[a-z]{2}$/.test(c) ? { ...baseGame(g), country: c } : baseGame(g);
+    return isCountryCode(c) ? { ...baseGame(g), country: c } : baseGame(g);
   });
 
   // Round is stored without a year — the season/year is derived from the date and
