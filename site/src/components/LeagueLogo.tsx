@@ -14,6 +14,6 @@ export default function LeagueLogo({ league, size = "card" }: { league?: string;
   const logo = leagueLogo(league);
   if (!logo) return null;
   const s = SIZES[size];
-  const style = { "--lh": `${h(logo.ratio, s.pc)}px`, "--lh-sp": `${h(logo.ratio, s.sp)}px` } as React.CSSProperties;
+  const style = { "--lh": `${Math.round(h(logo.ratio, s.pc) * logo.scale)}px`, "--lh-sp": `${Math.round(h(logo.ratio, s.sp) * logo.scale)}px` } as React.CSSProperties;
   return <img className="lg-logo" src={logo.src} alt={league} width={Math.round(40 * logo.ratio)} height={40} style={style} />;
 }
