@@ -84,21 +84,17 @@ function Schedule({ matches }: { matches: Match[] }) {
                       ); })()}
                     </div>
                   </div>
-                  {/* date with the final placing beside it (saves a row) */}
-                  <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px 12px", marginTop: 10 }}>
-                    <span style={{ fontWeight: 600, fontSize: 24, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
-                    {m.resultBadge && <span style={{ fontWeight: 700, fontSize: 15, lineHeight: 1, padding: "6px 12px", borderRadius: 7, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
-                  </div>
+                  <div style={{ fontWeight: 600, fontSize: 24, lineHeight: 1.1, marginTop: 10, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
                 </div>
-                {/* bottom: entry members in one row (photo, number + surname), pinned to the card's foot */}
-                {entry.length > 0 && (
-                  <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
-                    <div style={{ flex: "none", fontWeight: 800, fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: ORANGE, writingMode: "vertical-rl", transform: "rotate(180deg)" }}>Entry</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", minWidth: 0 }}>
+                {/* bottom (pinned to the card's foot): entry members in one row (photo, number +
+                    surname) on the left, the final placing in the bottom-right corner */}
+                {(entry.length > 0 || m.resultBadge) && (
+                  <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
+                    <div className="entry-row">
                       {entry.map((p) => (
-                        <div key={p.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, width: 54 }}>
-                          <span style={{ width: 38, height: 38, borderRadius: "50%", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=120)` : "#141414" }} />
+                        <div key={p.id} className="entry-item">
+                          <span className="entry-photo" style={{ background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=120)` : "#141414" }} />
                           <span style={{ display: "flex", alignItems: "baseline", gap: 3, maxWidth: "100%", lineHeight: 1 }}>
                             <span style={{ flex: "none", fontWeight: 700, fontSize: 12, color: ORANGE, fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
                             <span style={{ fontWeight: 700, fontSize: 9.5, textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn?.split(" ").slice(-1)[0]}</span>
@@ -106,6 +102,7 @@ function Schedule({ matches }: { matches: Match[] }) {
                         </div>
                       ))}
                     </div>
+                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 700, fontSize: 16, lineHeight: 1, padding: "7px 13px", borderRadius: 7, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
                   </div>
                 )}
               </div>
