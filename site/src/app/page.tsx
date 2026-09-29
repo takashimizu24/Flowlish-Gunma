@@ -56,7 +56,7 @@ function Schedule({ matches }: { matches: Match[] }) {
     <section id="schedule" style={{ ...section, background: INK, color: "#fff", padding: "52px 0 38px" }}>
       <div style={{ ...container, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <Heading>Schedule</Heading>
-        <a href="/schedule" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
+        <a href="/schedule" className="pill-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
       </div>
       {matches.length === 0 ? (
         <div style={container}><Empty label="試合未登録（microCMS「matches」に追加すると、ここにカードが並びます）" /></div>
@@ -105,7 +105,8 @@ function Schedule({ matches }: { matches: Match[] }) {
                         </div>
                       ))}
                     </div>
-                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 800, fontSize: 24, lineHeight: 1, letterSpacing: ".01em", padding: "5px 10px 4px", borderRadius: 8, background: ORANGE, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{rankLabel(m.resultBadge)}</span>}
+                    {/* original proportions (16px text in 7/13px padding), scaled up ×1.3 */}
+                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 700, fontSize: 21, lineHeight: 1, padding: "9px 17px", borderRadius: 9, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
                   </div>
                 )}
               </div>
@@ -139,7 +140,7 @@ function VideoBlock({ videos }: { videos: Video[] }) {
     <section id="video" style={{ ...section, background: INK, color: "#fff", padding: "56px 0" }}>
       <div style={{ ...container, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <Heading>Video</Heading>
-        <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
+        <a href={siteConfig.sns.youtube} target="_blank" rel="noopener" className="pill-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
       </div>
       <div style={container}>
         <VideoSection videos={videos} />
@@ -155,17 +156,19 @@ function NewsList({ news }: { news: News[] }) {
         <div style={panel}>
           <div style={{ marginBottom: "clamp(22px,3.2vw,40px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <Heading>News</Heading>
-            <a href="/news" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: INK, border: `1.5px solid ${INK}`, borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
+            <a href="/news" className="pill-btn pill-btn--ink" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 800, fontSize: 12, letterSpacing: ".06em", textTransform: "uppercase", color: INK, border: `1.5px solid ${INK}`, borderRadius: 999, padding: "8px 16px", whiteSpace: "nowrap", flex: "none" }}>VIEW ALL</a>
           </div>
           {news.length === 0 ? (
             <Empty label="お知らせ未登録" />
           ) : (
             <div className="news-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "30px 26px" }}>
               {news.map((n) => (
-                <a key={n.id} href={`/news/${n.id}`} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <span style={{ width: "100%", aspectRatio: "16/9", borderRadius: 8, background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6", flex: "none" }} />
+                <a key={n.id} href={`/news/${n.id}`} className="news-card" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <span className="news-thumb-wrap" style={{ borderRadius: 8 }}>
+                    <span className="news-thumb" style={{ background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6" }} />
+                  </span>
                   <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</span>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42, color: INK }}>{n.title}</h3>
+                  <h3 className="news-title" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42, color: INK }}>{n.title}</h3>
                   {n.categories?.length ? (
                     <span style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {n.categories.map((c) => <span key={c} style={{ fontWeight: 700, fontSize: 10, letterSpacing: ".06em", textTransform: "uppercase", border: `1px solid ${INK}`, color: INK, borderRadius: 999, padding: "3px 11px" }}>{c}</span>)}

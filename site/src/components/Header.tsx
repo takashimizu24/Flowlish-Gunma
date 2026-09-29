@@ -54,7 +54,7 @@ export default async function Header() {
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div className="sns" style={{ display: "flex", gap: 8 }}>
               {SNS.map((s) => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={s.label}
+                <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={s.label} className="icon-btn"
                    style={{ width: 36, height: 36, border: "1px solid rgba(255,255,255,.26)", borderRadius: 8, display: "grid", placeItems: "center", color: "#fff" }}>
                   <svg style={{ width: 22, height: 22, fill: "currentColor", display: "block" }}><use href={`/icons.svg#${s.icon}`} /></svg>
                 </a>
@@ -76,7 +76,7 @@ export default async function Header() {
               const style: React.CSSProperties = { fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" };
               if (n.href === "/schedule") return <ScheduleMenu key={n.label} linkStyle={style} {...menu} />;
               return (
-                <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} style={style}>
+                <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} className="nav-link" style={style}>
                   {n.label}
                 </a>
               );

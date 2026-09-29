@@ -40,7 +40,7 @@ export default function Footer() {
             </p>
             <div style={{ display: "flex", gap: 10 }}>
               {SNS.map((s) => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={s.label}
+                <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={s.label} className="icon-btn"
                    style={{ width: 38, height: 38, border: "1px solid rgba(255,255,255,.16)", borderRadius: 9, display: "grid", placeItems: "center", color: "#fff" }}>
                   <svg style={{ width: 22, height: 22, fill: "currentColor", display: "block" }}><use href={`/icons.svg#${s.icon}`} /></svg>
                 </a>
@@ -53,7 +53,7 @@ export default function Footer() {
               {c.links.map((l) => {
                 const external = l.href.startsWith("http");
                 return (
-                  <a key={l.label} href={l.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} style={linkStyle}>{l.label}</a>
+                  <a key={l.label} href={l.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} className="footer-link" style={linkStyle}>{l.label}</a>
                 );
               })}
             </div>

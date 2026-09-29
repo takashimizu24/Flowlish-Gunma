@@ -323,3 +323,41 @@ h1, h2, h3, h4 { margin: 0; }
   .entry-item { min-width: 34px; }
   .entry-photo { width: 34px; height: 34px; }
 }
+
+/* ===================== hover actions (site-wide) =====================
+   Transitions apply everywhere; the hover states themselves only on devices with
+   a real pointer, so a tap on a phone never leaves an element "stuck" hovered.
+   Several targets carry inline styles, hence the !important on those properties. */
+.nav-link { text-decoration: underline 2px transparent; text-underline-offset: 7px; transition: color .15s, text-decoration-color .15s; }
+.icon-btn, .cta, .pill-btn, .footer-link, .back-link { transition: background-color .18s, color .18s, border-color .18s, opacity .18s, transform .18s, box-shadow .18s; }
+.news-thumb-wrap { display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; flex: none; }
+.news-thumb { display: block; width: 100%; height: 100%; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.news-title { transition: color .15s; }
+.news-card--tile { transition: transform .25s, box-shadow .25s; }
+.roster-card { isolation: isolate; transition: transform .25s, border-color .2s, box-shadow .25s; }
+.roster-photo { position: absolute; inset: 0; z-index: -1; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.hcar-slide img, .vcar-item img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.sched-dot:not(.is-active) { transition: width .25s ease, background .2s ease; }
+.sched-filter select { transition: border-color .15s, background-color .15s; }
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover { color: var(--orange) !important; text-decoration-color: var(--orange); }
+  .icon-btn:hover { background: #fff; color: #141414 !important; border-color: #fff !important; transform: translateY(-2px); }
+  .cta:hover { background: #d85713 !important; transform: translateY(-1px); box-shadow: 0 6px 16px -6px rgba(238,101,28,.7); }
+  .pill-btn:hover { background: #fff; color: #141414 !important; border-color: #fff !important; }
+  .pill-btn--ink:hover { background: var(--ink); color: #fff !important; border-color: var(--ink) !important; }
+  .news-card:hover .news-thumb { transform: scale(1.05); }
+  .news-card:hover .news-title { color: var(--orange) !important; }
+  .news-card--tile:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -18px rgba(0,0,0,.7); }
+  .roster-card:hover { transform: translateY(-4px); border-color: var(--orange) !important; box-shadow: 0 16px 32px -16px rgba(0,0,0,.65); }
+  .roster-card:hover .roster-photo { transform: scale(1.05); }
+  .hcar-slide:hover img, .vcar-item:hover img { transform: scale(1.03); }
+  .footer-link:hover { color: var(--orange) !important; opacity: 1 !important; }
+  .back-link:hover { color: var(--orange) !important; opacity: 1 !important; }
+  .sched-dot:not(.is-active):hover { background: rgba(255,255,255,.65); }
+  .sched-filter select:hover { border-color: rgba(255,255,255,.5); background-color: rgba(255,255,255,.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn:hover, .cta:hover, .news-card--tile:hover, .roster-card:hover { transform: none; }
+  .news-card:hover .news-thumb, .roster-card:hover .roster-photo, .hcar-slide:hover img, .vcar-item:hover img { transform: none; }
+}

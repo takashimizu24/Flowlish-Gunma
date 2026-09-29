@@ -16,7 +16,7 @@ export default async function NewsDetail({ params }: { params: Promise<{ id: str
       <Header />
       <main style={{ background: INK, color: "#fff", minHeight: "70vh", padding: "clamp(28px,5vw,52px) 0 64px" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", padding: "0 clamp(16px,4.5vw,40px)" }}>
-          <a href="/news" style={{ fontSize: 12, fontWeight: 700, color: "#fff", opacity: 0.7 }}>← お知らせ一覧へ</a>
+          <a href="/news" className="back-link" style={{ fontSize: 12, fontWeight: 700, color: "#fff", opacity: 0.7 }}>← お知らせ一覧へ</a>
 
           {!n ? (
             <p style={{ opacity: 0.7, marginTop: 30 }}>このお知らせは見つかりませんでした。</p>

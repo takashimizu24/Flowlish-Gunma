@@ -26,12 +26,18 @@ export default function RosterSection({ players }: { players: Player[] }) {
           <button
             key={p.id}
             onClick={() => setActive(p)}
+            className="roster-card"
+            // explicit resets instead of `all: unset`: an inline `all` would also wipe the
+            // .roster-card hover styles (transform, shadow) and the isolation the photo layer needs
             style={{
-              all: "unset", cursor: "pointer", position: "relative", borderRadius: 14, overflow: "hidden",
-              aspectRatio: "3/4", background: p.photo ? `#141414 center/cover url(${p.photo.url}?w=800)` : "#1d1d1d",
-              border: "2px solid #fff", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "transform .2s",
+              appearance: "none", margin: 0, padding: 0, font: "inherit", color: "inherit", textAlign: "left", width: "100%", boxSizing: "border-box",
+              cursor: "pointer", position: "relative", isolation: "isolate", borderRadius: 14, overflow: "hidden",
+              aspectRatio: "3/4", background: "#1d1d1d",
+              border: "2px solid #fff", display: "flex", flexDirection: "column", justifyContent: "flex-end",
             }}
           >
+            {/* photo as its own layer so it can zoom on hover without moving the text */}
+            {p.photo && <span className="roster-photo" aria-hidden="true" style={{ background: `#141414 center/cover url(${p.photo.url}?w=800)` }} />}
             <div style={{ position: "absolute", top: 12, right: 14, fontWeight: 700, fontSize: 52, color: ORANGE, lineHeight: 1 }}>{p.number}</div>
             <div style={{ padding: 12, background: "linear-gradient(0deg,rgba(20,20,20,.94),transparent)", color: "#fff" }}>
               {p.position && <span style={{ display: "block", lineHeight: 1, color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}

@@ -25,11 +25,13 @@ export default async function NewsPage() {
           ) : (
             <div className="news-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "28px 24px" }}>
               {news.map((n) => (
-                <a key={n.id} href={`/news/${n.id}`} style={{ display: "flex", flexDirection: "column", background: "#fff", color: INK, borderRadius: 14, overflow: "hidden" }}>
-                  <span style={{ width: "100%", aspectRatio: "16/9", background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6", flex: "none" }} />
+                <a key={n.id} href={`/news/${n.id}`} className="news-card news-card--tile" style={{ display: "flex", flexDirection: "column", background: "#fff", color: INK, borderRadius: 14, overflow: "hidden" }}>
+                  <span className="news-thumb-wrap">
+                    <span className="news-thumb" style={{ background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6" }} />
+                  </span>
                   <span style={{ display: "flex", flexDirection: "column", gap: 10, padding: "16px 18px 20px" }}>
                     <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</span>
-                    <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42 }}>{n.title}</h3>
+                    <h3 className="news-title" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42 }}>{n.title}</h3>
                     {n.categories?.length ? (
                       <span style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                         {n.categories.map((c) => <span key={c} style={{ fontWeight: 700, fontSize: 10, letterSpacing: ".06em", textTransform: "uppercase", border: `1px solid ${INK}`, borderRadius: 999, padding: "3px 11px" }}>{c}</span>)}

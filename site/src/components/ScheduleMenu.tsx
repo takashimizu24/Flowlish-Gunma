@@ -34,7 +34,7 @@ export default function ScheduleMenu({ linkStyle, upcoming, seasons, leagues }: 
     <div ref={ref} className="nav-drop" onMouseEnter={() => hoverable() && show()} onMouseLeave={() => hoverable() && hideSoon()}
       // keyboard focus only — a tap also focuses the link, which must not pre-open it
       onFocus={(e) => { if ((e.target as HTMLElement).matches(":focus-visible")) show(); }} onBlur={(e) => { if (!ref.current?.contains(e.relatedTarget as Node)) setOpen(false); }}>
-      <a href="/schedule" aria-haspopup="true" aria-expanded={open} style={linkStyle}
+      <a href="/schedule" aria-haspopup="true" aria-expanded={open} className="nav-link" style={linkStyle}
         onClick={(e) => { if (!hoverable() && !open) { e.preventDefault(); setOpen(true); } }}>
         SCHEDULE
         <svg className="nav-drop-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: open ? "rotate(180deg)" : "none" }}><polyline points="6 9 12 15 18 9" /></svg>

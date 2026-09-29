@@ -27,7 +27,7 @@ export default function SchoolPage() {
             <span style={{ display: "block", whiteSpace: "nowrap" }}>開講までもう少しお待ちください。</span>
           </p>
 
-          <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 34, fontWeight: 800, fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "11px 24px" }}>
+          <a href="/" className="pill-btn" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 34, fontWeight: 800, fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", color: "#fff", border: "1.5px solid rgba(255,255,255,.4)", borderRadius: 999, padding: "11px 24px" }}>
             ← Back to Home
           </a>
         </div>
