@@ -6,7 +6,7 @@ const NAV = [
   { label: "NEWS", href: "/news" },
   { label: "TEAM", href: "/#roster" },
   { label: "PARTNERS", href: "/#partners" },
-  { label: "SCHOOL", href: "#" },
+  { label: "SCHOOL", href: siteConfig.schoolUrl },
   { label: "SHOP", href: siteConfig.shopUrl },
 ];
 
