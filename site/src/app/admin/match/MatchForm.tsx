@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
-import { roundTitle, seasonOf, seasonStart, currentSeason } from "@/lib/match";
+import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate } from "@/lib/match";
 import type { Match } from "@/lib/types";
 
 // override choices: 2022-23 .. next season, newest first
 const SEASON_OPTS = Array.from({ length: seasonStart(currentSeason()) + 2 - 2022 }, (_, i) => seasonOf(seasonStart(currentSeason()) + 1 - i));
 
 type PlayerOpt = { id: string; number: number; nameEn: string; active: boolean };
-type MatchListItem = { id: string; league: string; year?: number; round: string; dateLabel: string; date: string };
+type MatchListItem = { id: string; league: string; year?: number; season: string; round: string; dateLabel: string; date: string };
 
 const ymdShort = (d: string, label: string) => label || (d ? new Date(d).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : "");
 type Game = { phase: string; opp: string; myScore: string; oppScore: string; wo: "" | "win" | "lose" };
@@ -34,7 +34,7 @@ function gamesFromScores(scores?: string): Game[] {
   }
 }
 
-export default function MatchForm({ players, matches, editing }: { players: PlayerOpt[]; matches: MatchListItem[]; editing: Match | null }) {
+export default function MatchForm({ players, matches, leagues, sponsors, editing }: { players: PlayerOpt[]; matches: MatchListItem[]; leagues: string[]; sponsors: string[]; editing: Match | null }) {
   const [entry, setEntry] = useState<string[]>(() => (editing?.entryPlayers ?? []).map((p) => p.id));
   const [games, setGames] = useState<Game[]>(() => gamesFromScores(editing?.scores));
   const [busy, setBusy] = useState(false);
@@ -46,6 +46,9 @@ export default function MatchForm({ players, matches, editing }: { players: Play
 
   // show the date input in JST so it round-trips without a day shift
   const dateVal = editing?.date ? new Date(new Date(editing.date).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10) : "";
+  // live date -> the season "自動" resolves to (shown in the season select)
+  const [dateIn, setDateIn] = useState(dateVal);
+  const autoSeason = dateIn ? seasonForDate(new Date(`${dateIn}T00:00:00+09:00`)) : "";
 
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
@@ -92,6 +95,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         (e.target as HTMLFormElement).reset();
         setEntry([]);
         setGames([]);
+        setDateIn("");
       }
     } else {
       setMsg({ ok: false, text: d.error || "保存に失敗しました" });
@@ -120,14 +124,19 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         </div>
         {listOpen && (
           <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 300, overflow: "auto", marginTop: 12 }}>
-            {matches.map((m) => (
-              <a key={m.id} href={`/admin/match?id=${m.id}`}
+            {matches.map((m, i) => (
+              <div key={m.id} style={{ display: "contents" }}>
+              {m.season !== matches[i - 1]?.season && (
+                <div style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".08em", color: "#EE651C", margin: i ? "10px 2px 2px" : "0 2px 2px" }}>{m.season ? `${m.season} SEASON` : "シーズン不明"}</div>
+              )}
+              <a href={`/admin/match?id=${m.id}`}
                 style={{ display: "flex", alignItems: "baseline", gap: 8, fontSize: 12.5, padding: "8px 11px", borderRadius: 8, textDecoration: "none", border: "1px solid", borderColor: editing?.id === m.id ? "#EE651C" : "#eee", background: editing?.id === m.id ? "#EE651C" : "#fafafa", color: editing?.id === m.id ? "#fff" : "#444" }}>
                 <span style={{ fontWeight: 800, flex: "0 0 auto", minWidth: 38, color: editing?.id === m.id ? "#fff" : "#EE651C", fontVariantNumeric: "tabular-nums" }}>{m.year ?? "—"}</span>
                 <span style={{ fontWeight: 700, opacity: editing?.id === m.id ? 0.85 : 0.55, flex: "0 0 auto", minWidth: 92 }}>{m.league || "—"}</span>
                 <span style={{ fontWeight: 800, flex: "1 1 auto" }}>{roundTitle(m)}</span>
                 <span style={{ opacity: 0.7, flex: "0 0 auto", fontVariantNumeric: "tabular-nums" }}>{ymdShort(m.date, m.dateLabel)}</span>
               </a>
+              </div>
             ))}
           </div>
         )}
@@ -137,11 +146,13 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         <div style={half}>
           <div style={{ flex: "2 1 180px" }}>
             <label style={label}>リーグ（任意）</label>
-            <input name="league" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="空欄も可" style={input} />
+            <input name="league" list="league-names" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="冠スポンサー名は含めない" style={input} />
+            <datalist id="league-names">{leagues.map((l) => <option key={l} value={l} />)}</datalist>
           </div>
           <div style={{ flex: "1 1 120px" }}>
             <label style={label}>冠スポンサー（任意）</label>
-            <input name="leagueSponsor" defaultValue={editing?.leagueSponsor ?? ""} placeholder="例: PLCO" style={input} />
+            <input name="leagueSponsor" list="sponsor-names" defaultValue={editing?.leagueSponsor ?? ""} placeholder="例: PLCO" style={input} />
+            <datalist id="sponsor-names">{sponsors.map((s) => <option key={s} value={s} />)}</datalist>
           </div>
           <div style={{ flex: "0 1 100px" }}>
             <label style={label}>年</label>
@@ -150,7 +161,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
           <div style={{ flex: "0 1 150px" }}>
             <label style={label}>シーズン</label>
             <select name="season" defaultValue={editing?.season ?? ""} style={input}>
-              <option value="">自動（日付から）</option>
+              <option value="">{autoSeason ? `自動（${autoSeason}）` : "自動（日付から）"}</option>
               {SEASON_OPTS.map((x) => <option key={x} value={x}>{x}</option>)}
             </select>
           </div>
@@ -163,7 +174,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         <div style={half}>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>開催日</label>
-            <input name="date" type="date" defaultValue={dateVal} style={input} />
+            <input name="date" type="date" defaultValue={dateVal} onChange={(e) => setDateIn(e.target.value)} style={input} />
           </div>
           <div style={{ flex: "1 1 160px" }}>
             <label style={label}>日付表示（空欄なら自動）</label>
@@ -237,7 +248,7 @@ export default function MatchForm({ players, matches, editing }: { players: Play
         ))}
         <button type="button" onClick={addGame} style={{ marginTop: 4, padding: "9px 16px", fontSize: 13, fontWeight: 700, color: "#EE651C", background: "#fff", border: "1px dashed #EE651C", borderRadius: 9, cursor: "pointer" }}>＋ 試合を追加</button>
 
-        <label style={label}>備考（任意・イレギュラーな情報など）</label>
+        <label style={label}>備考（任意・イレギュラーな情報など／スケジュールページにのみ表示）</label>
         <textarea name="memo" defaultValue={editing?.memo ?? ""} rows={2} placeholder="例：会場変更 / 悪天候により順延 など" style={{ ...input, resize: "vertical", lineHeight: 1.6 }} />
 
         <label style={label}>大会公式サイト URL（任意）</label>

@@ -12,7 +12,7 @@ export default function AdminHome() {
       <div style={{ display: "grid", gap: 14, gridTemplateColumns: "1fr 1fr" }}>
         <a href="/admin/match" style={card}>
           <div style={{ fontWeight: 800, fontSize: 17 }}>🏀 試合を追加</div>
-          <div style={{ color: "#777", fontSize: 13, marginTop: 6 }}>ラウンド・結果・出場選手・スコア</div>
+          <div style={{ color: "#777", fontSize: 13, marginTop: 6 }}>リーグ・冠スポンサー・シーズン・結果・出場選手・スコア</div>
         </a>
         <a href="/admin/news" style={card}>
           <div style={{ fontWeight: 800, fontSize: 17 }}>📰 お知らせを追加</div>
