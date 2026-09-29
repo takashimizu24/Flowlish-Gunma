@@ -140,7 +140,7 @@ function MatchRow({ m }: { m: Match }) {
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
           {/* competition logo to the left of the league + round lines */}
           <div className="lg-head lg-head--list">
-            <LeagueLogo league={m.league} />
+            <LeagueLogo league={m.league} size="list" />
             <div style={{ flex: "1 1 auto", minWidth: 0 }}>
               {single ? (
                 year ? <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null

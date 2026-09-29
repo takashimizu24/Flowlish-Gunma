@@ -302,11 +302,12 @@ h1, h2, h3, h4 { margin: 0; }
 .flag-emoji { font-family: "Apple Color Emoji", var(--font-emoji), "Noto Color Emoji", sans-serif; font-style: normal; font-weight: 400; line-height: 1; letter-spacing: 0; text-transform: none; }
 
 /* ===== competition logo left of the league / round title ===== */
-.lg-head { display: flex; align-items: center; gap: 12px; }
-.lg-logo { flex: none; display: block; width: 64px; height: 40px; object-fit: contain; object-position: center; }
+.lg-head { display: flex; align-items: center; gap: 14px; }
+.lg-logo { flex: none; display: block; width: auto; height: var(--lh); }
 .lg-head--list { gap: 18px; }
-.lg-head--list .lg-logo { width: 96px; height: 52px; }
+/* home cards: logo pinned top-right, text starts at the left edge */
+.lg-head--corner { flex-direction: row-reverse; align-items: flex-start; }
 @media (max-width: 640px) {
-  .lg-head--list { gap: 14px; }
-  .lg-head--list .lg-logo { width: 64px; height: 36px; }
+  .lg-logo { height: var(--lh-sp); }
+  .lg-head, .lg-head--list { gap: 12px; }
 }

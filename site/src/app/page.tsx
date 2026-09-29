@@ -64,13 +64,13 @@ function Schedule({ matches }: { matches: Match[] }) {
           {matches.map((m) => {
             const entry = sortEntry(m.entryPlayers);
             return (
-              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+              <div key={m.id} className="sched-card" style={{ scrollSnapAlign: "start", background: "#fff", color: INK, borderRadius: 14, padding: 22, minHeight: 248, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
                 {/* top: logo + league + round big, then date / venue / placing. The memo (備考) is
                     shown on the schedule page only. minHeight (not a fixed height): a long title
                     that wraps grows the card — and, via the track's stretch, its siblings. */}
                 <div style={{ minWidth: 0, display: "flex", flexDirection: "column" }}>
-                  {/* competition logo to the left of the league + round lines */}
-                  <div className="lg-head">
+                  {/* league + round lines, with the competition logo in the card's top-right corner */}
+                  <div className="lg-head lg-head--corner">
                     <LeagueLogo league={m.league} />
                     <div style={{ flex: "1 1 auto", minWidth: 0 }}>
                       {isSingle(m) ? (
@@ -84,22 +84,25 @@ function Schedule({ matches }: { matches: Match[] }) {
                       ); })()}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: 24, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>
-                    {m.dateLabel || ymd(m.date)}
+                  {/* date with the final placing beside it (saves a row) */}
+                  <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px 12px", marginTop: 10 }}>
+                    <span style={{ fontWeight: 600, fontSize: 24, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</span>
+                    {m.resultBadge && <span style={{ fontWeight: 700, fontSize: 15, lineHeight: 1, padding: "6px 12px", borderRadius: 7, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
                   </div>
                   {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
-                  {m.resultBadge && <div style={{ marginTop: 14 }}><span style={{ fontWeight: 700, fontSize: 16, padding: "6px 13px", borderRadius: 7, background: ORANGE, color: "#fff", display: "inline-block" }}>{rankLabel(m.resultBadge)}</span></div>}
                 </div>
-                {/* bottom: entry members (circular photos, two columns), pinned to the card's foot */}
+                {/* bottom: entry members in one row (photo, number + surname), pinned to the card's foot */}
                 {entry.length > 0 && (
-                  <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 12 }}>
-                    <div style={{ fontWeight: 800, fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: ORANGE, marginBottom: 8 }}>Entry</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "8px 14px" }}>
+                  <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
+                    <div style={{ flex: "none", fontWeight: 800, fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: ORANGE, writingMode: "vertical-rl", transform: "rotate(180deg)" }}>Entry</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", minWidth: 0 }}>
                       {entry.map((p) => (
-                        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                          <span style={{ flex: "none", width: 30, height: 30, borderRadius: "50%", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=90)` : "#141414" }} />
-                          <span style={{ flex: "none", fontWeight: 400, fontSize: 19, color: ORANGE, lineHeight: 1, minWidth: 20, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
-                          <span style={{ fontWeight: 700, fontSize: 10, textTransform: "uppercase", lineHeight: 1.1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn}</span>
+                        <div key={p.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, width: 54 }}>
+                          <span style={{ width: 38, height: 38, borderRadius: "50%", background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=120)` : "#141414" }} />
+                          <span style={{ display: "flex", alignItems: "baseline", gap: 3, maxWidth: "100%", lineHeight: 1 }}>
+                            <span style={{ flex: "none", fontWeight: 700, fontSize: 12, color: ORANGE, fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
+                            <span style={{ fontWeight: 700, fontSize: 9.5, textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn?.split(" ").slice(-1)[0]}</span>
+                          </span>
                         </div>
                       ))}
                     </div>
