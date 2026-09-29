@@ -6,6 +6,7 @@ import ScheduleCarousel from "@/components/ScheduleCarousel";
 import IntroOverlay from "@/components/IntroOverlay";
 import VideoSection from "@/components/VideoSection";
 import FitLine from "@/components/FitLine";
+import OneLine from "@/components/OneLine";
 import LeagueLogo from "@/components/LeagueLogo";
 import { getPlayers, getNews, getMatches, getPartners, getBanners } from "@/lib/api";
 import { getChannelVideos, type Video } from "@/lib/youtube";
@@ -84,8 +85,10 @@ function Schedule({ matches }: { matches: Match[] }) {
                       ); })()}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: 24, lineHeight: 1.1, marginTop: 10, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</div>
-                  {m.venue && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</div>}
+                  {/* 4px: makes the visible gap round -> date match league -> round (~16px of ink gap) */}
+                  <div style={{ fontWeight: 600, fontSize: 24, lineHeight: 1.1, marginTop: 4, fontVariantNumeric: "tabular-nums" }}>{m.dateLabel || ymd(m.date)}</div>
+                  {/* venue: one line only — hidden entirely when it doesn't fit */}
+                  {m.venue && <OneLine style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{m.venue}</OneLine>}
                 </div>
                 {/* bottom (pinned to the card's foot): entry members in one row (photo, number +
                     surname) on the left, the final placing in the bottom-right corner */}
