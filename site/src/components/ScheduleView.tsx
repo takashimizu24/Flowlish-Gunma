@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { rankLabel } from "@/lib/rank";
-import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart, currentSeason } from "@/lib/match";
+import { roundTitle, matchYear, leagueLabel, hasJP, isSingle, matchTitle, matchSeason, seasonStart } from "@/lib/match";
 import { LeagueLabel, TitleText } from "@/components/LeagueLabel";
 import type { Match, Player } from "@/lib/types";
 import { countryName, flagUrl } from "@/lib/countries";
@@ -196,11 +196,7 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
   }, [matches]);
 
   const [fLeague, setFLeague] = useState("");
-  // open on the current season (or the latest one that has matches)
-  const [fSeason, setFSeason] = useState(() => {
-    const cur = currentSeason();
-    return seasons.includes(cur) ? cur : seasons[0] ?? "";
-  });
+  const [fSeason, setFSeason] = useState(""); // opens unfiltered: all seasons
   const [fPlayer, setFPlayer] = useState("");
 
   const filtered = useMemo(
@@ -222,8 +218,8 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
     return [...map.keys()].sort((a, b) => seasonStart(b) - seasonStart(a)).map((y) => ({ y, list: map.get(y)! }));
   }, [filtered]);
 
-  const active = fLeague || fPlayer;
-  const reset = () => { setFLeague(""); setFPlayer(""); };
+  const active = fLeague || fSeason || fPlayer;
+  const reset = () => { setFLeague(""); setFSeason(""); setFPlayer(""); };
 
   return (
     <>
@@ -231,8 +227,8 @@ export default function ScheduleView({ matches }: { matches: Match[] }) {
         <label className="sched-filter">
           <span>シーズン</span>
           <select value={fSeason} onChange={(e) => setFSeason(e.target.value)}>
-            {seasons.map((y) => <option key={y} value={y}>{y} SEASON</option>)}
             <option value="">全シーズン</option>
+            {seasons.map((y) => <option key={y} value={y}>{y} SEASON</option>)}
           </select>
         </label>
         <label className="sched-filter">
