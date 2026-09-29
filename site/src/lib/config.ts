@@ -12,6 +12,8 @@ export const siteConfig = {
   },
   // YouTube channel for the home VIDEO section (the public feed needs the UC… id, not the @handle)
   youtubeChannelId: "UCs77Oh4IkE3flrtPvt0vVQw",
+  // leagues listed in the header's SCHEDULE drop-down (exact league names, in this order)
+  menuLeagues: ["3x3.EXE PREMIER", "3XS", "FIBA 3x3 Women's Series"],
   fanClubUrl: "/fanclub", // COMING SOON page until the real fan club launches
   schoolUrl: "/school",   // COMING SOON page until the school opens
   shopUrl: "https://flowlish3x3.base.shop/", // external online shop (opens in a new tab)

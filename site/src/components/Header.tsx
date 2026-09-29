@@ -21,12 +21,12 @@ const SNS: { label: string; href: string; icon: string }[] = [
   { label: "YouTube", href: siteConfig.sns.youtube, icon: "ic-yt" },
 ];
 
-// Links for the SCHEDULE drop-down: upcoming count, each season, each league
-// (leagues ordered by their most recent match).
+// Links for the SCHEDULE drop-down: upcoming count, each season, and the main
+// leagues picked in siteConfig.menuLeagues.
 async function scheduleMenu() {
   const matches = await getMatches(100).catch(() => []);
   const seasons = new Map<string, number>();
-  const leagues = new Map<string, number>(); // insertion order = newest first (matches come newest first)
+  const leagues = new Map<string, number>();
   let upcoming = 0;
   for (const m of matches) {
     const s = matchSeason(m);
@@ -37,7 +37,9 @@ async function scheduleMenu() {
   return {
     upcoming,
     seasons: [...seasons].sort((a, b) => seasonStart(b[0]) - seasonStart(a[0])).map(([s, count]) => ({ label: `${s} SEASON`, href: `/schedule?season=${s}`, count })),
-    leagues: [...leagues].map(([l, count]) => ({ label: l, href: `/schedule?league=${encodeURIComponent(l)}`, count })),
+    leagues: siteConfig.menuLeagues
+      .filter((l) => leagues.has(l))
+      .map((l) => ({ label: l, href: `/schedule?league=${encodeURIComponent(l)}`, count: leagues.get(l)! })),
   };
 }
 
