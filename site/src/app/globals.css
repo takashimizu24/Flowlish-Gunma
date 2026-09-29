@@ -314,11 +314,12 @@ h1, h2, h3, h4 { margin: 0; }
 
 /* ===== home schedule card: entry players row (placing sits at its right) ===== */
 .entry-row { display: flex; gap: 16px; min-width: 0; }
-.entry-item { flex: 0 1 54px; min-width: 38px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+/* sized to the name (full surname when there's room), shrinking — with an ellipsis — only when tight */
+.entry-item { flex: 0 1 auto; min-width: 38px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .entry-photo { flex: none; width: 38px; height: 38px; border-radius: 50%; }
 @media (max-width: 640px) {
   /* keep four players + the placing on one line on phones */
   .entry-row { gap: 8px; }
-  .entry-item { flex-basis: 50px; min-width: 34px; }
+  .entry-item { min-width: 34px; }
   .entry-photo { width: 34px; height: 34px; }
 }

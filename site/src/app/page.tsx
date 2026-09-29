@@ -105,7 +105,7 @@ function Schedule({ matches }: { matches: Match[] }) {
                         </div>
                       ))}
                     </div>
-                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 700, fontSize: 16, lineHeight: 1, padding: "7px 13px", borderRadius: 7, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
+                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 800, fontSize: 24, lineHeight: 1, letterSpacing: ".01em", padding: "5px 10px 4px", borderRadius: 8, background: ORANGE, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{rankLabel(m.resultBadge)}</span>}
                   </div>
                 )}
               </div>
