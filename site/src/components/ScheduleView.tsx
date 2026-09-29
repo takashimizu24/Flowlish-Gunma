@@ -118,6 +118,9 @@ function MatchLinks({ m }: { m: Match }) {
   );
 }
 
+// league / year line above the title: 15px on phones up to 20px on PC (title is 30px there)
+const LEAGUE_FS = "clamp(15px, 2vw, 20px)";
+
 function MatchRow({ m }: { m: Match }) {
   const games = parseGames(m.scores);
   const qualDraw = games.filter((g) => isQualDraw(g.phase));
@@ -136,9 +139,9 @@ function MatchRow({ m }: { m: Match }) {
       <div className="sched-row" style={{ display: "flex", gap: 24 }}>
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
           {single ? (
-            year ? <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.25, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null
+            year ? <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: ".04em", color: ORANGE, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>{year}</div> : null
           ) : (
-            <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.25 }}><LeagueLabel m={m} /></div>
+            <div style={{ fontWeight: 800, fontSize: LEAGUE_FS, letterSpacing: jpLeague ? "0" : ".04em", textTransform: jpLeague ? "none" : "uppercase", color: ORANGE, lineHeight: 1.2 }}><LeagueLabel m={m} /></div>
           )}
           <h2 style={{ fontWeight: 800, fontSize: "clamp(22px,3.2vw,30px)", margin: "2px 0 0", lineHeight: jpTitle ? 1.32 : 1.05, letterSpacing: jpTitle ? "normal" : undefined, textTransform: "uppercase" }}><TitleText text={title} /></h2>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 14px", marginTop: 8, fontSize: 13 }}>
