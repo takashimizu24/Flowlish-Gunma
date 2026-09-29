@@ -95,10 +95,11 @@ function EntryAvatars({ entry }: { entry: Player[] }) {
 function MatchLinks({ m }: { m: Match }) {
   const links: { label: string; href: string; kind: "article" | "event" | "fiba" | "live" }[] = [];
   const article = m.articleUrl?.[0];
-  if (article) links.push({ label: "記事", href: `/news/${article.id}`, kind: "article" });
-  if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
+  // order: FIBA 3x3 → 大会情報 → LIVE → 記事
   if (m.fibaEventUrl) links.push({ label: "FIBA 3x3", href: m.fibaEventUrl, kind: "fiba" });
+  if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
   if (m.liveUrl) links.push({ label: "LIVE配信", href: m.liveUrl, kind: "live" });
+  if (article) links.push({ label: "記事", href: `/news/${article.id}`, kind: "article" });
   if (links.length === 0) return null;
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
