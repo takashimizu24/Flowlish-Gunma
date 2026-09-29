@@ -71,6 +71,7 @@ export async function POST(req: Request) {
   if (sponsor || b.prevLeagueSponsor) payload.leagueSponsor = sponsor;
   // "2025-26 SEASON" instead of the year — sent only when on or being switched off
   if (b.showSeason || b.prevShowSeason) payload.showSeason = !!b.showSeason;
+  if (b.hideYear || b.prevHideYear) payload.hideYear = !!b.hideYear;
 
   const editing = typeof b.id === "string" && b.id;
   const r = await fetch(

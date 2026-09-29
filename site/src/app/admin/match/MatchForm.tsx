@@ -79,8 +79,10 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
       year: f.get("year"),
       season: f.get("season"),
       prevSeason: editing?.season ?? "",
-      showSeason: f.get("showSeason") === "on",
+      showSeason: f.get("yearDisplay") === "season",
       prevShowSeason: !!editing?.showSeason,
+      hideYear: f.get("yearDisplay") === "none",
+      prevHideYear: !!editing?.hideYear,
       round: f.get("round"),
       date: f.get("date"),
       dateLabel: f.get("dateLabel"),
@@ -146,12 +148,24 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
           <Field label="ラウンド" hint="例：ROUND.8 / PLAYOFFS / FINAL">
             <input name="round" defaultValue={roundTitle({ round: editing?.round })} placeholder="例：ROUND.8" style={input} />
           </Field>
-          <Field label="年" hint="リーグ名の横に出る年。空欄なら開催日の年になります。">
+          <Field label="リーグ名の横の表示" hint="年を出すか、シーズンを出すか、何も出さないかを選べます。">
+            {(() => {
+              const cur = editing?.hideYear ? "none" : editing?.showSeason ? "season" : "year";
+              const opts: [string, string][] = [["year", "年を表示（例：3XS 2026）"], ["season", "シーズンを表示（例：3XS 2025-26 SEASON）"], ["none", "表示しない（例：3XS）"]];
+              return (
+                <div style={{ display: "grid", gap: 8 }}>
+                  {opts.map(([v, text]) => (
+                    <label key={v} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
+                      <input type="radio" name="yearDisplay" value={v} defaultChecked={cur === v} style={{ width: 20, height: 20, accentColor: ORANGE, flex: "none" }} />
+                      {text}
+                    </label>
+                  ))}
+                </div>
+              );
+            })()}
+          </Field>
+          <Field label="年" hint="「年を表示」のときに出る年。空欄なら開催日の年になります。">
             <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={{ ...input, maxWidth: 200 }} />
-            <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
-              <input type="checkbox" name="showSeason" defaultChecked={!!editing?.showSeason} style={{ width: 20, height: 20, accentColor: ORANGE, flex: "none" }} />
-              年の代わりにシーズンを表示（例：3XS 2025-26 SEASON）
-            </label>
           </Field>
           <Field label="シーズン" hint="通常は「自動」（4月〜翌3月で判定）。日程とシーズンがずれる大会だけ指定してください。">
             <select name="season" defaultValue={editing?.season ?? ""} style={{ ...input, maxWidth: 280 }}>

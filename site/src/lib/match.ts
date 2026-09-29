@@ -68,11 +68,12 @@ const EDITION: Record<string, number> = { "3x3 日本選手権": 2015 };
 
 // League + year as one label ("3x3.EXE PREMIER 2026"). For editioned tournaments
 // the edition replaces the year ("第11回 3x3日本選手権").
-type YearFields = Pick<Match, "year" | "date" | "round" | "season" | "showSeason">;
+type YearFields = Pick<Match, "year" | "date" | "round" | "season" | "showSeason" | "hideYear">;
 
-// What follows the league name: the year ("2026"), or — for leagues that run
-// across two years, when the match opts in — the season ("2025-26 SEASON").
+// What follows the league name: the year ("2026"), the season ("2025-26 SEASON")
+// for leagues that run across two years, or nothing — chosen per match.
 export function yearLabel(m: YearFields): string {
+  if (m.hideYear) return "";
   const s = m.showSeason ? matchSeason(m) : "";
   return s ? `${s} SEASON` : matchYear(m);
 }

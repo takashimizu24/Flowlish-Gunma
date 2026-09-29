@@ -24,6 +24,7 @@ export type Match = MicroCMSListContent & {
   year?: number;      // league year shown next to the league, e.g. 2026 (falls back to the date if unset)
   season?: string;    // season override, e.g. "2025-26" (derived from the date if unset)
   showSeason?: boolean; // show "2025-26 SEASON" instead of the year next to the league
+  hideYear?: boolean;   // show neither the year nor the season
   date?: string;
   dateLabel?: string; // 08/― 日程調整中
   roundName?: string; // 八戸ラウンド
