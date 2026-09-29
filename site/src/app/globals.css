@@ -82,6 +82,9 @@ h1, h2, h3, h4 { margin: 0; }
 
 @media (max-width: 640px) {
   .sched-card { flex-basis: calc(100vw - 2 * clamp(16px, 4.5vw, 48px)); }
+  /* gap = side gutter + 8px, so a snapped card never shows a sliver of its
+     neighbours (a flat 20px was within 1px of the gutter on 430px+ phones) */
+  .sched-track { gap: calc(clamp(16px, 4.5vw, 48px) + 8px); }
   .sched-arrow { display: none; }
 }
 
