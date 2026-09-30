@@ -3,14 +3,14 @@ import { siteConfig } from "@/lib/config";
 const COLS: { title: string; links: { label: string; href: string }[] }[] = [
   { title: "Team", links: [
     { label: "選手紹介", href: "/#roster" }, { label: "スタッフ", href: "#" },
-    { label: "チーム概要", href: "#" }, { label: "SDGs", href: "#" },
+    { label: "会社概要", href: "/company" }, { label: "SDGs", href: "#" },
   ] },
   { title: "Game", links: [
     { label: "ラウンド結果 / 日程", href: "/schedule" }, { label: "ニュース", href: "/news" },
     { label: "ホームゲーム", href: "#" },
   ] },
   { title: "Support", links: [
-    { label: "ファンクラブ", href: "/fanclub" }, { label: "スクール", href: "#" },
+    { label: "ファンクラブ", href: siteConfig.fanClubUrl }, { label: "スクール", href: siteConfig.schoolUrl },
     { label: "スポンサー募集", href: "#" }, { label: "SHOP", href: siteConfig.shopUrl },
   ] },
 ];

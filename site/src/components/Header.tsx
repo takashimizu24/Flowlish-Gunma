@@ -2,6 +2,7 @@ import { siteConfig } from "@/lib/config";
 import { getMatches } from "@/lib/api";
 import { matchSeason, seasonStart, isUpcoming } from "@/lib/match";
 import ScheduleMenu from "./ScheduleMenu";
+import TeamMenu from "./TeamMenu";
 
 const NAV = [
   { label: "HOME", href: "/" },
@@ -75,6 +76,7 @@ export default async function Header() {
               const external = n.href.startsWith("http");
               const style: React.CSSProperties = { fontWeight: 700, fontSize: 17, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink)", padding: i === 0 ? "10px 22px 10px 0" : "10px 22px", display: "flex", alignItems: "center" };
               if (n.href === "/schedule") return <ScheduleMenu key={n.label} linkStyle={style} {...menu} />;
+              if (n.label === "TEAM") return <TeamMenu key={n.label} linkStyle={style} />;
               return (
                 <a key={n.label} href={n.href} {...(external ? { target: "_blank", rel: "noopener" } : {})} className="nav-link" style={style}>
                   {n.label}

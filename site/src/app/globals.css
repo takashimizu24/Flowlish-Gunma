@@ -293,12 +293,14 @@ h1, h2, h3, h4 { margin: 0; }
 .nav-drop-link:hover, .nav-drop-link:focus-visible { background: rgba(238,101,28,.1); }
 .nav-drop-link b { font-weight: 700; font-size: 11px; color: rgba(20,20,20,.45); font-variant-numeric: tabular-nums; }
 .nav-drop-link--hot { color: var(--orange); }
+.nav-drop-cols--single { grid-template-columns: minmax(200px, auto); }
 .nav-drop-link--hot b { color: #fff; background: var(--orange); border-radius: 999px; padding: 1px 7px; }
 @media (max-width: 900px) {
   /* phones/tablets: the panel spans the whole menu bar */
   .nav-drop { position: static; }
   .nav-drop-panel { left: 0; right: 0; padding: 0 12px 12px; }
   .nav-drop-cols { grid-template-columns: 1fr 1fr; gap: 2px 16px; padding: 14px 16px 16px; max-height: 70vh; overflow: auto; }
+  .nav-drop-cols--single { grid-template-columns: 1fr; }
   .nav-drop-link { font-size: 13px; white-space: normal; }
 }
 
@@ -381,4 +383,9 @@ h1, h2, h3, h4 { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   .icon-btn:hover, .cta:hover, .news-card--tile:hover, .roster-cell:hover { transform: none; }
   .news-card:hover .news-thumb, .roster-cell:hover .roster-photo, .hcar-slide:hover img, .vcar-item:hover img { transform: none; }
+}
+
+/* ===== company page ===== */
+@media (max-width: 640px) {
+  .company-entities { grid-template-columns: 1fr !important; }
 }
