@@ -9,6 +9,7 @@ const LOGOS: { test: RegExp; src: string; ratio: number; scale?: number }[] = [
   { test: /\b3XS\b/i, src: "/leagues/3xs.svg", ratio: 2.95, scale: 0.8 },
   { test: /Women'?s\s*Series/i, src: "/leagues/ws.svg", ratio: 1.46 },
   { test: /日本選手権|Japan\s*Championship/i, src: "/leagues/jc.svg", ratio: 1.62 },
+  { test: /WKBL|Triple\s*Jam/i, src: "/leagues/wkbl.webp", ratio: 1.086 },
 ];
 
 export function leagueLogo(league?: string): { src: string; ratio: number; scale: number } | null {
