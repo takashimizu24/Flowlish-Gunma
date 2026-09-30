@@ -318,28 +318,26 @@ h1, h2, h3, h4 { margin: 0; }
 }
 
 /* ===== home schedule card: entry players row (placing sits at its right) =====
-   Four equal fixed-width slots, each player flush left in one, so the spacing never
-   depends on name length (a 3-player entry keeps the same slot width) and the first
-   photo lines up with the text edge above. Sized so the longest surname
-   ("77 GRANT-ALLEN", ~64px on PC) fits with room to spare. */
-/* fixed slot width (not 1fr) so the spacing is identical on every card, with or without a placing */
-.entry-row { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 72px)); justify-content: start; column-gap: 7px; row-gap: 8px; }
-.entry-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+   Photos on a fixed pitch (centre to centre), the first photo flush with the text edge
+   above; each name is centred under its photo and may overhang it. The pitch leaves room
+   for the longest surname ("77 GRANT-ALLEN", ~64px PC / ~53px phone) beside its neighbours. */
+.entry-row { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(4, 38px); justify-content: start; column-gap: 32px; row-gap: 8px; } /* pitch 70px */
+.entry-item { width: 38px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .entry-photo { flex: none; width: 38px; height: 38px; border-radius: 50%; }
-.entry-label { display: flex; align-items: baseline; gap: 3px; max-width: 100%; line-height: 1; }
+.entry-label { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; line-height: 1; }
 .entry-num { flex: none; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; }
-.entry-name { font-weight: 700; font-size: 9.5px; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-name { font-weight: 700; font-size: 9.5px; text-transform: uppercase; white-space: nowrap; }
 /* final placing, bottom-right: original proportions (16px text in 7/13px padding) scaled ×1.3 */
 .place-badge { flex: none; font-weight: 700; font-size: 21px; line-height: 1; padding: 9px 17px; border-radius: 9px; color: #fff; }
 @media (max-width: 640px) {
-  /* narrower slots next to the placing: slightly smaller type so full surnames still fit */
-  .entry-row { grid-template-columns: repeat(4, minmax(0, 56px)); column-gap: 4px; }
-  /* same proportions, a little smaller, so four full-width slots fit beside it */
-  .place-badge { font-size: 17px; padding: 7px 14px; border-radius: 7px; }
+  .entry-row { grid-template-columns: repeat(4, 34px); column-gap: 22px; } /* pitch 56px */
+  .entry-item { width: 34px; }
   .entry-photo { width: 34px; height: 34px; }
   .entry-num { font-size: 10.5px; }
   .entry-name { font-size: 8px; }
   .entry-label { gap: 2px; }
+  /* same proportions, a little smaller, so four full-width slots fit beside it */
+  .place-badge { font-size: 17px; padding: 7px 14px; border-radius: 7px; }
 }
 
 /* ===================== hover actions (site-wide) =====================
