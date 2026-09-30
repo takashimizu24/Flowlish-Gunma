@@ -7,10 +7,13 @@ const ORANGE = "#EE651C";
 const INK = "#141414";
 
 // The club is run by two bodies that share an office.
-const ENTITIES: { kind: string; name: string; repTitle: string; rep: string }[] = [
-  { kind: "株式会社", name: "株式会社FLOWLISH GUNMA", repTitle: "代表取締役", rep: "花野 文昭" },
-  { kind: "特定非営利活動法人", name: "特定非営利活動法人FLOWLISH GUNMA", repTitle: "代表理事", rep: "志村 潤" },
+const ENTITIES: { name: string; repTitle: string; rep: string }[] = [
+  { name: "株式会社FLOWLISH GUNMA", repTitle: "代表取締役", rep: "花野 文昭" },
+  { name: "特定非営利活動法人FLOWLISH GUNMA", repTitle: "代表理事", rep: "志村 潤" },
 ];
+
+// Japanese-first stack (Hiragino Sans has fine weight steps: 500 = W5, one lighter than W6)
+const JP_FONT = '"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", YuGothic, "Noto Sans JP", Meiryo, sans-serif';
 
 const ADDRESS = { zip: "〒370-0006", line: "群馬県高崎市問屋町1-8-2 アムールビル" };
 const TEL = "027-393-6292";
@@ -39,9 +42,12 @@ export default function CompanyPage() {
             <div className="company-entities" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 }}>
               {ENTITIES.map((e) => (
                 <section key={e.name} style={{ border: "1px solid rgba(20,20,20,.12)", borderRadius: 14, padding: "20px 22px" }}>
-                  <div style={{ fontWeight: 800, fontSize: 11, letterSpacing: ".14em", color: ORANGE }}>{e.kind}</div>
-                  <div style={{ fontSize: 12, opacity: 0.6, marginTop: 12 }}>商号</div>
-                  <h2 style={{ fontSize: "clamp(17px,2vw,20px)", fontWeight: 800, lineHeight: 1.45, margin: "2px 0 0" }}>{e.name}</h2>
+                  <div style={{ fontSize: 12, opacity: 0.6 }}>商号</div>
+                  {/* the whole name — "FLOWLISH GUNMA" included — in the Japanese face, one step lighter */}
+                  <h2 style={{ fontFamily: JP_FONT, fontSize: "clamp(17px,2vw,20px)", fontWeight: 500, lineHeight: 1.5, margin: "2px 0 0" }}>
+                    {/* never break inside the club name: wrap before it instead */}
+                    {e.name.replace("FLOWLISH GUNMA", "")}<span style={{ whiteSpace: "nowrap" }}>FLOWLISH GUNMA</span>
+                  </h2>
                   <div style={{ fontSize: 12, opacity: 0.6, marginTop: 14 }}>{e.repTitle}</div>
                   <div style={{ fontSize: 16, fontWeight: 700, marginTop: 2 }}>{e.rep}</div>
                 </section>
