@@ -102,7 +102,8 @@ function EntryAvatars({ entry }: { entry: Player[] }) {
 
 function MatchLinks({ m }: { m: Match }) {
   const links: { label: string; href: string; kind: "article" | "event" | "fiba" | "live" }[] = [];
-  const article = m.articleUrl?.[0];
+  // a related article that is still a draft gets no button (its page would be "not found")
+  const article = m.articleUrl?.find((n) => !!n?.publishedAt);
   // order: FIBA 3x3 → 大会情報 → LIVE → 記事
   if (m.fibaEventUrl) links.push({ label: "FIBA 3x3", href: m.fibaEventUrl, kind: "fiba" });
   if (m.eventUrl) links.push({ label: "大会情報", href: m.eventUrl, kind: "event" });
