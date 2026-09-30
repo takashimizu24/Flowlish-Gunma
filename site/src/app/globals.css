@@ -385,7 +385,3 @@ h1, h2, h3, h4 { margin: 0; }
   .news-card:hover .news-thumb, .roster-cell:hover .roster-photo, .hcar-slide:hover img, .vcar-item:hover img { transform: none; }
 }
 
-/* ===== company page ===== */
-@media (max-width: 640px) {
-  .company-entities { grid-template-columns: 1fr !important; }
-}

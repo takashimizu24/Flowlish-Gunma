@@ -39,7 +39,7 @@ export default function CompanyPage() {
 
           <div style={{ background: "#fff", color: INK, borderRadius: 18, padding: "clamp(22px,4vw,44px)" }}>
             {/* the two operating bodies */}
-            <div className="company-entities" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 }}>
+            <div className="company-entities" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
               {ENTITIES.map((e) => (
                 <section key={e.name} style={{ border: "1px solid rgba(20,20,20,.12)", borderRadius: 14, padding: "20px 22px" }}>
                   <div style={{ fontSize: 12, opacity: 0.6 }}>商号</div>
@@ -49,7 +49,7 @@ export default function CompanyPage() {
                     {e.name.replace("FLOWLISH GUNMA", "")}<span style={{ whiteSpace: "nowrap" }}>FLOWLISH GUNMA</span>
                   </h2>
                   <div style={{ fontSize: 12, opacity: 0.6, marginTop: 14 }}>{e.repTitle}</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, marginTop: 2 }}>{e.rep}</div>
+                  <div style={{ fontFamily: JP_FONT, fontSize: 16, fontWeight: 500, marginTop: 2 }}>{e.rep}</div>
                 </section>
               ))}
             </div>
