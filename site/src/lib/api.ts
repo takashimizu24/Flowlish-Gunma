@@ -1,6 +1,10 @@
 import { client } from "./microcms";
 import type { Player, News, Match, Partner, TopBanner } from "./types";
 
+// The CMS API key can also read drafts, so the content API returns unpublished items
+// too. Only content that has been published (has publishedAt) may reach the site.
+const published = <T extends { publishedAt?: string }>(items: T[]): T[] => items.filter((i) => !!i.publishedAt);
+
 /** Current-roster players, ordered by `order` then jersey number.
  *  Former players (active === false) are excluded — they only appear in past
  *  match records. Players without the flag set are treated as current. */
@@ -10,7 +14,7 @@ export async function getPlayers(): Promise<Player[]> {
     endpoint: "players",
     queries: { orders: "order,number", limit: 100 },
   });
-  return data.contents.filter((p) => p.active !== false);
+  return published(data.contents).filter((p) => p.active !== false);
 }
 
 /** All players incl. former (active === false) — for the admin editor. */
@@ -30,14 +34,15 @@ export async function getNews(limit = 6): Promise<News[]> {
     endpoint: "news",
     queries: { orders: "-publishedDate", limit },
   });
-  return data.contents;
+  return published(data.contents);
 }
 
 /** A single news item by id (for the detail page). */
 export async function getNewsItem(id: string): Promise<News | null> {
   if (!client) return null;
   try {
-    return await client.getListDetail<News>({ endpoint: "news", contentId: id });
+    const n = await client.getListDetail<News>({ endpoint: "news", contentId: id });
+    return n.publishedAt ? n : null; // drafts are never shown
   } catch {
     return null;
   }
@@ -50,7 +55,7 @@ export async function getMatches(limit = 20): Promise<Match[]> {
     endpoint: "matches",
     queries: { orders: "-date", limit, depth: 2 },
   });
-  return data.contents;
+  return published(data.contents);
 }
 
 /** Sponsors, ordered by `order`. */
@@ -60,7 +65,7 @@ export async function getPartners(): Promise<Partner[]> {
     endpoint: "partners",
     queries: { orders: "order", limit: 100 },
   });
-  return data.contents;
+  return published(data.contents);
 }
 
 /** Top news-carousel banners, ordered by `order`. */
@@ -70,5 +75,5 @@ export async function getBanners(): Promise<TopBanner[]> {
     endpoint: "banners",
     queries: { orders: "order", limit: 30 },
   });
-  return data.contents;
+  return published(data.contents);
 }
