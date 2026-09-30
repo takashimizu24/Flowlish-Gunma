@@ -16,11 +16,13 @@ export default async function AdminMatchPage({ searchParams }: { searchParams: P
   const uniq = (xs: (string | undefined)[]) => [...new Set(xs.map((x) => (x || "").trim()).filter(Boolean))].sort();
   const leagues = uniq(matches.map((m) => m.league));
   const sponsors = uniq(matches.map((m) => m.leagueSponsor));
-  // opponent -> country seen in past games, to pre-fill the flag when a team is typed again
+  // opponent -> country seen in past games, to pre-fill the flag when a team is typed again.
+  // Japan is left out: a Japanese team only gets a flag at international events (e.g. EXE
+  // PLAYOFFS), so it must not be pre-filled for the domestic rounds.
   const oppCountries: Record<string, string> = {};
   for (const m of matches) {
     try {
-      for (const g of JSON.parse(m.scores || "{}").games ?? []) if (g?.opp && g?.country) oppCountries[String(g.opp).trim()] = g.country;
+      for (const g of JSON.parse(m.scores || "{}").games ?? []) if (g?.opp && g?.country && g.country !== "jp") oppCountries[String(g.opp).trim()] = g.country;
     } catch {}
   }
   return <MatchForm players={opts} matches={list} leagues={leagues} sponsors={sponsors} oppCountries={oppCountries} editing={editing} />;
