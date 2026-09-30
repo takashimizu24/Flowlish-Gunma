@@ -322,7 +322,8 @@ h1, h2, h3, h4 { margin: 0; }
    length (a 3-player entry keeps the same slot width). Sized so the longest surname
    ("77 GRANT-ALLEN", ~64px on PC) fits with room to spare. */
 /* fixed slot width (not 1fr) so the spacing is identical on every card, with or without a placing */
-.entry-row { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 72px)); justify-content: start; column-gap: 7px; row-gap: 8px; }
+.entry-row { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 72px)); justify-content: start; column-gap: 7px; row-gap: 8px;
+  margin-left: -8px; /* players are centred in their slots; nudge the row so the first photo sits nearer the left edge */ }
 .entry-item { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .entry-photo { flex: none; width: 38px; height: 38px; border-radius: 50%; }
 .entry-label { display: flex; align-items: baseline; justify-content: center; gap: 3px; max-width: 100%; line-height: 1; }
@@ -332,7 +333,7 @@ h1, h2, h3, h4 { margin: 0; }
 .place-badge { flex: none; font-weight: 700; font-size: 21px; line-height: 1; padding: 9px 17px; border-radius: 9px; color: #fff; }
 @media (max-width: 640px) {
   /* narrower slots next to the placing: slightly smaller type so full surnames still fit */
-  .entry-row { grid-template-columns: repeat(4, minmax(0, 56px)); column-gap: 4px; }
+  .entry-row { grid-template-columns: repeat(4, minmax(0, 56px)); column-gap: 4px; margin-left: -5px; }
   /* same proportions, a little smaller, so four full-width slots fit beside it */
   .place-badge { font-size: 17px; padding: 7px 14px; border-radius: 7px; }
   .entry-photo { width: 34px; height: 34px; }
