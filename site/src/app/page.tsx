@@ -98,15 +98,15 @@ function Schedule({ matches }: { matches: Match[] }) {
                       {entry.map((p) => (
                         <div key={p.id} className="entry-item">
                           <span className="entry-photo" style={{ background: p.photo ? `#141414 top center/cover url(${p.photo.url}?w=120)` : "#141414" }} />
-                          <span style={{ display: "flex", alignItems: "baseline", gap: 3, maxWidth: "100%", lineHeight: 1 }}>
-                            <span style={{ flex: "none", fontWeight: 700, fontSize: 12, color: ORANGE, fontVariantNumeric: "tabular-nums" }}>{p.number}</span>
-                            <span style={{ fontWeight: 700, fontSize: 9.5, textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nameEn?.split(" ").slice(-1)[0]}</span>
+                          <span className="entry-label">
+                            <span className="entry-num" style={{ color: ORANGE }}>{p.number}</span>
+                            <span className="entry-name">{p.nameEn?.split(" ").slice(-1)[0]}</span>
                           </span>
                         </div>
                       ))}
                     </div>
                     {/* original proportions (16px text in 7/13px padding), scaled up ×1.3 */}
-                    {m.resultBadge && <span style={{ flex: "none", fontWeight: 700, fontSize: 21, lineHeight: 1, padding: "9px 17px", borderRadius: 9, background: ORANGE, color: "#fff" }}>{rankLabel(m.resultBadge)}</span>}
+                    {m.resultBadge && <span className="place-badge" style={{ background: ORANGE }}>{rankLabel(m.resultBadge)}</span>}
                   </div>
                 )}
               </div>
