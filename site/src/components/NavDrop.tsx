@@ -36,7 +36,6 @@ export default function NavDrop({ label, href, linkStyle, children }: {
       <a href={href} aria-haspopup="true" aria-expanded={open} className="nav-link" style={linkStyle}
         onClick={(e) => { if (!hoverable() && !open) { e.preventDefault(); setOpen(true); } }}>
         {label}
-        <svg className="nav-drop-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: open ? "rotate(180deg)" : "none" }}><polyline points="6 9 12 15 18 9" /></svg>
       </a>
       {open && <div className="nav-drop-panel" role="menu">{children}</div>}
     </div>
