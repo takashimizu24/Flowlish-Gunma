@@ -116,7 +116,7 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
     if (g.wo === "win") return "不戦勝";
     if (g.wo === "lose") return "不戦敗";
     const a = Number(g.myScore), b = Number(g.oppScore);
-    if (!g.myScore || !g.oppScore || !Number.isFinite(a) || !Number.isFinite(b)) return "";
+    if (!g.myScore || !g.oppScore || !Number.isFinite(a) || !Number.isFinite(b)) return "予定";
     return a > b ? "WIN" : "LOSE";
   };
 
@@ -197,7 +197,7 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
             <input name="resultBadge" defaultValue={editing?.resultBadge ?? ""} list="badges" placeholder="例：優勝 / 6位" style={{ ...input, maxWidth: 280 }} />
             <datalist id="badges">{RESULT_BADGES.map((b) => <option key={b} value={b} />)}</datalist>
           </Field>
-          <Field label="試合スコア" hint="勝敗はスコアから自動で判定します。「国・地域」を選ぶと、サイトで相手チーム名の後ろに国旗が付きます。国内の大会は空欄のまま、国際大会では日本のチームにも「日本」を選んでください。">
+          <Field label="試合スコア" hint="勝敗はスコアから自動で判定します。スコアを空欄のまま保存すると「予定」の試合になり、勝敗は付きません（試合後にスコアを入れてください）。「国・地域」を選ぶと、サイトで相手チーム名の後ろに国旗が付きます。国内の大会は空欄のまま、国際大会では日本のチームにも「日本」を選んでください。">
             {games.map((g, i) => {
               const hint = winHint(g);
               const win = hint === "WIN" || hint === "不戦勝";

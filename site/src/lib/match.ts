@@ -36,10 +36,19 @@ export const currentSeason = () => seasonForDate(new Date());
 // "2025-26" -> 2025 (for sorting)
 export const seasonStart = (s: string) => Number((s.match(SEASON_RE) || [])[1] || 0);
 
-// Not played yet: no result status, or a result with neither a placing nor any games.
+// A game without a result is scheduled (opponent known, not played yet).
+export function playedGames(scores?: string): number {
+  try {
+    const games = JSON.parse(scores || "{}").games;
+    return Array.isArray(games) ? games.filter((g: { result?: string }) => !!(g?.result || "").trim()).length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+// Not played yet: no result status, or a result with neither a placing nor any played game.
 export function isUpcoming(m: Pick<Match, "status" | "resultBadge" | "scores">): boolean {
-  const hasGames = /"opp"\s*:/.test(m.scores || "");
-  return m.status !== "結果" || (!m.resultBadge && !hasGames);
+  return m.status !== "結果" || (!m.resultBadge && playedGames(m.scores) === 0);
 }
 
 // Entry players in display order: current roster first, then former players,

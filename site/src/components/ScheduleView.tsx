@@ -35,7 +35,15 @@ function ymd(s?: string) {
 const isWalkover = (r: string) => /^wo-|walkover/i.test(r) || r === "不戦勝" || r === "不戦敗";
 const isWin = (r: string) => { const x = r.toLowerCase(); return x === "win" || x === "wo-win" || r === "不戦勝"; };
 
+// a game with no result yet is scheduled
+const isScheduled = (r?: string) => !(r || "").trim();
+
 function ResultChip({ result }: { result: string }) {
+  if (isScheduled(result)) {
+    return (
+      <span style={{ fontWeight: 800, fontSize: 10.5, width: 52, padding: "2px 0", textAlign: "center", boxSizing: "border-box", borderRadius: 5, flex: "none", border: "1px solid rgba(20,20,20,.25)", color: "rgba(20,20,20,.55)" }}>予定</span>
+    );
+  }
   const win = isWin(result);
   const wo = isWalkover(result);
   const text = wo ? (win ? "不戦勝" : "不戦敗") : win ? "WIN" : "LOSE";
@@ -59,7 +67,7 @@ function GameLine({ g }: { g: Game }) {
           <span className="flag-emoji" role="img" aria-label={countryName(g.country)} title={countryName(g.country)} style={{ flex: "none", fontSize: 17 }}>{flagEmoji(g.country)}</span>
         )}
       </span>
-      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: wo ? 0.4 : 1 }}>{wo ? "—" : g.score}</span>
+      <span style={{ flex: "none", fontWeight: 800, fontSize: 15, fontVariantNumeric: "tabular-nums", opacity: wo || isScheduled(g.result) ? 0.4 : 1 }}>{wo || isScheduled(g.result) ? "—" : g.score}</span>
       <ResultChip result={g.result} />
     </div>
   );
