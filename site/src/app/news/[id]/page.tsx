@@ -21,9 +21,11 @@ export default async function NewsDetail({ params }: { params: Promise<{ id: str
           {!n ? (
             <p style={{ opacity: 0.7, marginTop: 30 }}>このお知らせは見つかりませんでした。</p>
           ) : (
-            <article style={{ background: "#fff", color: INK, borderRadius: 16, overflow: "hidden", marginTop: 16 }}>
-              {n.thumbnail && <img src={`${n.thumbnail.url}?w=1200`} alt="" style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover", display: "block" }} />}
-              <div style={{ padding: "clamp(22px,4vw,36px)" }}>
+            // the photo and the white body are rounded separately rather than clipped by one white
+            // box: under a shared clip the white showed through the photo's anti-aliased corners
+            <article style={{ color: INK, marginTop: 16 }}>
+              {n.thumbnail && <img src={`${n.thumbnail.url}?w=1200`} alt="" style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover", display: "block", borderRadius: "16px 16px 0 0" }} />}
+              <div style={{ background: "#fff", borderRadius: n.thumbnail ? "0 0 16px 16px" : 16, padding: "clamp(22px,4vw,36px)" }}>
                 <div style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</div>
                 <h1 style={{ fontSize: "clamp(20px,3vw,28px)", fontWeight: 800, lineHeight: 1.4, margin: "8px 0 0" }}>{n.title}</h1>
                 {n.categories?.length ? (

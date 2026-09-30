@@ -32,9 +32,10 @@ export async function getNews(limit = 6): Promise<News[]> {
   if (!client) return [];
   const data = await client.getList<News>({
     endpoint: "news",
-    queries: { orders: "-publishedDate", limit },
+    // drafts come back too (see published); over-fetch so they don't eat into the limit
+    queries: { orders: "-publishedDate", limit: Math.min(limit + 20, 100) },
   });
-  return published(data.contents);
+  return published(data.contents).slice(0, limit);
 }
 
 /** A single news item by id (for the detail page). */
