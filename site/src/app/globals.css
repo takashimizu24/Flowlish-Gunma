@@ -144,6 +144,10 @@ h1, h2, h3, h4 { margin: 0; }
   .nav-links > a, .nav-drop > a { font-size: 13px !important; letter-spacing: .01em !important; margin-right: -.01em; }
   .news-grid { grid-template-columns: 1fr !important; }
   .roster-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  /* two-up player cards: number, name and kana name a step smaller */
+  .rc-num { font-size: 40px !important; top: 10px !important; right: 12px !important; }
+  .rc-name { font-size: 18px !important; }
+  .rc-ja { font-size: 11px !important; margin-top: 3px !important; }
   .partners-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
   .pmodal { flex-direction: column; overflow: hidden auto !important; min-height: 0; }
