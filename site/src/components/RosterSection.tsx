@@ -23,24 +23,27 @@ export default function RosterSection({ players }: { players: Player[] }) {
     <>
       <div className="roster-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 9 }}>
         {players.map((p) => (
-          // the cell carries the hover lift + shadow; the card inside is masked (see .roster-card)
-          <div key={p.id} className="roster-cell">
           <button
+            key={p.id}
             onClick={() => setActive(p)}
             className="roster-card"
-            // explicit resets instead of `all: unset`: an inline `all` would also wipe the
-            // .roster-card hover styles (transform, shadow) and the isolation the photo layer needs
+            // explicit resets instead of `all: unset`: an inline `all` would also wipe the .roster-card hover styles
             style={{
               appearance: "none", margin: 0, padding: 0, font: "inherit", color: "inherit", textAlign: "left", width: "100%", boxSizing: "border-box",
-              cursor: "pointer", position: "relative", isolation: "isolate", borderRadius: 14, overflow: "hidden",
-              aspectRatio: "3/4", background: "#1d1d1d",
+              cursor: "pointer", position: "relative", borderRadius: 14, aspectRatio: "3/4",
+              // the name fade, the photo and the fallback fill are all backgrounds of this one element, so the
+              // rounded corners are anti-aliased once. Stacked child layers each got their own anti-aliased
+              // clip, and the dark layers underneath bled through as a thin rim at the corners.
+              background: [
+                "linear-gradient(0deg,rgba(20,20,20,.94),rgba(20,20,20,0)) bottom / 100% 42% no-repeat",
+                p.photo ? `url(${p.photo.url}?w=800) center / cover no-repeat` : "",
+                "#1d1d1d",
+              ].filter(Boolean).join(", "),
               border: "none", display: "flex", flexDirection: "column", justifyContent: "flex-end",
             }}
           >
-            {/* photo as its own layer so it can zoom on hover without moving the text */}
-            {p.photo && <span className="roster-photo" aria-hidden="true" style={{ background: `#141414 center/cover url(${p.photo.url}?w=800)` }} />}
             <div className="rc-num" style={{ position: "absolute", top: 12, right: 14, fontWeight: 700, fontSize: 52, color: ORANGE, lineHeight: 1 }}>{p.number}</div>
-            <div style={{ padding: 12, background: "linear-gradient(0deg,rgba(20,20,20,.94),transparent)", color: "#fff" }}>
+            <div style={{ padding: 12, color: "#fff" }}>
               {p.position && <span style={{ display: "block", lineHeight: 1, color: ORANGE, fontWeight: 800, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase" }}>{p.position}</span>}
               <div className="rc-name" style={{ fontWeight: 700, fontSize: 23, textTransform: "uppercase", lineHeight: 1.05, marginTop: 4, color: "#fff" }}>
                 {p.nameEn}
@@ -48,7 +51,6 @@ export default function RosterSection({ players }: { players: Player[] }) {
               </div>
             </div>
           </button>
-          </div>
         ))}
       </div>
 
