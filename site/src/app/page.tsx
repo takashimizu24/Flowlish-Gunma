@@ -27,7 +27,7 @@ function Bar() {
 }
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontWeight: 800, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: "clamp(8px,2.4vw,14px)", margin: 0 }}>
+    <h2 style={{ fontWeight: 700, textTransform: "uppercase", fontSize: "clamp(26px,4vw,42px)", letterSpacing: ".01em", lineHeight: 1, display: "inline-flex", alignItems: "center", gap: "clamp(8px,2.4vw,14px)", margin: 0 }}>
       <Bar />
       {children}
     </h2>
