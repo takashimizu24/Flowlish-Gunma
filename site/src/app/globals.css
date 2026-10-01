@@ -369,7 +369,7 @@ h1, h2, h3, h4 { margin: 0; }
 .hcar-slide img, .vcar-item img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
 /* the side slides (right column on PC, 2-up row on phones) sit a little darker so the big
    one reads as the current banner; a slide is back to full colour once it moves into the big spot */
-.vcar-item img, .mcar-item img { filter: brightness(.6); transition: transform .6s cubic-bezier(.2,.7,.2,1), filter .3s; }
+.vcar-item img, .mcar-item img { filter: brightness(.8); transition: transform .6s cubic-bezier(.2,.7,.2,1), filter .3s; }
 .sched-dot:not(.is-active) { transition: width .25s ease, background .2s ease; }
 .sched-filter select { transition: border-color .15s, background-color .15s; }
 
