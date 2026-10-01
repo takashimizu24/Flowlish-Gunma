@@ -367,6 +367,9 @@ h1, h2, h3, h4 { margin: 0; }
    there are no child layers to seam at the rounded corners, during the hover either. */
 .roster-card { transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s; }
 .hcar-slide img, .vcar-item img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+/* the side slides (right column on PC, 2-up row on phones) sit a little darker so the big
+   one reads as the current banner; a slide is back to full colour once it moves into the big spot */
+.vcar-item img, .mcar-item img { filter: brightness(.6); transition: transform .6s cubic-bezier(.2,.7,.2,1), filter .3s; }
 .sched-dot:not(.is-active) { transition: width .25s ease, background .2s ease; }
 .sched-filter select { transition: border-color .15s, background-color .15s; }
 
@@ -381,6 +384,7 @@ h1, h2, h3, h4 { margin: 0; }
   .news-card--tile:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -18px rgba(0,0,0,.7); }
   .roster-card:hover { transform: translateY(-5px); box-shadow: 0 18px 30px -18px rgba(0,0,0,.6); }
   .hcar-slide:hover img, .vcar-item:hover img { transform: scale(1.03); }
+  .vcar-item:hover img { filter: none; }
   .footer-link:hover { color: var(--orange) !important; opacity: 1 !important; }
   .back-link:hover { color: var(--orange) !important; opacity: 1 !important; }
   .sched-dot:not(.is-active):hover { background: rgba(255,255,255,.65); }
