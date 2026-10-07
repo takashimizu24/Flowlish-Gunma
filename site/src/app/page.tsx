@@ -167,7 +167,7 @@ function NewsList({ news }: { news: News[] }) {
                   <span className="news-thumb-wrap" style={{ borderRadius: 8 }}>
                     <span className="news-thumb" style={{ background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6" }} />
                   </span>
-                  <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : ""}</span>
                   <h3 className="news-title" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42, color: INK }}>{n.title}</h3>
                   {n.categories?.length ? (
                     <span style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>

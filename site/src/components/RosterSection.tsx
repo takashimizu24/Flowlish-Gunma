@@ -107,7 +107,7 @@ export default function RosterSection({ players }: { players: Player[] }) {
                 <Cell label="ポジション" value={typeof active.position === "string" ? active.position : undefined} />
                 <Cell label="出身" value={active.hometown} />
                 <Cell label="国籍" value={active.nationality} />
-                <Cell label="生年月日" value={active.birthdate ? new Date(active.birthdate).toLocaleDateString("ja-JP") : undefined} />
+                <Cell label="生年月日" value={active.birthdate ? new Date(active.birthdate).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : undefined} />
               </div>
               {active.bio && <p style={{ fontSize: 14, lineHeight: 1.75, margin: "14px 0 0" }}>{active.bio}</p>}
             </div>

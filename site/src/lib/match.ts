@@ -4,7 +4,7 @@ import type { Match } from "./types";
 // 4-digit year baked into the round string (legacy data like "2026 ROUND.8").
 export function matchYear(m: Pick<Match, "year" | "date" | "round">): string {
   if (m.year) return String(m.year);
-  if (m.date) return String(new Date(m.date).getFullYear());
+  if (m.date) return String(new Date(new Date(m.date).getTime() + 9 * 3600 * 1000).getUTCFullYear()); // JST
   const mm = (m.round || "").match(/^(\d{4})\b/);
   return mm ? mm[1] : "";
 }
@@ -73,35 +73,82 @@ export function isSingle(m: Pick<Match, "round" | "league">): boolean {
   return !((m.league || "").trim() && roundTitle(m));
 }
 
-// League as displayed: title sponsor + league ("PLCO 3XS"). The sponsor lives in
-// its own field so the schedule filter still groups by the plain league name.
-export function leagueName(m: Pick<Match, "league" | "leagueSponsor">): string {
-  return [m.leagueSponsor, m.league].map((s) => (s || "").trim()).filter(Boolean).join(" ");
+// ---- League line: its parts and their order -------------------------------------------
+// The line above the round is built from up to five parts — sponsor, league, other (an
+// edition like "11th"), year, season — in an order set per match (`titleOrder`). Only
+// `league` is what the schedule filter groups by, so "11th" / "PLCO" never split a league.
+export type TitlePart = "sponsor" | "league" | "extra" | "year" | "season";
+export const TITLE_PARTS: TitlePart[] = ["sponsor", "league", "extra", "year", "season"];
+export type TitleSlot = { part: TitlePart; on: boolean };
+
+export type LabelFields = Pick<Match, "league" | "leagueSponsor" | "leagueExtra" | "titleOrder" | "year" | "date" | "round" | "season" | "showSeason" | "hideYear">;
+
+// Stored as "extra league year -season -sponsor": the order, with "-" marking a hidden part
+// (it keeps its place so turning it back on puts it where it was).
+export function parseTitleOrder(s?: string): TitleSlot[] | null {
+  const toks = (s || "").trim().split(/[\s,]+/).filter(Boolean);
+  const slots: TitleSlot[] = [];
+  for (const t of toks) {
+    const part = t.replace(/^-/, "") as TitlePart;
+    if (TITLE_PARTS.includes(part) && !slots.some((x) => x.part === part)) slots.push({ part, on: !t.startsWith("-") });
+  }
+  return slots.length ? slots : null;
+}
+export const serializeTitleOrder = (slots: TitleSlot[]) => slots.map((x) => (x.on ? "" : "-") + x.part).join(" ");
+
+// The order + visibility a match uses. Without `titleOrder` it is the old layout:
+// sponsor, league, other, then the year or the season (showSeason / hideYear).
+export function titleSlots(m: Pick<Match, "titleOrder" | "showSeason" | "hideYear">): TitleSlot[] {
+  const parsed = parseTitleOrder(m.titleOrder);
+  if (parsed) {
+    // parts missing from an older stored order: the date parts hidden, the names shown
+    for (const part of TITLE_PARTS) if (!parsed.some((x) => x.part === part)) parsed.push({ part, on: part !== "year" && part !== "season" });
+    return parsed;
+  }
+  return [
+    { part: "sponsor", on: true },
+    { part: "league", on: true },
+    { part: "extra", on: true },
+    { part: "year", on: !m.hideYear && !m.showSeason },
+    { part: "season", on: !m.hideYear && !!m.showSeason },
+  ];
+}
+
+export function partText(m: LabelFields, part: TitlePart): string {
+  if (part === "sponsor") return (m.leagueSponsor || "").trim();
+  if (part === "league") return (m.league || "").trim();
+  if (part === "extra") return (m.leagueExtra || "").trim();
+  if (part === "year") return matchYear(m);
+  const s = matchSeason(m);
+  return s ? `${s} SEASON` : "";
+}
+
+const isDatePart = (p: TitlePart) => p === "year" || p === "season";
+const shownParts = (m: LabelFields, keep: (p: TitlePart) => boolean) =>
+  titleSlots(m).filter((x) => x.on && keep(x.part)).map((x) => partText(m, x.part)).filter(Boolean).join(" ");
+
+// The name parts only, in order ("PLCO 3XS", "11th 3x3 Japan Championships").
+export function leagueName(m: LabelFields): string {
+  return shownParts(m, (p) => !isDatePart(p));
 }
 
 // The big title: the round if present, otherwise the league (event) name.
-export function matchTitle(m: Pick<Match, "round" | "league" | "leagueSponsor">): string {
+export function matchTitle(m: LabelFields): string {
   return roundTitle(m) || leagueName(m);
 }
 
-// Tournaments shown with their edition (第N回) instead of the year.
-// base: championship-year - base = edition (e.g. 2024 -> 第9回).
+// Tournaments shown with their edition (第N回) instead of the year — legacy data only
+// (matches without an "other" part or a set order). base: year - base = edition (2024 -> 第9回).
 const EDITION: Record<string, number> = { "3x3 日本選手権": 2015 };
 
-// League + year as one label ("3x3.EXE PREMIER 2026"). For editioned tournaments
-// the edition replaces the year ("第11回 3x3日本選手権").
-type YearFields = Pick<Match, "year" | "date" | "round" | "season" | "showSeason" | "hideYear">;
-
-// What follows the league name: the year ("2026"), the season ("2025-26 SEASON")
-// for leagues that run across two years, or nothing — chosen per match.
-export function yearLabel(m: YearFields): string {
-  if (m.hideYear) return "";
-  const s = m.showSeason ? matchSeason(m) : "";
-  return s ? `${s} SEASON` : matchYear(m);
+// The year / season parts only — shown alone above a single-event title.
+export function yearLabel(m: LabelFields): string {
+  return shownParts(m, isDatePart);
 }
 
-export function leagueLabel(m: Pick<Match, "league" | "leagueSponsor"> & YearFields): string {
-  const base = m.league ? EDITION[m.league] : undefined;
+// The full line, every shown part in order ("3x3.EXE PREMIER 2026", "11th 3x3 Japan Championships").
+export function leagueLabel(m: LabelFields): string {
+  const base = m.league && !m.leagueExtra && !m.titleOrder ? EDITION[m.league] : undefined;
   if (base !== undefined) {
     const y = Number(matchYear(m));
     // qualifiers (県予選) run in Nov of the previous year -> championship is year+1
@@ -109,5 +156,5 @@ export function leagueLabel(m: Pick<Match, "league" | "leagueSponsor"> & YearFie
     const ed = champYear ? champYear - base : 0;
     if (ed >= 1) return `第${ed}回 ${leagueName(m)}`;
   }
-  return [leagueName(m), yearLabel(m)].filter(Boolean).join(" ");
+  return shownParts(m, () => true);
 }

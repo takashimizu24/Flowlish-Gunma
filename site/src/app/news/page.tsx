@@ -30,7 +30,7 @@ export default async function NewsPage() {
                     <span className="news-thumb" style={{ background: n.thumbnail ? `#141414 center/cover url(${n.thumbnail.url}?w=640)` : "#e6e6e6" }} />
                   </span>
                   <span style={{ display: "flex", flexDirection: "column", gap: 10, padding: "16px 18px 20px" }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP") : ""}</span>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: ORANGE }}>{n.publishedDate ? new Date(n.publishedDate).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }) : ""}</span>
                     <h3 className="news-title" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.42 }}>{n.title}</h3>
                     {n.categories?.length ? (
                       <span style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>

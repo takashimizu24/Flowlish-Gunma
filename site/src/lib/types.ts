@@ -20,6 +20,8 @@ export type News = MicroCMSListContent & {
 export type Match = MicroCMSListContent & {
   league?: string;    // EXE PREMIER (without the title sponsor — this is what the filter groups by)
   leagueSponsor?: string; // 冠スポンサー, e.g. "PLCO" -> shown as "PLCO 3XS"
+  leagueExtra?: string;   // その他 — e.g. an edition "11th"; shown on the league line, not part of the league
+  titleOrder?: string;    // order of the league-line parts, e.g. "extra league year -season -sponsor" (see lib/match)
   round?: string;     // ROUND.6 (no year — the year is its own field)
   year?: number;      // league year shown next to the league, e.g. 2026 (falls back to the date if unset)
   season?: string;    // season override, e.g. "2025-26" (derived from the date if unset)

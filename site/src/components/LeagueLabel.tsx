@@ -1,5 +1,4 @@
-import { leagueLabel } from "@/lib/match";
-import type { Match } from "@/lib/types";
+import { leagueLabel, type LabelFields } from "@/lib/match";
 
 /**
  * League + year, e.g. "3x3.EXE PREMIER 2026".
@@ -30,6 +29,6 @@ export function TitleText({ text }: { text: string }) {
   );
 }
 
-export function LeagueLabel({ m }: { m: Pick<Match, "league" | "leagueSponsor" | "year" | "date" | "round" | "season" | "showSeason" | "hideYear"> }) {
+export function LeagueLabel({ m }: { m: LabelFields }) {
   return <TitleText text={leagueLabel(m)} />;
 }

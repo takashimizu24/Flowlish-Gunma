@@ -74,6 +74,14 @@ export async function POST(req: Request) {
   // title sponsor (冠スポンサー) — same "only when set or being cleared" rule
   const sponsor = String(b.leagueSponsor ?? "").trim();
   if (sponsor || b.prevLeagueSponsor) payload.leagueSponsor = sponsor;
+  // その他 (edition etc.) and the league-line order — same "only when set or being cleared" rule
+  const extra = String(b.leagueExtra ?? "").trim();
+  if (extra || b.prevLeagueExtra) payload.leagueExtra = extra;
+  const order = String(b.titleOrder ?? "").trim();
+  if (order && !/^(-?(sponsor|league|extra|year|season)\s*)+$/.test(order)) {
+    return NextResponse.json({ ok: false, error: "並び順の形式が正しくありません" }, { status: 400 });
+  }
+  if (order || b.prevTitleOrder) payload.titleOrder = order;
   // "2025-26 SEASON" instead of the year — sent only when on or being switched off
   if (b.showSeason || b.prevShowSeason) payload.showSeason = !!b.showSeason;
   if (b.hideYear || b.prevHideYear) payload.hideYear = !!b.hideYear;

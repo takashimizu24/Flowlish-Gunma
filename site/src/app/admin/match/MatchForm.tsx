@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdminChrome } from "@/components/admin/AdminChrome";
 import { Section, Field, Chip, PickList, PickRow, PickHeading, SaveBar, inputStyle as input, ORANGE } from "@/components/admin/ui";
 import { MATCH_STATUS, RESULT_BADGES, GAME_PHASES } from "@/lib/adminOptions";
-import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate } from "@/lib/match";
+import { roundTitle, seasonOf, seasonStart, currentSeason, seasonForDate, titleSlots, serializeTitleOrder, partText, leagueLabel, type TitleSlot, type TitlePart, type LabelFields } from "@/lib/match";
 import { COUNTRY_GROUPS, flagEmoji } from "@/lib/countries";
 import type { Match } from "@/lib/types";
 
@@ -33,6 +33,45 @@ function gamesFromScores(scores?: string): Game[] {
   }
 }
 
+const PART_NAMES: Record<TitlePart, string> = { sponsor: "冠スポンサー", league: "リーグ", extra: "その他", year: "年", season: "シーズン" };
+
+/** Order + visibility of the league-line parts, with a live preview of the line. */
+function TitleOrderEditor({ slots, onChange, m }: { slots: TitleSlot[]; onChange: (s: TitleSlot[]) => void; m: LabelFields }) {
+  const move = (i: number, d: -1 | 1) => {
+    const j = i + d;
+    if (j < 0 || j >= slots.length) return;
+    const next = [...slots];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  const toggle = (i: number) => onChange(slots.map((x, k) => (k === i ? { ...x, on: !x.on } : x)));
+  const preview = leagueLabel({ ...m, titleOrder: serializeTitleOrder(slots) });
+  const btn: React.CSSProperties = { width: 38, height: 38, border: "1px solid #d6d6d6", borderRadius: 8, background: "#fff", fontSize: 15, fontWeight: 800, cursor: "pointer", flex: "none" };
+  return (
+    <div>
+      <div style={{ background: "#141414", color: ORANGE, borderRadius: 10, padding: "12px 14px", fontWeight: 800, fontSize: 15, letterSpacing: ".02em", minHeight: 20 }}>
+        {preview || <span style={{ color: "#777", fontWeight: 600 }}>（表示なし）</span>}
+      </div>
+      <div style={{ display: "grid", gap: 6, marginTop: 10 }}>
+        {slots.map((x, i) => {
+          const text = partText(m, x.part);
+          return (
+            <div key={x.part} style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid #e4e4e4", borderRadius: 10, padding: "6px 8px 6px 12px", background: x.on ? "#fff" : "#f6f6f6" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, flex: "1 1 auto", minWidth: 0, cursor: "pointer" }}>
+                <input type="checkbox" checked={x.on} onChange={() => toggle(i)} style={{ width: 20, height: 20, accentColor: ORANGE, flex: "none" }} />
+                <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: x.on ? ORANGE : "#aaa", borderRadius: 999, padding: "3px 9px", flex: "none" }}>{PART_NAMES[x.part]}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", opacity: x.on && text ? 1 : 0.45 }}>{text || "（未入力）"}</span>
+              </label>
+              <button type="button" aria-label="上へ" onClick={() => move(i, -1)} disabled={i === 0} style={{ ...btn, opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+              <button type="button" aria-label="下へ" onClick={() => move(i, 1)} disabled={i === slots.length - 1} style={{ ...btn, opacity: i === slots.length - 1 ? 0.3 : 1 }}>↓</button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function MatchForm({ players, matches, leagues, sponsors, oppCountries, editing }: {
   players: PlayerOpt[]; matches: MatchListItem[]; leagues: string[]; sponsors: string[]; oppCountries: Record<string, string>; editing: Match | null;
 }) {
@@ -49,6 +88,27 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
   // live date -> the season "自動" resolves to (shown in the season select)
   const [dateIn, setDateIn] = useState(dateVal);
   const autoSeason = dateIn ? seasonForDate(new Date(`${dateIn}T00:00:00+09:00`)) : "";
+
+  // league-line parts: order + visibility, and the live field values the preview is built from
+  const [slots, setSlots] = useState<TitleSlot[]>(() => titleSlots(editing ?? {}));
+  const [orderTouched, setOrderTouched] = useState(false);
+  const [vals, setVals] = useState(() => ({
+    league: editing ? editing.league ?? "" : "3x3.EXE PREMIER", leagueSponsor: editing?.leagueSponsor ?? "", leagueExtra: editing?.leagueExtra ?? "",
+    year: editing?.year ? String(editing.year) : "", season: editing?.season ?? "",
+  }));
+  const onFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+    const f = new FormData(e.currentTarget);
+    const g = (k: string) => String(f.get(k) ?? "");
+    setVals({ league: g("league"), leagueSponsor: g("leagueSponsor"), leagueExtra: g("leagueExtra"), year: g("year"), season: g("season") });
+  };
+  const labelM: LabelFields = {
+    league: vals.league, leagueSponsor: vals.leagueSponsor, leagueExtra: vals.leagueExtra,
+    year: vals.year ? Number(vals.year) : undefined, season: vals.season,
+    date: dateIn ? `${dateIn}T00:00:00+09:00` : undefined,
+    // untouched legacy matches keep their old rendering (e.g. 第N回 for 日本選手権)
+    titleOrder: orderTouched || editing?.titleOrder ? serializeTitleOrder(slots) : undefined,
+    showSeason: editing?.showSeason, hideYear: editing?.hideYear,
+  };
 
   function toggleEntry(id: string) {
     setEntry((v) => (v.includes(id) ? v.filter((x) => x !== id) : [...v, id]));
@@ -79,9 +139,16 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
       year: f.get("year"),
       season: f.get("season"),
       prevSeason: editing?.season ?? "",
-      showSeason: f.get("yearDisplay") === "season",
+      leagueExtra: f.get("leagueExtra"),
+      prevLeagueExtra: editing?.leagueExtra ?? "",
+      // the order is only stored once it has been changed (or was stored before), so
+      // untouched old matches keep rendering exactly as they do now
+      titleOrder: labelM.titleOrder ?? "",
+      prevTitleOrder: editing?.titleOrder ?? "",
+      // kept in step with the order for anything still reading the old flags
+      showSeason: labelM.titleOrder ? slots.some((x) => x.part === "season" && x.on) : !!editing?.showSeason,
       prevShowSeason: !!editing?.showSeason,
-      hideYear: f.get("yearDisplay") === "none",
+      hideYear: labelM.titleOrder ? !slots.some((x) => (x.part === "year" || x.part === "season") && x.on) : !!editing?.hideYear,
       prevHideYear: !!editing?.hideYear,
       round: f.get("round"),
       date: f.get("date"),
@@ -105,6 +172,8 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
         setEntry([]);
         setGames([]);
         setDateIn("");
+        setSlots(titleSlots({}));
+        setOrderTouched(false);
       }
     } else {
       setMsg({ ok: false, text: d.error || "保存に失敗しました" });
@@ -135,7 +204,7 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
         ))}
       </PickList>
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} onChange={onFormChange}>
         <Section title="大会" desc="リーグかラウンドのどちらかは必須です。片方だけのときは、その名前がカードに大きく表示されます。">
           <Field label="リーグ" hint="スケジュールの絞り込みはこの名前でまとまります。冠スポンサー名は含めずに入力してください。">
             <input name="league" list="league-names" defaultValue={editing ? editing.league ?? "" : "3x3.EXE PREMIER"} placeholder="例：3XS" style={input} />
@@ -148,23 +217,10 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
           <Field label="ラウンド" hint="例：ROUND.8 / PLAYOFFS / FINAL">
             <input name="round" defaultValue={roundTitle({ round: editing?.round })} placeholder="例：ROUND.8" style={input} />
           </Field>
-          <Field label="リーグ名の横の表示" hint="年を出すか、シーズンを出すか、何も出さないかを選べます。">
-            {(() => {
-              const cur = editing?.hideYear ? "none" : editing?.showSeason ? "season" : "year";
-              const opts: [string, string][] = [["year", "年を表示（例：3XS 2026）"], ["season", "シーズンを表示（例：3XS 2025-26 SEASON）"], ["none", "表示しない（例：3XS）"]];
-              return (
-                <div style={{ display: "grid", gap: 8 }}>
-                  {opts.map(([v, text]) => (
-                    <label key={v} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
-                      <input type="radio" name="yearDisplay" value={v} defaultChecked={cur === v} style={{ width: 20, height: 20, accentColor: ORANGE, flex: "none" }} />
-                      {text}
-                    </label>
-                  ))}
-                </div>
-              );
-            })()}
+          <Field label="その他" hint="回数などリーグ名に添える言葉（例：11th / 第11回）。絞り込みには影響しません。">
+            <input name="leagueExtra" defaultValue={editing?.leagueExtra ?? ""} placeholder="例：11th" style={{ ...input, maxWidth: 280 }} />
           </Field>
-          <Field label="年" hint="「年を表示」のときに出る年。空欄なら開催日の年になります。">
+          <Field label="年" hint="空欄なら開催日の年になります。">
             <input name="year" type="number" inputMode="numeric" defaultValue={editing?.year ?? ""} placeholder="2026" style={{ ...input, maxWidth: 200 }} />
           </Field>
           <Field label="シーズン" hint="通常は「自動」（4月〜翌3月で判定）。日程とシーズンがずれる大会だけ指定してください。">
@@ -172,6 +228,9 @@ export default function MatchForm({ players, matches, leagues, sponsors, oppCoun
               <option value="">{autoSeason ? `自動（${autoSeason}）` : "自動（開催日から）"}</option>
               {SEASON_OPTS.map((x) => <option key={x} value={x}>{x}</option>)}
             </select>
+          </Field>
+          <Field label="リーグ行の並び順と表示" hint="ラウンド名の上の行に出す項目を選び、↑↓で並べ替えます。黒い枠がサイトでの見え方です。">
+            <TitleOrderEditor slots={slots} onChange={(x) => { setSlots(x); setOrderTouched(true); }} m={labelM} />
           </Field>
         </Section>
 
